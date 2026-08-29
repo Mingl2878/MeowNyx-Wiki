@@ -21,15 +21,10 @@
 
 前往 [Releases](../../releases) 页面下载：
 
-| 文件 | 说明 |
-|------|------|
-| `小黑猫Wiki-Setup-v1.0.exe` | 安装包，双击安装 |
-| `小黑猫Wiki-v1.0-Portable.zip` | 便携版，解压即用 |
 
 ## 系统要求
 
 - Windows 10 / 11
-- WebView2 运行时（Win11 自带，Win10 一般也有，没有的话安装包会自动下载）
 
 ## 编译
 
@@ -52,7 +47,3 @@ go build -ldflags "-H=windowsgui" -o "小黑猫 Wiki.exe" .
 └── js/              # 前端逻辑
     └── pages/       # 各页面模块
 ```
-
-## License
-
-MIT
