@@ -1,0 +1,16 @@
+# 编译产物
+*.exe
+*.exe~
+
+# 临时/备份文件
+*.bak
+*.tmp
+*.zip
+
+# IDE
+.vscode/
+.idea/
+
+# 系统文件
+Thumbs.db
+Desktop.ini

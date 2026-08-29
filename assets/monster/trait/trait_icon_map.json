@@ -1,0 +1,1370 @@
+{
+  "氧循环": {
+    "icon_file": "氧循环.png",
+    "feature_id": "200076",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/6b/1k5monmmigx31pju28sbgf30x15a2qn.png",
+    "downloaded": true
+  },
+  "净化": {
+    "icon_file": "净化.png",
+    "feature_id": "200191",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png",
+    "downloaded": true
+  },
+  "裁决": {
+    "icon_file": "裁决.png",
+    "feature_id": "200191",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png",
+    "downloaded": true
+  },
+  "滋养": {
+    "icon_file": "滋养.png",
+    "feature_id": "200191",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png",
+    "downloaded": true
+  },
+  "点燃": {
+    "icon_file": "点燃.png",
+    "feature_id": "200191",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png",
+    "downloaded": true
+  },
+  "草木苏醒时": {
+    "icon_file": "草木苏醒时.png",
+    "feature_id": "200076",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/6b/1k5monmmigx31pju28sbgf30x15a2qn.png",
+    "downloaded": true
+  },
+  "最好的伙伴": {
+    "icon_file": "最好的伙伴.png",
+    "feature_id": "200191",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0b/3n6tt0mfpgne1cyektvv5bin1apvx4m.png",
+    "downloaded": true
+  },
+  "深层氧循环": {
+    "icon_file": "深层氧循环.png",
+    "feature_id": "20007601",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f6/hr830utoie2i1qxmjqnjude9r0nljde.png",
+    "downloaded": true
+  },
+  "浸润": {
+    "icon_file": "浸润.png",
+    "feature_id": "200107",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/32/0j9cxhp9kr94iuqip86c9w0fdl19gf1.png",
+    "downloaded": true
+  },
+  "爆燃": {
+    "icon_file": "爆燃.png",
+    "feature_id": "200146",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/7e/het1frqcaevl1bq7dkgifl5bb6xwn0j.png",
+    "downloaded": true
+  },
+  "挺起胸脯": {
+    "icon_file": "挺起胸脯.png",
+    "feature_id": "200088",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/cf/qf93cxjmv32dzqiw3ud5cxl4k8ceqyr.png",
+    "downloaded": true
+  },
+  "“国王”的威严": {
+    "icon_file": "“国王”的威严.png",
+    "feature_id": "20008801",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ea/rfnjv8dl0l40n3alfqj2t77gb6qfimk.png",
+    "downloaded": true
+  },
+  "浪潮": {
+    "icon_file": "浪潮.png",
+    "feature_id": "200107",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/32/0j9cxhp9kr94iuqip86c9w0fdl19gf1.png",
+    "downloaded": true
+  },
+  "缩壳": {
+    "icon_file": "缩壳.png",
+    "feature_id": "200108",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/dd/i364yoldrpbnnj2w08w20eqh3goe7e8.png",
+    "downloaded": true
+  },
+  "助燃": {
+    "icon_file": "助燃.png",
+    "feature_id": "200146",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/7e/het1frqcaevl1bq7dkgifl5bb6xwn0j.png",
+    "downloaded": true
+  },
+  "碰瓷": {
+    "icon_file": "碰瓷.png",
+    "feature_id": "200089",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/a5/f3lhjtt04sh27qg5b5hjzin53nxsfya.png",
+    "downloaded": true
+  },
+  "破空": {
+    "icon_file": "破空.png",
+    "feature_id": "200124",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/46/9gd29v6j6s6e5xeup001bts0sop3scf.png",
+    "downloaded": true
+  },
+  "顺风": {
+    "icon_file": "顺风.png",
+    "feature_id": "200124",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/46/9gd29v6j6s6e5xeup001bts0sop3scf.png",
+    "downloaded": true
+  },
+  "毒蘑菇": {
+    "icon_file": "毒蘑菇.png",
+    "feature_id": "200158",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/6c/so2hignl023p3gv6ngttko3phz6az8c.png",
+    "downloaded": true
+  },
+  "地脉": {
+    "icon_file": "地脉.png",
+    "feature_id": "200102",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/63/1j6o8ci1xdetw5dvcq08mazf5ud3uo7.png",
+    "downloaded": true
+  },
+  "地脉馈赠": {
+    "icon_file": "地脉馈赠.png",
+    "feature_id": "200102",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/63/1j6o8ci1xdetw5dvcq08mazf5ud3uo7.png",
+    "downloaded": true
+  },
+  "渴求": {
+    "icon_file": "渴求.png",
+    "feature_id": "200139",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c1/8s16p26um6pcoe2waarbl65wbbsec08.png",
+    "downloaded": true
+  },
+  "刺肤": {
+    "icon_file": "刺肤.png",
+    "feature_id": "200103",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/b4/amm5zcx1gk9v7pqf3cwvregu9fby8h1.png",
+    "downloaded": true
+  },
+  "贪得无厌": {
+    "icon_file": "贪得无厌.png",
+    "feature_id": "200139",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c1/8s16p26um6pcoe2waarbl65wbbsec08.png",
+    "downloaded": true
+  },
+  "化茧": {
+    "icon_file": "化茧.png",
+    "feature_id": "200135",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/1c/gi7pzgtbv1om40vsngv9sgbtqd2ysb1.png",
+    "downloaded": true
+  },
+  "小偷小摸": {
+    "icon_file": "小偷小摸.png",
+    "feature_id": "200155",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/2a/aq3b0ld8hx8guyj8ps8za4aeohp7xit.png",
+    "downloaded": true
+  },
+  "大捞一笔": {
+    "icon_file": "大捞一笔.png",
+    "feature_id": "200155",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/2a/aq3b0ld8hx8guyj8ps8za4aeohp7xit.png",
+    "downloaded": true
+  },
+  "保守派": {
+    "icon_file": "保守派.png",
+    "feature_id": "200094",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/14/jfonxr0vbb5wql6u2kzjzxohq1fw7ue.png",
+    "downloaded": true
+  },
+  "养分内循环": {
+    "icon_file": "养分内循环.png",
+    "feature_id": "200080",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fb/f5w5224milq533lltin7jn8z2cu65o7.png",
+    "downloaded": true
+  },
+  "偏振": {
+    "icon_file": "偏振.png",
+    "feature_id": "200074",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e3/7lf5ndi3txqk9h9qk3lurtdsz39hm33.png",
+    "downloaded": true
+  },
+  "养分重吸收": {
+    "icon_file": "养分重吸收.png",
+    "feature_id": "200080",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fb/f5w5224milq533lltin7jn8z2cu65o7.png",
+    "downloaded": true
+  },
+  "完全偏振": {
+    "icon_file": "完全偏振.png",
+    "feature_id": "200074",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e3/7lf5ndi3txqk9h9qk3lurtdsz39hm33.png",
+    "downloaded": true
+  },
+  "专注力": {
+    "icon_file": "专注力.png",
+    "feature_id": "200149",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/29/7y1w933dgiwjro4dny5137901p71hos.png",
+    "downloaded": true
+  },
+  "诈死": {
+    "icon_file": "诈死.png",
+    "feature_id": "200081",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/dc/1xszor6d01inp2mldysxio74ncugctt.png",
+    "downloaded": true
+  },
+  "全神贯注": {
+    "icon_file": "全神贯注.png",
+    "feature_id": "200149",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/29/7y1w933dgiwjro4dny5137901p71hos.png",
+    "downloaded": true
+  },
+  "惊吓": {
+    "icon_file": "惊吓.png",
+    "feature_id": "200157",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f9/efpyinyqdfa1ml9eh178y3cxh9i56zv.png",
+    "downloaded": true
+  },
+  "做噩梦": {
+    "icon_file": "做噩梦.png",
+    "feature_id": "200161",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/35/t10qz8bddi5nmqwdd0stpdj3mx8wggj.png",
+    "downloaded": true
+  },
+  "囤积": {
+    "icon_file": "囤积.png",
+    "feature_id": "200091",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/00/k2l0dfg1waba4wx3ynle6gkpe7wsrae.png",
+    "downloaded": true
+  },
+  "稀兽花宝": {
+    "icon_file": "稀兽花宝.png",
+    "feature_id": "200220",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/32/1u7mm9ujn41r9w6rsh4dfu537vq6kmf.png",
+    "downloaded": true
+  },
+  "复方汤剂": {
+    "icon_file": "复方汤剂.png",
+    "feature_id": "200186",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f2/ssu4elh8cjfxisuqxbjlnz3me2fpzwq.png",
+    "downloaded": true
+  },
+  "壮胆": {
+    "icon_file": "壮胆.png",
+    "feature_id": "200090",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d3/9mfli2nobvxp5d4gkcms98tg5p81560.png",
+    "downloaded": true
+  },
+  "高浓生物碱": {
+    "icon_file": "高浓生物碱.png",
+    "feature_id": "20007801",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/52/5ilk0wb7n829kzdqos9q4490e2wcqxv.png",
+    "downloaded": true
+  },
+  "生物碱": {
+    "icon_file": "生物碱.png",
+    "feature_id": "200078",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f1/1zawwi4dgqfpfsfaedy3wxw5c1s9rpa.png",
+    "downloaded": true
+  },
+  "勇敢": {
+    "icon_file": "勇敢.png",
+    "feature_id": "200077",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ee/2ns15azu8vkrk41w9nurd0pqct81orq.png",
+    "downloaded": true
+  },
+  "溶解扩散": {
+    "icon_file": "溶解扩散.png",
+    "feature_id": "200111",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/40/34ecvsdrgb1ndjnu43c762egy6pujp5.png",
+    "downloaded": true
+  },
+  "慢热型": {
+    "icon_file": "慢热型.png",
+    "feature_id": "200177",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/1c/jaljxard4ytuz0p9s6vn4uj02i2txdx.png",
+    "downloaded": true
+  },
+  "腐植循环": {
+    "icon_file": "腐植循环.png",
+    "feature_id": "200083",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f0/h2n419q96003c40x6r84c986u3lt9im.png",
+    "downloaded": true
+  },
+  "快充": {
+    "icon_file": "快充.png",
+    "feature_id": "200163",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0d/mnvndkg3r3uogk64dlwf63t8famk60h.png",
+    "downloaded": true
+  },
+  "溶解腐蚀": {
+    "icon_file": "溶解腐蚀.png",
+    "feature_id": "200111",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/40/34ecvsdrgb1ndjnu43c762egy6pujp5.png",
+    "downloaded": true
+  },
+  "无忧无虑": {
+    "icon_file": "无忧无虑.png",
+    "feature_id": "200182",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/58/ptclf0je8biby8ekch77kqqa3u4c65q.png",
+    "downloaded": true
+  },
+  "电流刺激": {
+    "icon_file": "电流刺激.png",
+    "feature_id": "200164",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/6e/e1lccik4txay82tygf0gls1k8awy4v8.png",
+    "downloaded": true
+  },
+  "虫群鼓舞": {
+    "icon_file": "虫群鼓舞.png",
+    "feature_id": "200132",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/1f/30vugm400lmrt1hxlvgw57b5sylzpr0.png",
+    "downloaded": true
+  },
+  "虫群突袭": {
+    "icon_file": "虫群突袭.png",
+    "feature_id": "200132",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/1f/30vugm400lmrt1hxlvgw57b5sylzpr0.png",
+    "downloaded": true
+  },
+  "嫁祸": {
+    "icon_file": "嫁祸.png",
+    "feature_id": "200143",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e2/r0yganurgrysujy5nd25udxxgn51fvx.png",
+    "downloaded": true
+  },
+  "洁癖": {
+    "icon_file": "洁癖.png",
+    "feature_id": "200126",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/9a/1e9idsnj71gob017xeh3tehsgpsheia.png",
+    "downloaded": true
+  },
+  "孤傲": {
+    "icon_file": "孤傲.png",
+    "feature_id": "200231",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/dc/so80h65dge9ek234690nx55fxnya67f.png",
+    "downloaded": true
+  },
+  "快锤": {
+    "icon_file": "快锤.png",
+    "feature_id": "200129",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/b9/2cwrzhk8cgxqbxq35qvqt8ymfzo8143.png",
+    "downloaded": true
+  },
+  "木桶戏法": {
+    "icon_file": "木桶戏法.png",
+    "feature_id": "200082",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/21/tdvms31rc2oigio8o1jf28si2z3pydr.png",
+    "downloaded": true
+  },
+  "不移": {
+    "icon_file": "不移.png",
+    "feature_id": "200099",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/4c/p93pycrqaalpja8hyyr6umc77ipf42n.png",
+    "downloaded": true
+  },
+  "花精灵": {
+    "icon_file": "花精灵.png",
+    "feature_id": "200136",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/a0/4ygqy3p4vn07079nldi32b6m3435bnh.png",
+    "downloaded": true
+  },
+  "咔咔冲刺": {
+    "icon_file": "咔咔冲刺.png",
+    "feature_id": "200125",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d5/e0nbv7a307w6mhywtv1mpmhgqu63pk1.png",
+    "downloaded": true
+  },
+  "自由飘": {
+    "icon_file": "自由飘.png",
+    "feature_id": "200183",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d4/d7yye7ykpssap1htme9kow67dohl0nm.png",
+    "downloaded": true
+  },
+  "石头大餐": {
+    "icon_file": "石头大餐.png",
+    "feature_id": "200100",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/27/64cdnq067e8ay213oojx2cvuxpbsd9a.png",
+    "downloaded": true
+  },
+  "盛宴": {
+    "icon_file": "盛宴.png",
+    "feature_id": "200100",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/27/64cdnq067e8ay213oojx2cvuxpbsd9a.png",
+    "downloaded": true
+  },
+  "水翼推进": {
+    "icon_file": "水翼推进.png",
+    "feature_id": "200110",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/88/sb3ooc3zium2v29thi50a7olxsoytrt.png",
+    "downloaded": true
+  },
+  "水翼飞升": {
+    "icon_file": "水翼飞升.png",
+    "feature_id": "200110",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/88/sb3ooc3zium2v29thi50a7olxsoytrt.png",
+    "downloaded": true
+  },
+  "观星": {
+    "icon_file": "观星.png",
+    "feature_id": "200106",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/a9/tbasdyc0p4n6kutzhbemebetcf991ie.png",
+    "downloaded": true
+  },
+  "坠星": {
+    "icon_file": "坠星.png",
+    "feature_id": "200106",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/a9/tbasdyc0p4n6kutzhbemebetcf991ie.png",
+    "downloaded": true
+  },
+  "石天平": {
+    "icon_file": "石天平.png",
+    "feature_id": "200104",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/bb/l5osu3a4dqj32knlwbvmowuknt7zbq6.png",
+    "downloaded": true
+  },
+  "目空": {
+    "icon_file": "目空.png",
+    "feature_id": "200075",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ea/jvpj9lnxlk6s58sfvnyamxgj7oemorw.png",
+    "downloaded": true
+  },
+  "夺目": {
+    "icon_file": "夺目.png",
+    "feature_id": "200075",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ea/jvpj9lnxlk6s58sfvnyamxgj7oemorw.png",
+    "downloaded": true
+  },
+  "共鸣": {
+    "icon_file": "共鸣.png",
+    "feature_id": "200098",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/ce/82ll3cahcdje6vao2t053tn5a4syjhk.png",
+    "downloaded": true
+  },
+  "齐鸣": {
+    "icon_file": "齐鸣.png",
+    "feature_id": "200098",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/ce/82ll3cahcdje6vao2t053tn5a4syjhk.png",
+    "downloaded": true
+  },
+  "先知": {
+    "icon_file": "先知.png",
+    "feature_id": "200222",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ea/61g3fyim65ngtxv2jvlgn5m7g73x7k4.png",
+    "downloaded": true
+  },
+  "预警": {
+    "icon_file": "预警.png",
+    "feature_id": "200222",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ea/61g3fyim65ngtxv2jvlgn5m7g73x7k4.png",
+    "downloaded": true
+  },
+  "下黑手": {
+    "icon_file": "下黑手.png",
+    "feature_id": "200156",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3f/19m6udcrx4it0o4yiigm4e2wl0k9idx.png",
+    "downloaded": true
+  },
+  "毒牙": {
+    "icon_file": "毒牙.png",
+    "feature_id": "200185",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/79/qa4lp1b4q1agjbbtv16gmv7k7ft3y1i.png",
+    "downloaded": true
+  },
+  "悼亡": {
+    "icon_file": "悼亡.png",
+    "feature_id": "200140",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/dc/ttotbnuw49zg0trqylb0a0wkemwpo14.png",
+    "downloaded": true
+  },
+  "吸积盘": {
+    "icon_file": "吸积盘.png",
+    "feature_id": "200189",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/da/7emulbvyagyhs5399u3uwrx6gsrccn2.png",
+    "downloaded": true
+  },
+  "悲悯": {
+    "icon_file": "悲悯.png",
+    "feature_id": "200140",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/dc/ttotbnuw49zg0trqylb0a0wkemwpo14.png",
+    "downloaded": true
+  },
+  "超负荷": {
+    "icon_file": "超负荷.png",
+    "feature_id": "200278",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/75/f7ahl4y5ntrmvtzbotja5iptq9dyyzx.png",
+    "downloaded": true
+  },
+  "冻土": {
+    "icon_file": "冻土.png",
+    "feature_id": "200120",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/95/kxahdw0dmcgneq742a0fyk564fauzm2.png",
+    "downloaded": true
+  },
+  "结晶水": {
+    "icon_file": "结晶水.png",
+    "feature_id": "200118",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e1/c0yz4yv4ssk67cb6qs4dwnutk36r176.png",
+    "downloaded": true
+  },
+  "捉迷藏": {
+    "icon_file": "捉迷藏.png",
+    "feature_id": "200116",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/ae/bonene8n070557d9caw78p0u3mu8b0l.png",
+    "downloaded": true
+  },
+  "冰封": {
+    "icon_file": "冰封.png",
+    "feature_id": "200123",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/05/s2qwj64ya8843g5arenzwfh4ilv3jm8.png",
+    "downloaded": true
+  },
+  "机械变式": {
+    "icon_file": "机械变式.png",
+    "feature_id": "200197",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/bb/13dzjze1oz1q47zbnzr222dl5ib3u13.png",
+    "downloaded": true
+  },
+  "抓到你了": {
+    "icon_file": "抓到你了.png",
+    "feature_id": "200116",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/ae/bonene8n070557d9caw78p0u3mu8b0l.png",
+    "downloaded": true
+  },
+  "灵魂灼伤": {
+    "icon_file": "灵魂灼伤.png",
+    "feature_id": "200150",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0d/5wdbdzq49fdsqs2o2a88f7b2pyau0k0.png",
+    "downloaded": true
+  },
+  "飓风": {
+    "icon_file": "飓风.png",
+    "feature_id": "200211",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/9b/pc9jhlojh06stayt56k0u21gn5a16yh.png",
+    "downloaded": true
+  },
+  "野性感官": {
+    "icon_file": "野性感官.png",
+    "feature_id": "200249",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d9/n5er253a7bsl4o5emossmbhgdt08osk.png",
+    "downloaded": true
+  },
+  "圣火骑士": {
+    "icon_file": "圣火骑士.png",
+    "feature_id": "200247",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/53/4nbzowttztkc0grkthxj9fs8hjk3zup.png",
+    "downloaded": true
+  },
+  "思维之盾": {
+    "icon_file": "思维之盾.png",
+    "feature_id": "200248",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/da/fhdv9vbzarae4k4hvl5jlugwq3l5zwe.png",
+    "downloaded": true
+  },
+  "衡量": {
+    "icon_file": "衡量.png",
+    "feature_id": "200221",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/8a/4b1q4iujmgl87uvpk6k7c2alf1gmtma.png",
+    "downloaded": true
+  },
+  "毒腺": {
+    "icon_file": "毒腺.png",
+    "feature_id": "200131",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/77/kjikojxjbwqzn9mhpbx1plexbeyinug.png",
+    "downloaded": true
+  },
+  "威慑": {
+    "icon_file": "威慑.png",
+    "feature_id": "200180",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fe/pxeq43gnt5i56nw7uirr3bi2oim0lyz.png",
+    "downloaded": true
+  },
+  "乘风连击": {
+    "icon_file": "乘风连击.png",
+    "feature_id": "200128",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e9/bvpq6ktx91t4kyzhn2l90yvv9funptu.png",
+    "downloaded": true
+  },
+  "逐魂鸟": {
+    "icon_file": "逐魂鸟.png",
+    "feature_id": "200232",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/89/0pzmge16lj3mc9ffour5p3jb99mpf9f.png",
+    "downloaded": true
+  },
+  "泛音列": {
+    "icon_file": "泛音列.png",
+    "feature_id": "200227",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/85/lorjl2wwxy300rld9e4kofbtp85whvo.png",
+    "downloaded": true
+  },
+  "得寸进尺": {
+    "icon_file": "得寸进尺.png",
+    "feature_id": "200079",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/ca/ta0k8q221mhhf63pt8rjb824x7xbwo2.png",
+    "downloaded": true
+  },
+  "多人宿舍": {
+    "icon_file": "多人宿舍.png",
+    "feature_id": "200215",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c8/b1486dc2a476j9zjzjptp5c1zag5csk.png",
+    "downloaded": true
+  },
+  "消波块": {
+    "icon_file": "消波块.png",
+    "feature_id": "200224",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/30/d9sp3lnk7bu27538ylrbbvfmun1caym.png",
+    "downloaded": true
+  },
+  "身经百练": {
+    "icon_file": "身经百练.png",
+    "feature_id": "200178",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f9/bkikpv3wao9w2qd866yo4ukuh8cjkez.png",
+    "downloaded": true
+  },
+  "守护者": {
+    "icon_file": "守护者.png",
+    "feature_id": "200109",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/42/59qc72bkqas893emkj052305tzb9ghm.png",
+    "downloaded": true
+  },
+  "腾挪": {
+    "icon_file": "腾挪.png",
+    "feature_id": "200236",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/03/ptr0846kue6aaebylbxuv7lxjd0djrv.png",
+    "downloaded": true
+  },
+  "保卫": {
+    "icon_file": "保卫.png",
+    "feature_id": "200237",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/59/cjylg0bj871msgmctl3v92ru5z373lb.png",
+    "downloaded": true
+  },
+  "渗透": {
+    "icon_file": "渗透.png",
+    "feature_id": "200212",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3c/dogsa8pp86jjq0060382z9y3nxfdj85.png",
+    "downloaded": true
+  },
+  "御驾亲征": {
+    "icon_file": "御驾亲征.png",
+    "feature_id": "200212",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3c/dogsa8pp86jjq0060382z9y3nxfdj85.png",
+    "downloaded": true
+  },
+  "好象坏象": {
+    "icon_file": "好象坏象.png",
+    "feature_id": "200238",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/b4/5hkn66j377yzacl9t7z86zymyss3xp9.png",
+    "downloaded": true
+  },
+  "鼓气": {
+    "icon_file": "鼓气.png",
+    "feature_id": "200096",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/ff/112jow70lsrrfz8zt0tbg2uec8390wq.png",
+    "downloaded": true
+  },
+  "三鼓作气": {
+    "icon_file": "三鼓作气.png",
+    "feature_id": "200096",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/ff/112jow70lsrrfz8zt0tbg2uec8390wq.png",
+    "downloaded": true
+  },
+  "营养液泡": {
+    "icon_file": "营养液泡.png",
+    "feature_id": "200084",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3b/dtp84zj24zaeb6hrzl1825umm5pof5z.png",
+    "downloaded": true
+  },
+  "奔波命": {
+    "icon_file": "奔波命.png",
+    "feature_id": "200105",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/26/eh49xmf2f2ke05d1mh6b55cpl0sooic.png",
+    "downloaded": true
+  },
+  "噼啪！": {
+    "icon_file": "噼啪！.png",
+    "feature_id": "200162",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/26/q19jgumy8ldocvvik4kbspzqhv2v5oo.png",
+    "downloaded": true
+  },
+  "铃兰晚钟": {
+    "icon_file": "铃兰晚钟.png",
+    "feature_id": "200223",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fd/ilgej4djpb4wvjsino4dp6dndxi1ri3.png",
+    "downloaded": true
+  },
+  "游弋": {
+    "icon_file": "游弋.png",
+    "feature_id": "200174",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e3/tcq8xnejjbx5go0xreyo6sx9z65787z.png",
+    "downloaded": true
+  },
+  "嫉妒": {
+    "icon_file": "嫉妒.png",
+    "feature_id": "200174",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e3/tcq8xnejjbx5go0xreyo6sx9z65787z.png",
+    "downloaded": true
+  },
+  "防过载保护": {
+    "icon_file": "防过载保护.png",
+    "feature_id": "200165",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/2f/pa0tixdgjuiivhk5plh0ytufb3601iz.png",
+    "downloaded": true
+  },
+  "噼啪噼啪！": {
+    "icon_file": "噼啪噼啪！.png",
+    "feature_id": "200162",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/26/q19jgumy8ldocvvik4kbspzqhv2v5oo.png",
+    "downloaded": true
+  },
+  "虚假宝箱": {
+    "icon_file": "虚假宝箱.png",
+    "feature_id": "200235",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/de/a60yj2efe3u4k0pixp766a0q6t38c7d.png",
+    "downloaded": true
+  },
+  "拨浪鼓": {
+    "icon_file": "拨浪鼓.png",
+    "feature_id": "200181",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/6c/3c41cs247z4cvi651sem0x5qvgcmuud.png",
+    "downloaded": true
+  },
+  "振奋虫心": {
+    "icon_file": "振奋虫心.png",
+    "feature_id": "200133",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/76/h3s2wff7r52cr9slqlvpkhxgz4rq9si.png",
+    "downloaded": true
+  },
+  "蒸汽膨胀": {
+    "icon_file": "蒸汽膨胀.png",
+    "feature_id": "200153",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e6/9lq3ujloxiod8khxkre3pyzpflph1a6.png",
+    "downloaded": true
+  },
+  "定向精炼": {
+    "icon_file": "定向精炼.png",
+    "feature_id": "200172",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/a9/s3k5fms30vbjzrx9b4ngdy1pzm9z7qy.png",
+    "downloaded": true
+  },
+  "吟游之弦": {
+    "icon_file": "吟游之弦.png",
+    "feature_id": "200225",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/72/p12fouroewvx94y8zyt19pw0n1v2lcw.png",
+    "downloaded": true
+  },
+  "珊瑚骨": {
+    "icon_file": "珊瑚骨.png",
+    "feature_id": "200216",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ea/bv7euxwjokwfsuqmg81plhu9sjc8yb0.png",
+    "downloaded": true
+  },
+  "暴食": {
+    "icon_file": "暴食.png",
+    "feature_id": "200173",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c2/abmuqpd2zdpufw95s39krqld0waf3hn.png",
+    "downloaded": true
+  },
+  "蓄电池": {
+    "icon_file": "蓄电池.png",
+    "feature_id": "200169",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/50/9tsd1l0y53jtqq4g6xb6s869fu10ovk.png",
+    "downloaded": true
+  },
+  "超级电池": {
+    "icon_file": "超级电池.png",
+    "feature_id": "200169",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/50/9tsd1l0y53jtqq4g6xb6s869fu10ovk.png",
+    "downloaded": true
+  },
+  "向心力": {
+    "icon_file": "向心力.png",
+    "feature_id": "200228",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/88/7syiqexp4525datiep1bi0nrnlu2ien.png",
+    "downloaded": true
+  },
+  "洄游": {
+    "icon_file": "洄游.png",
+    "feature_id": "200114",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/9b/ap29trtlv0v6i9u321dnsvaqcl4fy4m.png",
+    "downloaded": true
+  },
+  "相争": {
+    "icon_file": "相争.png",
+    "feature_id": "200124",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/46/9gd29v6j6s6e5xeup001bts0sop3scf.png",
+    "downloaded": true
+  },
+  "起飞加速": {
+    "icon_file": "起飞加速.png",
+    "feature_id": "200093",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3b/kxgydnaumwxjk1mzvnv3fkvg73u0zyt.png",
+    "downloaded": true
+  },
+  "加个雪球": {
+    "icon_file": "加个雪球.png",
+    "feature_id": "200122",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/68/qeka66c0qjbb6rty6hnk9mykwn6pus2.png",
+    "downloaded": true
+  },
+  "耐活王": {
+    "icon_file": "耐活王.png",
+    "feature_id": "200240",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/23/ono0x763c92kfz6rgkiqvslyxpq2stt.png",
+    "downloaded": true
+  },
+  "生物电": {
+    "icon_file": "生物电.png",
+    "feature_id": "200167",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/9d/pu6pw4902ahwut31o7xa4rxwulu2is2.png",
+    "downloaded": true
+  },
+  "扩散侵蚀": {
+    "icon_file": "扩散侵蚀.png",
+    "feature_id": "200115",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e7/9pk5di2a0suud3vogfi98qu6mboa3tg.png",
+    "downloaded": true
+  },
+  "蚀刻": {
+    "icon_file": "蚀刻.png",
+    "feature_id": "200187",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ee/s0ns9o6rt0x62dp0gca42om6hf7igb5.png",
+    "downloaded": true
+  },
+  "恶魔的晚宴": {
+    "icon_file": "恶魔的晚宴.png",
+    "feature_id": "200257",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e9/aof98nyt9uva3eupvh0ivc7rppafq24.png",
+    "downloaded": true
+  },
+  "冰钻": {
+    "icon_file": "冰钻.png",
+    "feature_id": "200117",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/a7/7w7ibe312yutpzt77344jfmbmoax1nf.png",
+    "downloaded": true
+  },
+  "仁心": {
+    "icon_file": "仁心.png",
+    "feature_id": "200152",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/5c/bkgiokw5yc6jpw4tk8govowt9bfp8oj.png",
+    "downloaded": true
+  },
+  "散热": {
+    "icon_file": "散热.png",
+    "feature_id": "200147",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f2/sv5rgiohpjq5qfkmby9qxezd3j0qdgs.png",
+    "downloaded": true
+  },
+  "翼轴": {
+    "icon_file": "翼轴.png",
+    "feature_id": "200234",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/81/1kaxxo7482uvpkh74ruvivn17hfqlwp.png",
+    "downloaded": true
+  },
+  "盲拧": {
+    "icon_file": "盲拧.png",
+    "feature_id": "200170",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/66/q4b0bwmiv4tvvwzjqjf7d7wqiryfjbr.png",
+    "downloaded": true
+  },
+  "斗技": {
+    "icon_file": "斗技.png",
+    "feature_id": "200148",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fa/i9is3vof8rivknknajcf7ub43m5ndic.png",
+    "downloaded": true
+  },
+  "指挥家": {
+    "icon_file": "指挥家.png",
+    "feature_id": "200218",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f1/lc7coo5ggrwx6jz6bf7do7v87cawru0.png",
+    "downloaded": true
+  },
+  "哨兵": {
+    "icon_file": "哨兵.png",
+    "feature_id": "200262",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e2/jto7dzo1e8k22tjtjm5v6wckeqqh8to.png",
+    "downloaded": true
+  },
+  "生长": {
+    "icon_file": "生长.png",
+    "feature_id": "200087",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f9/mesgw3q66x7jr5d4kgdw2gk8nwqylkm.png",
+    "downloaded": true
+  },
+  "倾轧": {
+    "icon_file": "倾轧.png",
+    "feature_id": "200112",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/2d/aevoisafgs5rt8ehs9f7t7wpp49njgs.png",
+    "downloaded": true
+  },
+  "连续负荷": {
+    "icon_file": "连续负荷.png",
+    "feature_id": "200219",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/45/139xozmbomvso8snzzfeez7md6uw9da.png",
+    "downloaded": true
+  },
+  "警惕": {
+    "icon_file": "警惕.png",
+    "feature_id": "200092",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ef/2qexn7rvsqf5od8uhfqc6usqkbwv4vf.png",
+    "downloaded": true
+  },
+  "涂鸦": {
+    "icon_file": "涂鸦.png",
+    "feature_id": "200267",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/15/612pyjciutatrjs8tc1tv3ljdnccw4w.png",
+    "downloaded": true
+  },
+  "绝对秩序": {
+    "icon_file": "绝对秩序.png",
+    "feature_id": "200268",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d7/3s2wic6q74akt7m0dgkmvjw3z5p6e45.png",
+    "downloaded": true
+  },
+  "坚韧铠甲": {
+    "icon_file": "坚韧铠甲.png",
+    "feature_id": "200138",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/1a/lum9nkolloafvzqm5z9amdcb1n22jzf.png",
+    "downloaded": true
+  },
+  "正位宝剑": {
+    "icon_file": "正位宝剑.png",
+    "feature_id": "200208",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fe/gch08tx8sq6gon0k79zg0su189ie84n.png",
+    "downloaded": true
+  },
+  "宝剑王牌": {
+    "icon_file": "宝剑王牌.png",
+    "feature_id": "200208",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fe/gch08tx8sq6gon0k79zg0su189ie84n.png",
+    "downloaded": true
+  },
+  "无差别过滤": {
+    "icon_file": "无差别过滤.png",
+    "feature_id": "200209",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/41/nk6n8fhjyr0f6tgawr1mnkft6ocxaap.png",
+    "downloaded": true
+  },
+  "不朽": {
+    "icon_file": "不朽.png",
+    "feature_id": "200230",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/b7/9v2d3z4p5fe92tbzd931q5l20sgt0f3.png",
+    "downloaded": true
+  },
+  "强制过滤": {
+    "icon_file": "强制过滤.png",
+    "feature_id": "200209",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/41/nk6n8fhjyr0f6tgawr1mnkft6ocxaap.png",
+    "downloaded": true
+  },
+  "侵蚀": {
+    "icon_file": "侵蚀.png",
+    "feature_id": "200204",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/12/ma8195dp1qwei7xwwfh9eqlimcuu00p.png",
+    "downloaded": true
+  },
+  "付给恶魔的赎价": {
+    "icon_file": "付给恶魔的赎价.png",
+    "feature_id": "200141",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/7b/9dvdh39zzabbn8nfm89cc79p26g7wva.png",
+    "downloaded": true
+  },
+  "扫拖一体": {
+    "icon_file": "扫拖一体.png",
+    "feature_id": "200255",
+    "url": "https://patchwiki.biligame.com/images/rocom/2/2a/39o0dqix5ochjgle4lhzwfitpkhful4.png",
+    "downloaded": true
+  },
+  "灰色肖像": {
+    "icon_file": "灰色肖像.png",
+    "feature_id": "200242",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/47/touyisfb4vi2m1et3hxhsy9th7z9mjo.png",
+    "downloaded": true
+  },
+  "构装契约者": {
+    "icon_file": "构装契约者.png",
+    "feature_id": "200245",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/52/qcugnswn8lihl52bqtk89g1od3100ul.png",
+    "downloaded": true
+  },
+  "图书守卫者": {
+    "icon_file": "图书守卫者.png",
+    "feature_id": "200244",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d3/520e4pif6wqubf5m8adq3tzutcbp08g.png",
+    "downloaded": true
+  },
+  "绒粉星光": {
+    "icon_file": "绒粉星光.png",
+    "feature_id": "200192",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/17/2ibqodm4ontozq4h9hrn98v8cp6ndka.png",
+    "downloaded": true
+  },
+  "变形活画": {
+    "icon_file": "变形活画.png",
+    "feature_id": "200243",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d0/thj3087qpxv1n9hi4p4a69uxelhky5l.png",
+    "downloaded": true
+  },
+  "月光审判": {
+    "icon_file": "月光审判.png",
+    "feature_id": "200193",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fc/rv8d9fz9py2asuhiommujwix56fw6kn.png",
+    "downloaded": true
+  },
+  "特殊清洁场景": {
+    "icon_file": "特殊清洁场景.png",
+    "feature_id": "200256",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/86/5cuirobjs7a93x4kq19yi5870z5n4wz.png",
+    "downloaded": true
+  },
+  "茶多酚": {
+    "icon_file": "茶多酚.png",
+    "feature_id": "200253",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/99/caj65ekkctarxw24o2l16vd81fw2sd7.png",
+    "downloaded": true
+  },
+  "美拉德反应": {
+    "icon_file": "美拉德反应.png",
+    "feature_id": "200254",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/f7/omdml3kj0hdor514ztdc78yqoogndqu.png",
+    "downloaded": true
+  },
+  "吉利丁片": {
+    "icon_file": "吉利丁片.png",
+    "feature_id": "200202",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e0/d9l1i0yux4gjzolf7sgpubpfcf6f5uo.png",
+    "downloaded": true
+  },
+  "对流": {
+    "icon_file": "对流.png",
+    "feature_id": "200113",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/4e/qojqn54lkeoiioo5ewm07uw5qe4eewi.png",
+    "downloaded": true
+  },
+  "月牙雪糕": {
+    "icon_file": "月牙雪糕.png",
+    "feature_id": "200205",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/44/0mxp1dvzc0wc3h8mti4muk969nh02rs.png",
+    "downloaded": true
+  },
+  "血型吸引": {
+    "icon_file": "血型吸引.png",
+    "feature_id": "200251",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/35/3jliksbmsnm3rmsp05htuhwxsvhpvss.png",
+    "downloaded": true
+  },
+  "契约的形状": {
+    "icon_file": "契约的形状.png",
+    "feature_id": "200137",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3c/8nhuhfx9349f51rie5c75y41aosfpa2.png",
+    "downloaded": true
+  },
+  "煤渣草": {
+    "icon_file": "煤渣草.png",
+    "feature_id": "200203",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/7a/j602gb4app4vzv1u1mag4hefjq02tpn.png",
+    "downloaded": true
+  },
+  "搜刮": {
+    "icon_file": "搜刮.png",
+    "feature_id": "200160",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/8d/lp3c4mhtdpxij7ap5p32qd3s3i6ugl0.png",
+    "downloaded": true
+  },
+  "星地善良": {
+    "icon_file": "星地善良.png",
+    "feature_id": "200166",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/61/kf48vvqcz8jp2mvhr7dp9rbbvpnn2wh.png",
+    "downloaded": true
+  },
+  "贪心算法": {
+    "icon_file": "贪心算法.png",
+    "feature_id": "200171",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c2/our7cehnoqbbvxazuvm9cmxkeyk7cve.png",
+    "downloaded": true
+  },
+  "陨落": {
+    "icon_file": "陨落.png",
+    "feature_id": "200241",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0c/ccyaldt9hdtmnjest3yk4809hwwpicp.png",
+    "downloaded": true
+  },
+  "双向光速": {
+    "icon_file": "双向光速.png",
+    "feature_id": "200095",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/37/l7ccan0ftph1p3ks4dl8sipvyhri3ua.png",
+    "downloaded": true
+  },
+  "扫荡": {
+    "icon_file": "扫荡.png",
+    "feature_id": "200160",
+    "url": "https://patchwiki.biligame.com/images/rocom/8/8d/lp3c4mhtdpxij7ap5p32qd3s3i6ugl0.png",
+    "downloaded": true
+  },
+  "张弛有度": {
+    "icon_file": "张弛有度.png",
+    "feature_id": "200269",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/34/nqsrxqf5qalg3lzbevino3bmrqt9jmk.png",
+    "downloaded": true
+  },
+  "天通地明": {
+    "icon_file": "天通地明.png",
+    "feature_id": "200196",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/b7/jin75iy27ac9gttxs4bgndhvz8cwcad.png",
+    "downloaded": true
+  },
+  "系统发育": {
+    "icon_file": "系统发育.png",
+    "feature_id": "200085",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/0a/9p0wvuiwi5r0jb92sfcsz4rz6o89b7b.png",
+    "downloaded": true
+  },
+  "狂欢开始": {
+    "icon_file": "狂欢开始.png",
+    "feature_id": "200286",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/70/33e8olfrxizj2zkv3bp8u6iflbm1ccc.png",
+    "downloaded": true
+  },
+  "守望星": {
+    "icon_file": "守望星.png",
+    "feature_id": "200210",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c1/as6gcsctdis4wbkpldfpzs573tcjuj7.png",
+    "downloaded": true
+  },
+  "展翅": {
+    "icon_file": "展翅.png",
+    "feature_id": "200127",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3e/reee4yybh4u535hpek8g42siy8k4crf.png",
+    "downloaded": true
+  },
+  "大雪球": {
+    "icon_file": "大雪球.png",
+    "feature_id": "200290",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/46/em0inrqy1t060rdxdkitrbq7g4lx392.png",
+    "downloaded": true
+  },
+  "大火球": {
+    "icon_file": "大火球.png",
+    "feature_id": "200292",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/74/smol3uhgvbkemmci77fd6nfg5dyu7ud.png",
+    "downloaded": true
+  },
+  "换碟": {
+    "icon_file": "换碟.png",
+    "feature_id": "200287",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3a/p7i4jc7f4hzu5qfy05ecocfi6eda3ne.png",
+    "downloaded": true
+  },
+  "拉拉队长": {
+    "icon_file": "拉拉队长.png",
+    "feature_id": "200289",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/a8/nxj5gn35zqj5pzuypypn1ex5g4w0d1f.png",
+    "downloaded": true
+  },
+  "焰色反应": {
+    "icon_file": "焰色反应.png",
+    "feature_id": "200273",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/7c/1op4hvklat6iua5dve6a3mabrbp5mnw.png",
+    "downloaded": true
+  },
+  "戏耍": {
+    "icon_file": "戏耍.png",
+    "feature_id": "200291",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/ed/9io9lrdvvwqs6r03as96r6ykxxwbmf7.png",
+    "downloaded": true
+  },
+  "魔术帽": {
+    "icon_file": "魔术帽.png",
+    "feature_id": "200272",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/7c/j9rkhbtazmu420zfbj6kqfq8ymvum0z.png",
+    "downloaded": true
+  },
+  "安可": {
+    "icon_file": "安可.png",
+    "feature_id": "200293",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/16/itobkcszapnwz72f7aj5vpi8urp94xf.png",
+    "downloaded": true
+  },
+  "盲从": {
+    "icon_file": "盲从.png",
+    "feature_id": "200188",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/33/cyhs49r76vh2l46cpaoxu5e3jdtpiis.png",
+    "downloaded": true
+  },
+  "留学生": {
+    "icon_file": "留学生.png",
+    "feature_id": "200252",
+    "url": "https://patchwiki.biligame.com/images/rocom/7/78/77wncq306qitjxqpa789qzwuxwvzce7.png",
+    "downloaded": true
+  },
+  "合拍": {
+    "icon_file": "合拍.png",
+    "feature_id": "200275",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/eb/gvpsjv5nvvvjzatzc9ttjj0mtfx3z0n.png",
+    "downloaded": true
+  },
+  "不死鸟": {
+    "icon_file": "不死鸟.png",
+    "feature_id": "200154",
+    "url": "https://patchwiki.biligame.com/images/rocom/a/ad/jm7scm2832ctt8xfh5w1pz2k40r8oay.png",
+    "downloaded": true
+  },
+  "上锁": {
+    "icon_file": "上锁.png",
+    "feature_id": "200300",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/1c/5s4elwy5oh22xz31n3o5htybhn2k0af.png",
+    "downloaded": true
+  },
+  "流沙统治者": {
+    "icon_file": "流沙统治者.png",
+    "feature_id": "200298",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/cf/6o2yz4t2mxfx55ut0pn7d0k8egejbd1.png",
+    "downloaded": true
+  },
+  "盘根木": {
+    "icon_file": "盘根木.png",
+    "feature_id": "200299",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c4/5bd55qrh5wbjokx7aktszogu4njavvp.png",
+    "downloaded": true
+  },
+  "电子音乐": {
+    "icon_file": "电子音乐.png",
+    "feature_id": "200168",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/4d/fpd59m5h4y2pyhxi8qrdzo47ymzdm6n.png",
+    "downloaded": true
+  },
+  "冰雪魂魄": {
+    "icon_file": "冰雪魂魄.png",
+    "feature_id": "200311",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/95/oy9qa2pvlobscx3j1xye3ko86gwjl1m.png",
+    "downloaded": true
+  },
+  "友谊之果": {
+    "icon_file": "友谊之果.png",
+    "feature_id": "200301",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/ca/td7e8xdbaba2eraoe8jsoqzwrom0sme.png",
+    "downloaded": true
+  },
+  "淬炼火": {
+    "icon_file": "淬炼火.png",
+    "feature_id": "200302",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/4f/ffx94ql8cuedeh19mjohsyob1kfgq7c.png",
+    "downloaded": true
+  },
+  "莫比乌斯": {
+    "icon_file": "莫比乌斯.png",
+    "feature_id": "200297",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3b/r6wlsswt5mob878f677gmkaounsdufe.png",
+    "downloaded": true
+  },
+  "瞳中倒影": {
+    "icon_file": "瞳中倒影.png",
+    "feature_id": "200142",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/cb/pmzlrysdwzvsyb7khuda0e14ey7gtj5.png",
+    "downloaded": true
+  },
+  "异类": {
+    "icon_file": "异类.png",
+    "feature_id": "200130",
+    "url": "https://patchwiki.biligame.com/images/rocom/f/fc/pqi1z0dk5gdifilj5kyusv5kfau6yma.png",
+    "downloaded": true
+  },
+  "滴眼液": {
+    "icon_file": "滴眼液.png",
+    "feature_id": "200144",
+    "url": "https://patchwiki.biligame.com/images/rocom/9/9a/oqdtbqiyu8nncq4gugafl7oc18coky6.png",
+    "downloaded": true
+  },
+  "迎宾": {
+    "icon_file": "迎宾.png",
+    "feature_id": "200304",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/bc/9bndfwtwd9pjzhmqphvpu9ulatuasjz.png",
+    "downloaded": true
+  },
+  "有求必应": {
+    "icon_file": "有求必应.png",
+    "feature_id": "200306",
+    "url": "https://patchwiki.biligame.com/images/rocom/0/04/rjbouo39sinz52dv9l3rgd2wvd0ib5q.png",
+    "downloaded": true
+  },
+  "与星星同行": {
+    "icon_file": "与星星同行.png",
+    "feature_id": "200217",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/c3/bntwo3jqeepd47rl3vw3sxgai1uioxa.png",
+    "downloaded": true
+  },
+  "一意孤行": {
+    "icon_file": "一意孤行.png",
+    "feature_id": "200305",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/3d/1rey6t07k8apsashry279nsr0cyp2rw.png",
+    "downloaded": true
+  },
+  "整点报时": {
+    "icon_file": "整点报时.png",
+    "feature_id": "200246",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/58/5nhq7ihlzpgl33g1y9siiakpbzj45ku.png",
+    "downloaded": true
+  },
+  "守护之心": {
+    "icon_file": "守护之心.png",
+    "feature_id": "200309",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/5d/b619x35srcsof1vya1gxlcftkcuqiq6.png",
+    "downloaded": true
+  },
+  "和弦共振": {
+    "icon_file": "和弦共振.png",
+    "feature_id": "200310",
+    "url": "https://patchwiki.biligame.com/images/rocom/1/19/6fwu0cf41sv0mf7pwyknlip0qoylg3d.png",
+    "downloaded": true
+  },
+  "猫精灵的礼物": {
+    "icon_file": "猫精灵的礼物.png",
+    "feature_id": "200307",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/5f/iaiqjdq07vs4qdmgip1djdlmypn3fxq.png",
+    "downloaded": true
+  },
+  "爆裂玉米": {
+    "icon_file": "爆裂玉米.png",
+    "feature_id": "200277",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/40/rpcuado17k14ikbdsg20uut31unjgm7.png",
+    "downloaded": true
+  },
+  "光度换算": {
+    "icon_file": "光度换算.png",
+    "feature_id": "200312",
+    "url": "https://patchwiki.biligame.com/images/rocom/4/40/4vfg2itpm17yhzlpmtwajq7ntokvzuj.png",
+    "downloaded": true
+  },
+  "王子的诺言": {
+    "icon_file": "王子的诺言.png",
+    "feature_id": "200294",
+    "url": "https://patchwiki.biligame.com/images/rocom/3/36/jt2dk72yvd4trqar6f3uttw7ahd8avm.png",
+    "downloaded": true
+  },
+  "诅咒": {
+    "icon_file": "诅咒.png",
+    "feature_id": "200296",
+    "url": "https://patchwiki.biligame.com/images/rocom/5/59/pcsxb2nogl7dg2qb4iad0242redq77c.png",
+    "downloaded": true
+  },
+  "长久保存制法": {
+    "icon_file": "长久保存制法.png",
+    "feature_id": "200264",
+    "url": "https://patchwiki.biligame.com/images/rocom/d/d4/qw7mldsktmrn63g3c2qkcs63t6ijbb7.png",
+    "downloaded": true
+  },
+  "守望者": {
+    "icon_file": "守望者.png",
+    "feature_id": "200295",
+    "url": "https://patchwiki.biligame.com/images/rocom/b/bb/2fenigubbrwtovti258j2xjaxpwbn1f.png",
+    "downloaded": true
+  },
+  "安眠": {
+    "icon_file": "安眠.png",
+    "feature_id": "200308",
+    "url": "https://patchwiki.biligame.com/images/rocom/e/e3/t0duts0kx5go3k5eas4ygd9v1vfed6h.png",
+    "downloaded": true
+  },
+  "扎手": {
+    "icon_file": "扎手.png",
+    "feature_id": "200239",
+    "url": "https://patchwiki.biligame.com/images/rocom/c/cc/2ni43cv1dl7y7tbiarimq83zuoj6mxp.png",
+    "downloaded": true
+  },
+  "博物": {
+    "icon_file": "博物.png",
+    "feature_id": "200288",
+    "url": "https://patchwiki.biligame.com/images/rocom/6/60/g7mvbvi4yuampxiz6755y7rwn8tdyjx.png",
+    "downloaded": true
+  }
+}

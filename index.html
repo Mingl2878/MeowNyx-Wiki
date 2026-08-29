@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小黑猫 Wiki</title>
+  <link rel="icon" href="assets/favicon.ico">
+  <script>
+    // 自动给所有本地资源加时间戳，彻底避免缓存问题
+    document.addEventListener('DOMContentLoaded', function(){});
+  </script>
+  <link rel="stylesheet" href="css/style.css?v={{CACHE_BUST}}">
+  <script src="js/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav id="navbar">
+    <div class="nav-brand" draggable="false">
+      <img src="assets/favicon.svg" alt="logo" class="nav-logo" draggable="false" onerror="this.style.display='none'">
+      <span>小黑猫 Wiki</span>
+    </div>
+    <div class="nav-links">
+      <a href="#/petdex" class="nav-link" data-route="petdex" draggable="false">精灵图鉴</a>
+      <a href="#/moves" class="nav-link" data-route="moves" draggable="false">技能列表</a>
+      <a href="#/types" class="nav-link" data-route="types" draggable="false">克制关系</a>
+      <a href="#/speed" class="nav-link" data-route="speed" draggable="false">速度速查</a>
+      <a href="#/team" class="nav-link" data-route="team" draggable="false">组队系统</a>
+      <a href="#/damage" class="nav-link" data-route="damage" draggable="false">伤害计算</a>
+      <a href="#/chart" class="nav-link" data-route="chart" draggable="false">伤害曲线</a>
+      <a href="#/updatedata" class="nav-link" data-route="updatedata" draggable="false">数据更新</a>
+    </div>
+    <button id="theme-toggle" class="theme-toggle-btn" title="切换夜间模式" draggable="false">
+      <svg class="theme-icon theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      <svg class="theme-icon theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main id="app">
+    <div id="page-container"><!-- 页面动态渲染区 --></div>
+  </main>
+
+  <!-- 全局加载提示 -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>少女祈祷中<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></p>
+  </div>
+
+  <!-- 精灵详情模态框 -->
+  <div id="pet-modal" class="modal-overlay" style="display:none; z-index: 300;">
+    <div class="modal-content hide-scrollbar" id="pet-modal-body"><!-- 详情内容 --></div>
+  </div>
+
+  <!-- 技能详情模态框 -->
+  <div id="move-modal" class="modal-overlay" style="display:none; z-index: 400;">
+    <div class="modal-content hide-scrollbar" id="move-modal-body"><!-- 详情内容 --></div>
+  </div>
+
+  <!-- 数据层 -->
+  <script src="js/data.js?v={{CACHE_BUST}}"></script>
+  <!-- 公共组件 -->
+  <script src="js/common.js?v={{CACHE_BUST}}"></script>
+  <!-- 页面模块 -->
+  <script src="js/pages/petdex.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/moves.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/types.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/speed.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/team.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/damage.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/chart.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/updatedata.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/settings.js?v={{CACHE_BUST}}"></script>
+  <!-- 主应用 -->
+  <script src="js/app.js?v={{CACHE_BUST}}"></script>
+</body>
+</html>
