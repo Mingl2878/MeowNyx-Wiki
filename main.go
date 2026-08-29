@@ -543,6 +543,10 @@ func loadSettings() UserSettings {
 
 func saveSettings(s UserSettings) error {
 	path := getSettingsFilePath()
+	// 确保目录存在（首次保存时 Xwiki 子目录可能不存在）
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return err
+	}
 	data, _ := json.MarshalIndent(s, "", "  ")
 	return os.WriteFile(path, data, 0644)
 }
