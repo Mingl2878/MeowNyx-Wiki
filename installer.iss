@@ -3,7 +3,9 @@
 ; 下载地址: https://jrsoftware.org/isdl.php
 
 #define MyAppName "小黑猫 Wiki"
-#define MyAppVersion "1.0.0"
+#ifndef MyAppVersion
+  #define MyAppVersion "1.0.0"
+#endif
 #define MyAppExeName "小黑猫 Wiki.exe"
 #define MyAppPublisher "akikocc"
 
@@ -64,8 +66,8 @@ begin
   begin
     if not WebView2Installed then
     begin
-      // 下载 WebView2 安装器到临时目录
-      DownloadTemporaryFile('https://go.microsoft.com/fwlink/p/?LinkId=2124703', ExpandConstant('{tmp}\MicrosoftEdgeWebview2Setup.exe'), nil);
+      // 下载 WebView2 安装器到临时目录（参数：URL、文件名、SHA256校验、进度回调）
+      DownloadTemporaryFile('https://go.microsoft.com/fwlink/p/?LinkId=2124703', 'MicrosoftEdgeWebview2Setup.exe', '', nil);
     end;
   end;
 end;
