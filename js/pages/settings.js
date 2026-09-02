@@ -244,9 +244,11 @@ const SettingsPage = (function () {
         body: JSON.stringify(settings)
       });
       const data = await res.json();
-      if (r) r.innerHTML = data.ok
-        ? '<span style="color:var(--success);font-weight:600;">✓ 保存成功！部分设置重启后生效</span>'
-        : '<span style="color:var(--danger);">保存失败</span>';
+      if (r) r.innerHTML = !data.ok
+        ? '<span style="color:var(--danger);">保存失败</span>'
+        : (data.hotkey_failed
+          ? '<span style="color:var(--danger);">✓ 已保存，但全局快捷键注册失败：该组合键可能已被其他程序占用，请更换后重新保存</span>'
+          : '<span style="color:var(--success);font-weight:600;">✓ 保存成功！部分设置重启后生效</span>');
       if (data.ok) clearDirty();
     } catch (e) {
       if (r) r.innerHTML = '<span style="color:var(--danger);">请求失败: ' + e.message + '</span>';
@@ -287,8 +289,8 @@ const SettingsPage = (function () {
       +       '</div>'
       +     '</div>'
 
-      // 最大化时界面缩放（窗口大小卡片内，窗口模式选项下方）
-      + '<div class="settings-row">'
+      // 最大化时界面缩放（仅默认窗口模式为“最大化”时显示）
+      + '<div class="settings-row" id="set-maxzoom-row" style="' + (settings.window_maximized ? '' : 'display:none;') + '">'
       +   '<div class="settings-label">最大化时界面缩放</div>'
       +   '<div class="settings-control">'
       +     '<div class="settings-input-group">'
@@ -394,6 +396,8 @@ const SettingsPage = (function () {
           + '<span class="settings-pill ' + (settings.window_maximized ? 'active' : '') + '" data-val="true">最大化</span>';
         var sizeRow = document.getElementById('set-size-row');
         if (sizeRow) sizeRow.style.display = settings.window_maximized ? 'none' : '';
+        var zoomRow = document.getElementById('set-maxzoom-row');
+        if (zoomRow) zoomRow.style.display = settings.window_maximized ? '' : 'none';
       };
     }
 

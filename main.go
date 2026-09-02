@@ -82,14 +82,19 @@ type winMsg struct {
 	PtY     int32
 }
 
-// applyHotkeyOnThread 在当前（热键）线程上按设置注册热键，hwnd=NULL 时 WM_HOTKEY 投递到线程队列
-func applyHotkeyOnThread() {
+// applyHotkeyOnThread 在当前（热键）线程上按设置注册热键，返回是否注册成功（未绑定视为成功）
+func applyHotkeyOnThread() bool {
 	procUnregisterHotKey.Call(0, HOTKEY_ID)
 	s := loadSettings()
-	if s.HotkeyVK != 0 {
-		procRegisterHotKey.Call(0, HOTKEY_ID, uintptr(s.HotkeyMods), uintptr(s.HotkeyVK))
+	if s.HotkeyVK == 0 {
+		return true
 	}
+	r, _, _ := procRegisterHotKey.Call(0, HOTKEY_ID, uintptr(s.HotkeyMods), uintptr(s.HotkeyVK))
+	return r != 0
 }
+
+// hotkeyResultCh 热键重载结果（true=注册成功），供保存设置接口同步反馈
+var hotkeyResultCh = make(chan bool, 1)
 
 // hotkeyThreadProc 热键专用线程：注册热键并泵消息，按下时唤起主窗口
 func hotkeyThreadProc() {
@@ -106,7 +111,11 @@ func hotkeyThreadProc() {
 			return
 		}
 		if msg.Message == WM_APP_RELOAD_HOTKEY {
-			applyHotkeyOnThread()
+			ok := applyHotkeyOnThread()
+			select {
+			case hotkeyResultCh <- ok:
+			default:
+			}
 			continue
 		}
 		if msg.Message == WM_HOTKEY && msg.WParam == HOTKEY_ID && mainHwnd != 0 {
@@ -743,15 +752,29 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 	gCloseMu.Lock()
 	gCloseBehavior = s.CloseBehavior
 	gCloseMu.Unlock()
-	// 通知热键线程重载热键
-	if hotkeyThreadID != 0 {
-		procPostThreadMsg.Call(hotkeyThreadID, WM_APP_RELOAD_HOTKEY, 0, 0)
-	}
+	// 先保存设置文件（热键线程重载时要读到最新设置）
 	if err := saveSettings(s); err != nil {
 		writeJSON(w, 500, []byte(`{"ok":false,"error":"保存失败"}`))
 		return
 	}
-	writeJSON(w, 200, []byte(`{"ok":true}`))
+	// 通知热键线程重载热键，并等待注册结果（最多500ms）
+	hotkeyOK := true
+	if hotkeyThreadID != 0 {
+		select {
+		case <-hotkeyResultCh:
+		default:
+		}
+		procPostThreadMsg.Call(hotkeyThreadID, WM_APP_RELOAD_HOTKEY, 0, 0)
+		select {
+		case hotkeyOK = <-hotkeyResultCh:
+		case <-time.After(500 * time.Millisecond):
+		}
+	}
+	if hotkeyOK {
+		writeJSON(w, 200, []byte(`{"ok":true}`))
+	} else {
+		writeJSON(w, 200, []byte(`{"ok":true,"hotkey_failed":true}`))
+	}
 }
 
 func handleEditMonster(w http.ResponseWriter, r *http.Request) {
