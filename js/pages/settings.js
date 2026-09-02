@@ -199,6 +199,9 @@ const SettingsPage = (function () {
   function markDirty() {
     var el = document.getElementById('settings-dirty-hint');
     if (el) el.style.display = 'block';
+    // 任何更改后清除"保存成功/已恢复默认"等结果提示
+    var r = document.getElementById('settings-result');
+    if (r) r.innerHTML = '';
   }
   function clearDirty() {
     var el = document.getElementById('settings-dirty-hint');
