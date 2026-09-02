@@ -262,7 +262,7 @@ const SettingsPage = (function () {
       +   '<div class="settings-card-header">窗口关闭行为</div>'
       +   '<div class="settings-card-body">'
       +     '<div class="settings-row">'
-      +       '<div class="settings-label">点击 × 时<div class="settings-desc">关闭窗口时的行为</div></div>'
+      +       '<div class="settings-label">关闭窗口时的行为</div>'
       +       '<div class="settings-control">'
       +         '<div class="settings-pills" id="set-close-pills">'
       +           '<span class="settings-pill ' + (settings.close_behavior === 'close' ? 'active' : '') + '" data-val="close">直接关闭</span>'
@@ -278,7 +278,7 @@ const SettingsPage = (function () {
       +   '<div class="settings-card-header">窗口大小</div>'
       +   '<div class="settings-card-body">'
       +     '<div class="settings-row">'
-      +       '<div class="settings-label">窗口模式<div class="settings-desc">打开软件时的窗口状态（下次启动生效）</div></div>'
+      +       '<div class="settings-label">默认窗口模式</div>'
       +       '<div class="settings-control">'
       +         '<div class="settings-pills" id="set-max-pills">'
       +           '<span class="settings-pill ' + (!settings.window_maximized ? 'active' : '') + '" data-val="false">窗口化</span>'
@@ -289,7 +289,7 @@ const SettingsPage = (function () {
 
       // 最大化时界面缩放（窗口大小卡片内，窗口模式选项下方）
       + '<div class="settings-row">'
-      +   '<div class="settings-label">最大化时界面缩放<div class="settings-desc">最大化窗口时的缩放比例（Ctrl+滚轮会实时记忆）</div></div>'
+      +   '<div class="settings-label">最大化时界面缩放</div>'
       +   '<div class="settings-control">'
       +     '<div class="settings-input-group">'
       +       '<input type="range" class="settings-slider" id="set-zoom-slider" min="100" max="200" step="5" value="' + (settings.default_max_zoom || 100) + '">'
@@ -300,7 +300,7 @@ const SettingsPage = (function () {
       + '</div>'
 
       +     '<div class="settings-row" id="set-size-row" style="' + (settings.window_maximized ? 'display:none;' : '') + '">'
-      +       '<div class="settings-label">窗口尺寸<div class="settings-desc">窗口化时的宽度和高度</div></div>'
+      +       '<div class="settings-label">窗口尺寸</div>'
       +       '<div class="settings-control">'
       +         '<div style="margin-bottom:10px;">'
       +           '<label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--text-secondary);font-weight:600;user-select:none;">'
@@ -330,7 +330,7 @@ const SettingsPage = (function () {
       +   '<div class="settings-card-header">全局唤醒快捷键</div>'
       +   '<div class="settings-card-body">'
       +     '<div class="settings-row">'
-      +       '<div class="settings-label">唤起窗口<div class="settings-desc">任意界面按下快捷键即可唤起窗口；默认未绑定。点击输入框后按下组合键，按 Esc 清除</div></div>'
+      +       '<div class="settings-label">唤起窗口</div>'
       +       '<div class="settings-control">'
       +         '<input type="text" id="set-hotkey" readonly placeholder="未绑定（点击后按下快捷键）" '
       +           'style="width:280px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--bg-secondary);cursor:pointer;">'
@@ -344,7 +344,7 @@ const SettingsPage = (function () {
       +   '<div class="settings-card-header">默认打开页面</div>'
       +   '<div class="settings-card-body">'
       +     '<div class="settings-row">'
-      +       '<div class="settings-label">默认页面<div class="settings-desc">启动时自动打开的页面</div></div>'
+      +       '<div class="settings-label">默认页面</div>'
       +       '<div class="settings-control">'
       +         '<div class="settings-route-grid" id="set-route-grid">'
       +           ROUTE_OPTIONS.map(function(r) {
