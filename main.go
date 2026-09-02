@@ -46,6 +46,10 @@ var (
 	procPostThreadMsg    = modUser32.NewProc("PostThreadMessageW")
 	procGetMessage       = modUser32.NewProc("GetMessageW")
 	procGetThreadID      = modKernel32.NewProc("GetCurrentThreadId")
+	procGetSystemMetrics = modUser32.NewProc("GetSystemMetrics")
+	procEnumMonitors     = modUser32.NewProc("EnumDisplayMonitors")
+	procGetMonitorInfoW  = modUser32.NewProc("GetMonitorInfoW")
+	procSetWindowPos     = modUser32.NewProc("SetWindowPos")
 )
 
 const mutexName = "XiaoHeiMaoWikiSingleInstance"
@@ -58,6 +62,8 @@ const WM_APP_RELOAD_HOTKEY = 0x8010 // WM_APP+0x10: 通知热键线程重载设�
 const WM_QUIT = 0x0012
 const GWLP_WNDPROC = ^uintptr(3) // -4
 const HOTKEY_ID = 1
+const SM_CMONITORS = 80 // 显示器数量
+const MONITORINFOF_PRIMARY = 1
 
 // ---- 主窗口句柄与消息钩子 ----
 var (
@@ -66,6 +72,72 @@ var (
 	gCloseMu       sync.RWMutex
 	gCloseBehavior = "close"
 )
+
+// ---- 多显示器检测与枚举 ----
+type winRect struct{ left, top, right, bottom int32 }
+
+type monitorInfoExW struct {
+	cbSize     uint32
+	rcMonitor  winRect
+	rcWork     winRect
+	dwFlags    uint32
+	szDevice   [32]uint16
+}
+
+var (
+	monitorEnumMu  sync.Mutex
+	monitorEnumBuf []monitorEntry
+)
+
+type monitorEntry struct {
+	rc      winRect
+	primary bool
+}
+
+// monitorEnumCallback 收集每个显示器的屏幕矩形
+func monitorEnumCallback(hmon, hdc, lprect, lparam uintptr) uintptr {
+	var mi monitorInfoExW
+	mi.cbSize = uint32(unsafe.Sizeof(mi))
+	r, _, _ := procGetMonitorInfoW.Call(hmon, uintptr(unsafe.Pointer(&mi)))
+	if r != 0 {
+		monitorEnumBuf = append(monitorEnumBuf, monitorEntry{mi.rcMonitor, mi.dwFlags&MONITORINFOF_PRIMARY != 0})
+	}
+	return 1
+}
+
+var monitorEnumCB = syscall.NewCallback(monitorEnumCallback)
+
+// monitorCount 返回系统显示器数量（至少为1）
+func monitorCount() int {
+	r, _, _ := procGetSystemMetrics.Call(SM_CMONITORS)
+	n := int(int32(r))
+	if n < 1 {
+		n = 1
+	}
+	return n
+}
+
+// monitorRects 枚举所有显示器矩形，主显示器排在索引0
+func monitorRects() []monitorEntry {
+	monitorEnumMu.Lock()
+	defer monitorEnumMu.Unlock()
+	monitorEnumBuf = nil
+	procEnumMonitors.Call(0, 0, monitorEnumCB, 0)
+	out := monitorEnumBuf
+	// 主显示器排到索引0
+	for i, m := range out {
+		if m.primary && i > 0 {
+			first := out[0]
+			out[0] = m
+			out[i] = first
+			break
+		}
+	}
+	if len(out) == 0 {
+		out = append(out, monitorEntry{winRect{0, 0, 1920, 1080}, true})
+	}
+	return out
+}
 
 // ---- 全局热键：独立线程 + 独立消息循环（与 WebView 消息循环解耦，确保可靠接收）----
 var hotkeyThreadID uintptr
@@ -677,6 +749,7 @@ type UserSettings struct {
 	DefaultMaxZoom int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（50~200）
 	HotkeyMods     int    `json:"hotkey_mods"`     // 热键修饰键位掩码（1=ALT 2=CTRL 4=SHIFT 8=WIN）
 	HotkeyVK       int    `json:"hotkey_vk"`       // 热键虚拟键码（0=未绑定）
+	DefaultMonitor int    `json:"default_monitor"` // 默认打开的显示器（0=主显示器，多显示器时可用）
 }
 
 func getSettingsFilePath() string {
@@ -697,6 +770,7 @@ func loadSettings() UserSettings {
 		WindowMaximized: false,
 		DefaultRoute:   "petdex",
 		DefaultMaxZoom: 100,
+		DefaultMonitor: 0,
 	}
 	path := getSettingsFilePath()
 	data, err := os.ReadFile(path)
@@ -731,7 +805,10 @@ func saveSettings(s UserSettings) error {
 
 func handleGetSettings(w http.ResponseWriter, r *http.Request) {
 	s := loadSettings()
-	out, _ := json.Marshal(s)
+	out, _ := json.Marshal(struct {
+		UserSettings
+		MonitorCount int `json:"monitor_count"` // 系统显示器数量（多屏才显示相关选项）
+	}{s, monitorCount()})
 	writeJSON(w, 200, out)
 }
 
@@ -748,6 +825,7 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
 	if s.HotkeyMods < 0 || s.HotkeyMods > 15 { s.HotkeyMods = 0 }
 	if s.HotkeyVK < 0 || s.HotkeyVK > 255 { s.HotkeyVK = 0 }
+	if s.DefaultMonitor < 0 || s.DefaultMonitor >= monitorCount() { s.DefaultMonitor = 0 }
 	// 同步到消息钩子（关闭行为实时生效），并通知窗口线程重载热键
 	gCloseMu.Lock()
 	gCloseBehavior = s.CloseBehavior
@@ -1367,6 +1445,19 @@ func main() {
 	// 启动全局热键线程
 	go hotkeyThreadProc()
 	wv.SetSize(int(wWidth), int(wHeight), webview.HintNone)
+	// 默认打开在指定显示器（多显示器时）：移动窗口到该屏居中；索引0=主显示器则保持系统默认位置
+	if mIdx := settings.DefaultMonitor; mIdx > 0 {
+		if rects := monitorRects(); mIdx < len(rects) {
+			rc := rects[mIdx].rc
+			x := int(rc.left) + (int(rc.right)-int(rc.left)-int(wWidth))/2
+			y := int(rc.top) + (int(rc.bottom)-int(rc.top)-int(wHeight))/2
+			const SWP_NOSIZE = 0x0001
+			const SWP_NOZORDER = 0x0004
+			const SWP_NOACTIVATE = 0x0010
+			procSetWindowPos.Call(uintptr(wv.Window()), 0, uintptr(x), uintptr(y), 0, 0,
+				SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE)
+		}
+	}
 	if settings.WindowMaximized {
 		// 注意：库的 SetSize(HintMax) 只设置窗口最大尺寸限制，并非最大化；这里直接最大化窗口
 		procShowWindow.Call(uintptr(wv.Window()), SW_MAXIMIZE)

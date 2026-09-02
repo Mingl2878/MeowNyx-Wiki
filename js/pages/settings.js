@@ -205,6 +205,17 @@ const SettingsPage = (function () {
     if (el) el.style.display = 'none';
   }
 
+  // 生成默认显示屏选项 HTML（仅多显示器时调用）
+  function monitorPillsHtml() {
+    var n = settings.monitor_count || 1;
+    var cur = settings.default_monitor || 0;
+    var out = '';
+    for (var i = 0; i < n; i++) {
+      out += '<span class="settings-pill ' + (cur === i ? 'active' : '') + '" data-val="' + i + '">' + (i === 0 ? '主显示器' : '显示器 ' + (i + 1)) + '</span>';
+    }
+    return out;
+  }
+
   // 可选路由列表
   const ROUTE_OPTIONS = [
     { value: 'petdex',     label: '精灵图鉴' },
@@ -221,6 +232,9 @@ const SettingsPage = (function () {
       const res = await fetch('/api/settings');
       const data = await res.json();
       Object.assign(settings, data);
+      // 兼容旧版后端：无 monitor_count 字段时按单屏处理
+      if (typeof settings.monitor_count !== 'number') settings.monitor_count = 1;
+      if (typeof settings.default_monitor !== 'number') settings.default_monitor = 0;
       loaded = true;
     } catch (e) {
       console.error('加载设置失败:', e);
@@ -288,6 +302,19 @@ const SettingsPage = (function () {
       +         '</div>'
       +       '</div>'
       +     '</div>'
+
+      // 默认打开的显示器（仅多显示器时显示）
+      // 默认显示屏（仅多显示器时显示）
+      + (settings.monitor_count > 1
+      ? ('<div class="settings-row">'
+      +   '<div class="settings-label">默认显示屏</div>'
+      +   '<div class="settings-control">'
+      +     '<div class="settings-pills" id="set-monitor-pills">'
+      +       monitorPillsHtml()
+      +     '</div>'
+      +   '</div>'
+      + '</div>')
+      : '')
 
       // 最大化时界面缩放（仅默认窗口模式为“最大化”时显示）
       + '<div class="settings-row" id="set-maxzoom-row" style="' + (settings.window_maximized ? '' : 'display:none;') + '">'
@@ -398,7 +425,21 @@ const SettingsPage = (function () {
         if (sizeRow) sizeRow.style.display = settings.window_maximized ? 'none' : '';
         var zoomRow = document.getElementById('set-maxzoom-row');
         if (zoomRow) zoomRow.style.display = settings.window_maximized ? '' : 'none';
+      }
+
+    // 默认显示屏选择（仅多显示器时渲染）
+    var monitorPills = document.getElementById('set-monitor-pills');
+    if (monitorPills) {
+      monitorPills.onclick = function(e) {
+        var pill = e.target.closest('.settings-pill');
+        if (!pill) return;
+        settings.default_monitor = +pill.dataset.val;
+        markDirty();
+        monitorPills.querySelectorAll('.settings-pill').forEach(function(p) {
+          p.classList.toggle('active', +p.dataset.val === settings.default_monitor);
+        });
       };
+    };
     }
 
     // 最大化时界面缩放（拖动即写入记忆，保存后持久化到设置文件）
