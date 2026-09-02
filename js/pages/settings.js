@@ -195,6 +195,16 @@ const SettingsPage = (function () {
 
   let loaded = false;
 
+  // 未保存更改提示
+  function markDirty() {
+    var el = document.getElementById('settings-dirty-hint');
+    if (el) el.style.display = 'block';
+  }
+  function clearDirty() {
+    var el = document.getElementById('settings-dirty-hint');
+    if (el) el.style.display = 'none';
+  }
+
   // 可选路由列表
   const ROUTE_OPTIONS = [
     { value: 'petdex',     label: '精灵图鉴' },
@@ -237,6 +247,7 @@ const SettingsPage = (function () {
       if (r) r.innerHTML = data.ok
         ? '<span style="color:var(--success);font-weight:600;">✓ 保存成功！部分设置重启后生效</span>'
         : '<span style="color:var(--danger);">保存失败</span>';
+      if (data.ok) clearDirty();
     } catch (e) {
       if (r) r.innerHTML = '<span style="color:var(--danger);">请求失败: ' + e.message + '</span>';
     }
@@ -245,7 +256,6 @@ const SettingsPage = (function () {
   function buildHtml() {
     return '<div class="calc-root"><div class="scroll-container" style="padding:8px 24px 40px;">'
       + PAGE_STYLE
-      + '<div id="settings-result" style="text-align:center;margin-bottom:16px;"></div>'
 
       // 关闭行为
       + '<div class="settings-card">'
@@ -350,6 +360,9 @@ const SettingsPage = (function () {
       +   '<button type="button" class="btn btn-primary ud-btn-lg" id="set-save-btn" style="padding:10px 40px;font-size:15px;font-weight:700;border-radius:8px;">保存设置</button>'
       +   '<button type="button" class="btn ud-btn-lg" id="set-reset-btn" style="padding:10px 28px;font-size:15px;font-weight:700;border-radius:8px;background:var(--bg-secondary);border:2px solid var(--border);color:var(--text-secondary);cursor:pointer;">恢复默认</button>'
       + '</div>'
+      + '<div id="settings-result" style="text-align:center;margin-top:12px;"></div>'
+      // 未保存更改提示（右下角红框）
+      + '<div id="settings-dirty-hint" style="display:none;position:fixed;right:24px;bottom:24px;padding:10px 18px;border:2px solid var(--danger);background:var(--bg-card);border-radius:10px;font-size:13px;font-weight:700;color:var(--danger);box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:9999;">⚠ 有未保存的更改，请点击“保存设置”</div>'
     + '</div></div>';
   }
 
@@ -361,6 +374,7 @@ const SettingsPage = (function () {
         var pill = e.target.closest('.settings-pill');
         if (!pill) return;
         settings.close_behavior = pill.dataset.val;
+        markDirty();
         closePills.innerHTML =
           '<span class="settings-pill ' + (settings.close_behavior === 'close' ? 'active' : '') + '" data-val="close">直接关闭</span>'
           + '<span class="settings-pill ' + (settings.close_behavior === 'minimize' ? 'active' : '') + '" data-val="minimize">最小化到任务栏</span>';
@@ -374,6 +388,7 @@ const SettingsPage = (function () {
         var pill = e.target.closest('.settings-pill');
         if (!pill) return;
         settings.window_maximized = pill.dataset.val === 'true';
+        markDirty();
         maxPills.innerHTML =
           '<span class="settings-pill ' + (!settings.window_maximized ? 'active' : '') + '" data-val="false">窗口化</span>'
           + '<span class="settings-pill ' + (settings.window_maximized ? 'active' : '') + '" data-val="true">最大化</span>';
@@ -390,6 +405,7 @@ const SettingsPage = (function () {
       if (v < 100) v = 100;
       if (v > 200) v = 200;
       settings.default_max_zoom = v;
+      markDirty();
       if (zoomSlider) zoomSlider.value = v;
       if (zoomInput) zoomInput.value = v;
       // 实时写入缩放记忆，下次最大化立即生效
@@ -407,6 +423,7 @@ const SettingsPage = (function () {
         var item = e.target.closest('.settings-route-item');
         if (!item) return;
         settings.default_route = item.dataset.route;
+        markDirty();
         routeGrid.innerHTML = ROUTE_OPTIONS.map(function(r) {
           return '<div class="settings-route-item ' + (r.value === settings.default_route ? 'active' : '') + '" data-route="' + r.value + '">' + r.label + '</div>';
         }).join('');
@@ -454,24 +471,28 @@ const SettingsPage = (function () {
     if (wSlider && wInput) {
       wSlider.addEventListener('input', function() {
         wInput.value = wSlider.value;
+        markDirty();
         if (lockCheckbox && lockCheckbox.checked) syncHeightFromWidth();
       });
       wInput.addEventListener('input', function() {
         var v = +wInput.value || 640;
         v = clampVal(v, 640, 2560);
         wSlider.value = v;
+        markDirty();
         if (lockCheckbox && lockCheckbox.checked) syncHeightFromWidth();
       });
     }
     if (hSlider && hInput) {
       hSlider.addEventListener('input', function() {
         hInput.value = hSlider.value;
+        markDirty();
         if (lockCheckbox && lockCheckbox.checked) syncWidthFromHeight();
       });
       hInput.addEventListener('input', function() {
         var v = +hInput.value || 360;
         v = clampVal(v, 360, 1440);
         hSlider.value = v;
+        markDirty();
         if (lockCheckbox && lockCheckbox.checked) syncWidthFromHeight();
       });
     }
@@ -522,6 +543,7 @@ const SettingsPage = (function () {
         if (e.key === 'Escape') {
           settings.hotkey_mods = 0;
           settings.hotkey_vk = 0;
+          markDirty();
           hotkeyInput.value = hotkeyLabel(0, 0);
           return;
         }
@@ -530,6 +552,7 @@ const SettingsPage = (function () {
         var mods = (e.ctrlKey ? 2 : 0) | (e.altKey ? 1 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
         settings.hotkey_mods = mods;
         settings.hotkey_vk = e.keyCode;
+        markDirty();
         hotkeyInput.value = hotkeyLabel(mods, e.keyCode);
       });
     }

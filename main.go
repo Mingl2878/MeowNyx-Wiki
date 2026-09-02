@@ -1343,10 +1343,10 @@ func main() {
 	installWindowHook(uintptr(wv.Window()))
 	// 启动全局热键线程
 	go hotkeyThreadProc()
+	wv.SetSize(int(wWidth), int(wHeight), webview.HintNone)
 	if settings.WindowMaximized {
-		wv.SetSize(0, 0, webview.HintMax)
-	} else {
-		wv.SetSize(int(wWidth), int(wHeight), webview.HintNone)
+		// 注意：库的 SetSize(HintMax) 只设置窗口最大尺寸限制，并非最大化；这里直接最大化窗口
+		procShowWindow.Call(uintptr(wv.Window()), SW_MAXIMIZE)
 	}
 	wv.Navigate(pageURL)
 	wv.Run()
