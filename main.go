@@ -1100,12 +1100,9 @@ func serveFileWithMIME(w http.ResponseWriter, r *http.Request, relPath string) {
 	}
 
 	w.Header().Set("Content-Type", ct)
-	// JS/CSS/HTML 每次都重新加载，避免 WebView2 缓存导致改动不生效
-	if ext == "js" || ext == "css" || ext == "html" {
-		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-	} else {
-		w.Header().Set("Cache-Control", "no-cache")
-	}
+	// 所有静态资源（含图片/JSON）都禁止缓存，避免版本更新后
+	// WebView2 使用旧缓存的图片（如精灵头像替换后仍显示旧图）
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 
 	// 对 JSON 等大文本启用 gzip 压缩
 	if (ext == "json" || ext == "js" || ext == "css" || ext == "html" || ext == "svg") && len(data) > 1024 {

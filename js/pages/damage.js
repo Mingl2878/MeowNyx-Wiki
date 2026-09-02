@@ -687,6 +687,7 @@ const DamagePage = (function () {
         const comboInput = document.getElementById('comboCount');
         comboInput.value = combo;
         state.comboCount = combo;
+        // 用户主动点选技能：保存为该攻击方精灵的技能设置记忆
         saveSkillConfig(state.atkPet && state.atkPet.id);
 
         // 设置技能类型（物攻/魔攻）
@@ -1121,6 +1122,9 @@ const DamagePage = (function () {
     state.atkPet = state.defPet;
     state.defPet = tempPet;
     onAttackerSelected();
+    // 交换后应用新的攻击方精灵的技能设置记忆
+    const skillCfg = loadSkillConfig(state.atkPet && state.atkPet.id);
+    if (skillCfg) applySkillConfig(skillCfg);
     onDefenderSelected();
   }
 
@@ -1299,7 +1303,8 @@ const DamagePage = (function () {
     state.defenseMod = (document.getElementById('defenseMod').value || '0').trim();
     state.starMeteor = Math.max(0, Math.round(evalExpr(document.getElementById('starMeteor').value, 0)));
     state.finalPowerManual = (document.getElementById('finalPowerManual').value || '').trim();
-    saveSkillConfig(state.atkPet && state.atkPet.id);
+    // 注意：此处不保存技能配置记忆——calculate 会在选中精灵/恢复页面时被触发，
+    // 若在此保存会把当前默认值覆盖进该精灵的记忆；保存点在用户输入事件与技能图标点击处。
 
     if (!atk || !def) {
       stepsEl.innerHTML = '<p class="process-step">请选择精灵和技能进行计算</p>';
@@ -1364,10 +1369,11 @@ const DamagePage = (function () {
     }
     dropdown.innerHTML = html;
 
+    const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
     const rect = btn.getBoundingClientRect();
     dropdown.style.position = 'fixed';
-    dropdown.style.top = (rect.bottom + 4) + 'px';
-    dropdown.style.left = Math.max(8, rect.left) + 'px';
+    dropdown.style.top = ((rect.bottom + 4) / _z) + 'px';
+    dropdown.style.left = (Math.max(8, rect.left) / _z) + 'px';
 
     document.body.appendChild(dropdown);
 
@@ -1411,7 +1417,13 @@ const DamagePage = (function () {
     atkInput.addEventListener('input', function(e) {
       const name = e.target.value.trim();
       const pet = RKData.getMonsters().find(m => getPetName(m) === name);
-      if (pet) { state.atkPet = pet; onAttackerSelected(); }
+      if (pet) {
+        state.atkPet = pet;
+        onAttackerSelected();
+        // 应用该精灵上次保存的技能设置记忆
+        const skillCfg = loadSkillConfig(pet.id);
+        if (skillCfg) applySkillConfig(skillCfg);
+      }
     });
     defInput.addEventListener('input', function(e) {
       const name = e.target.value.trim();
@@ -1452,7 +1464,12 @@ const DamagePage = (function () {
 
     ['basePower','fixedBonus','percentBonus','comboCount','buff','debuffPercent','defenseMod','starMeteor','finalPowerManual'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.addEventListener('input', () => { updateFinalPower(); calculate(); });
+      if (el) el.addEventListener('input', () => {
+        updateFinalPower();
+        calculate(); // 先同步 state
+        // 用户手动输入：保存为该攻击方精灵的技能设置记忆（须在 state 同步后）
+        saveSkillConfig(state.atkPet && state.atkPet.id);
+      });
     });
 
     document.querySelector('.attacker-card').addEventListener('click', e => handleModifierClick(e));

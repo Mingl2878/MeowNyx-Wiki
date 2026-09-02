@@ -500,6 +500,7 @@ const SpeedPage = (function () {
 
     const wrap = table.parentElement;
     const wrapRect = wrap.getBoundingClientRect();
+    const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
     const highlightRow = table.querySelector('tr.tier-highlight');
     if (!highlightRow) { overlay.style.display = 'none'; return; }
 
@@ -510,10 +511,10 @@ const SpeedPage = (function () {
         const tdRect = selectedTd.getBoundingClientRect();
         overlay.style.display = 'block';
         overlay.classList.add('tier-overlay-selected');
-        overlay.style.left = (tdRect.left - wrapRect.left) + 'px';
-        overlay.style.top = (tdRect.top - wrapRect.top) + 'px';
-        overlay.style.width = tdRect.width + 'px';
-        overlay.style.height = tdRect.height + 'px';
+        overlay.style.left = ((tdRect.left - wrapRect.left) / _z) + 'px';
+        overlay.style.top = ((tdRect.top - wrapRect.top) / _z) + 'px';
+        overlay.style.width = (tdRect.width / _z) + 'px';
+        overlay.style.height = (tdRect.height / _z) + 'px';
       }
     } else {
       // 未选中：overlay 包裹整行4个数值（td-speed + 3个 tier-btn）
@@ -524,10 +525,10 @@ const SpeedPage = (function () {
         const lastRect = lastTd.getBoundingClientRect();
         overlay.style.display = 'block';
         overlay.classList.remove('tier-overlay-selected');
-        overlay.style.left = (firstRect.left - wrapRect.left) + 'px';
-        overlay.style.top = (firstRect.top - wrapRect.top) + 'px';
-        overlay.style.width = (lastRect.right - firstRect.left) + 'px';
-        overlay.style.height = firstRect.height + 'px';
+        overlay.style.left = ((firstRect.left - wrapRect.left) / _z) + 'px';
+        overlay.style.top = ((firstRect.top - wrapRect.top) / _z) + 'px';
+        overlay.style.width = ((lastRect.right - firstRect.left) / _z) + 'px';
+        overlay.style.height = (firstRect.height / _z) + 'px';
       }
     }
     // 自动滚动让高亮行可见（仅搜索选中时）

@@ -86,7 +86,7 @@ a:hover { color: var(--accent-hover); }
 
 /* ===================== 通用滚动容器（隐藏滚动条） ===================== */
 .scroll-container {
-  height: calc(100vh - var(--nav-height) - 42px);
+  height: calc(100vh / var(--page-zoom, 1) - var(--nav-height) - 42px);
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -389,7 +389,7 @@ a:hover { color: var(--accent-hover); }
   border-radius: var(--radius);
   border: 1px solid var(--border);
   overflow-y: auto;
-  max-height: calc(100vh - 330px);
+  max-height: calc(100vh / var(--page-zoom, 1) - 330px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -397,7 +397,7 @@ a:hover { color: var(--accent-hover); }
 .moves-page-layout {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--nav-height) - 42px);
+  height: calc(100vh / var(--page-zoom, 1) - var(--nav-height) - 42px);
 }
 .move-scroll-wrapper {
   flex: 1;
@@ -727,7 +727,7 @@ a:hover { color: var(--accent-hover); }
   border: 1px solid var(--border);
   max-width: 1200px;
   width: 92%;
-  height: 90vh;
+  height: calc(90vh / var(--page-zoom, 1));
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 28px;
@@ -1429,6 +1429,9 @@ a:hover { color: var(--accent-hover); }
 .detail-attr-panel .detail-attr-header { justify-content: center; }
 .detail-attr-panel .final-stats-grid { justify-content: center; }
 .detail-attr-panel .final-stat-item { justify-self: center; }
+/* 伤害计算：攻守方卡片的属性值/性格/个体区域居中 */
+.attacker-card .final-stats-grid, .defender-card .final-stats-grid { justify-content: center; }
+.attacker-card .final-stat-item, .defender-card .final-stat-item { justify-self: center; }
 
 /* 统一属性值面板样式（与伤害计算页一致） */
 .final-stats-grid {
@@ -1565,7 +1568,7 @@ a:hover { color: var(--accent-hover); }
 }
 .team-skill-picker-content {
   position: relative; background: var(--bg-card); border-radius: var(--radius);
-  width: 92%; max-width: 1200px; height: 90vh; display: flex; flex-direction: column;
+  width: 92%; max-width: 1200px; height: calc(90vh / var(--page-zoom, 1)); display: flex; flex-direction: column;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2); overflow: hidden;
 }
 .team-skill-picker-header {
@@ -1766,7 +1769,7 @@ a:hover { color: var(--accent-hover); }
   background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-  min-width: 320px; max-width: 90vw; max-height: 80vh;
+  min-width: 320px; max-width: calc(90vw / var(--page-zoom, 1)); max-height: calc(80vh / var(--page-zoom, 1));
   overflow: hidden;
   animation: cui-pop-in 0.2s ease;
 }
@@ -3001,7 +3004,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 
 .chart-container {
     position: relative;
-    height: calc(100vh - 340px);
+    height: calc(100vh / var(--page-zoom, 1) - 340px);
     min-height: 400px;
     width: 100%;
 }

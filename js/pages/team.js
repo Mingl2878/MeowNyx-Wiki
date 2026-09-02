@@ -212,6 +212,7 @@ const TeamPage = (function () {
   }
 
   function showGroupContextMenu(x, y, groupId) {
+    const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
     // 移除已有菜单
     const existing = document.getElementById('group-context-menu');
     if (existing) existing.remove();
@@ -220,8 +221,8 @@ const TeamPage = (function () {
     const menu = document.createElement('div');
     menu.id = 'group-context-menu';
     menu.className = 'group-context-menu';
-    menu.style.left = x + 'px';
-    menu.style.top = y + 'px';
+    menu.style.left = (x / _z) + 'px';
+    menu.style.top = (y / _z) + 'px';
     menu.innerHTML = `
       <div class="group-ctx-item" data-action="rename">重命名</div>
       <div class="group-ctx-item" data-action="copy">复制</div>
@@ -231,10 +232,10 @@ const TeamPage = (function () {
       <div class="group-ctx-item" data-action="import">导入</div>
     `;
     document.body.appendChild(menu);
-    // 调整位置防止溢出
+    // 调整位置防止溢出（rect 为视觉坐标，style 值为布局坐标，需除以缩放）
     const rect = menu.getBoundingClientRect();
-    if (rect.right > window.innerWidth) menu.style.left = (window.innerWidth - rect.width - 4) + 'px';
-    if (rect.bottom > window.innerHeight) menu.style.top = (window.innerHeight - rect.height - 4) + 'px';
+    if (rect.right > window.innerWidth) menu.style.left = ((window.innerWidth - rect.width - 4) / _z) + 'px';
+    if (rect.bottom > window.innerHeight) menu.style.top = ((window.innerHeight - rect.height - 4) / _z) + 'px';
     // 菜单项点击
     menu.querySelectorAll('.group-ctx-item').forEach(item => {
       item.addEventListener('click', function() {
@@ -670,10 +671,11 @@ const TeamPage = (function () {
     </div>`;
 
     // 定位到槽位下方
-    const rect = slotEl.getBoundingClientRect();
-    dropdown.style.position = 'fixed';
-    dropdown.style.top = (rect.bottom + 4) + 'px';
-    dropdown.style.left = Math.max(8, rect.left) + 'px';
+  const rect = slotEl.getBoundingClientRect();
+  const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
+  dropdown.style.position = 'fixed';
+  dropdown.style.top = ((rect.bottom + 4) / _z) + 'px';
+  dropdown.style.left = (Math.max(8, rect.left) / _z) + 'px';
 
     document.body.appendChild(dropdown);
 
@@ -988,10 +990,11 @@ const TeamPage = (function () {
       dropdown.innerHTML = html;
 
       // 定位到 trigger 下方
-      const rect = trigger.getBoundingClientRect();
-      dropdown.style.position = 'fixed';
-      dropdown.style.top = (rect.bottom + 4) + 'px';
-      dropdown.style.left = Math.max(8, rect.left) + 'px';
+  const rect = trigger.getBoundingClientRect();
+  const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
+  dropdown.style.position = 'fixed';
+  dropdown.style.top = ((rect.bottom + 4) / _z) + 'px';
+  dropdown.style.left = (Math.max(8, rect.left) / _z) + 'px';
 
       document.body.appendChild(dropdown);
 
@@ -1096,10 +1099,11 @@ const TeamPage = (function () {
     dropdown.innerHTML = html;
 
     // 定位到按钮下方，水平排列
-    const rect = btn.getBoundingClientRect();
-    dropdown.style.position = 'fixed';
-    dropdown.style.top = (rect.bottom + 4) + 'px';
-    dropdown.style.left = Math.max(8, rect.left) + 'px';
+  const rect = btn.getBoundingClientRect();
+  const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
+  dropdown.style.position = 'fixed';
+  dropdown.style.top = ((rect.bottom + 4) / _z) + 'px';
+  dropdown.style.left = (Math.max(8, rect.left) / _z) + 'px';
 
     document.body.appendChild(dropdown);
 

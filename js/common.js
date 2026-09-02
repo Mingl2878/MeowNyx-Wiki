@@ -4,24 +4,47 @@
  */
 
 /* ============================================================
- * 窗口缩放控制：非最大化时禁用 Ctrl+滚轮缩放，最大化时允许
+ * 窗口缩放控制（完全由前端接管，禁用浏览器原生缩放）：
+ *   - 非最大化：禁用 Ctrl+滚轮缩放，强制 100%（最大化时缩放后还原窗口会自动复位）
+ *   - 最大化：Ctrl+滚轮调整缩放（50%~200%，步进10%），Ctrl+0 复位
  * ============================================================ */
 (function () {
   let windowMaximized = false;
+  let zoom = 1;
+  function applyZoom() {
+    document.documentElement.style.zoom = zoom;
+    // CSS 变量供 vh/vw 及坐标修正使用
+    document.documentElement.style.setProperty('--page-zoom', zoom);
+  }
   function refreshWindowState() {
     fetch('/api/window/state')
       .then(r => r.json())
-      .then(d => { windowMaximized = !!d.maximized; })
+      .then(d => {
+        windowMaximized = !!d.maximized;
+        // 非最大化时强制回到 100%
+        if (!windowMaximized && zoom !== 1) { zoom = 1; applyZoom(); }
+      })
       .catch(() => {});
   }
   // 窗口最大化/还原时会触发 resize
   window.addEventListener('resize', refreshWindowState);
   refreshWindowState();
   window.addEventListener('wheel', function (e) {
-    if (e.ctrlKey && !windowMaximized) {
-      e.preventDefault();
-    }
+    if (!e.ctrlKey) return;
+    e.preventDefault(); // 接管缩放，禁用浏览器原生 Ctrl+滚轮
+    if (!windowMaximized) return; // 非最大化：完全忽略
+    const delta = e.deltaY < 0 ? 0.1 : -0.1;
+    zoom = Math.min(2, Math.max(0.5, Math.round((zoom + delta) * 10) / 10));
+    applyZoom();
   }, { passive: false });
+  // Ctrl+0 复位 100%
+  window.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && (e.key === '0' || e.code === 'Digit0')) {
+      zoom = 1; applyZoom();
+    }
+  });
+  // 供 fixed 定位下拉框修正坐标（CSS zoom 下 getBoundingClientRect 返回视觉坐标）
+  window.__getPageZoom = function () { return zoom; };
 })();
 
 const CommonUI = (function () {
@@ -300,11 +323,12 @@ const CommonUI = (function () {
           <span class="autocomplete-name">${name}</span>
         </div>`;
       }).join('');
-      // position: fixed 定位到输入框下方
+      // position: fixed 定位到输入框下方（除以页面缩放，rect 为视觉坐标）
+      const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
       const inputRect = input.getBoundingClientRect();
-      dropdown.style.left = inputRect.left + 'px';
-      dropdown.style.top = (inputRect.bottom + 4) + 'px';
-      dropdown.style.width = inputRect.width + 'px';
+      dropdown.style.left = (inputRect.left / _z) + 'px';
+      dropdown.style.top = ((inputRect.bottom + 4) / _z) + 'px';
+      dropdown.style.width = (inputRect.width / _z) + 'px';
       dropdown.style.display = 'block';
     }
 
