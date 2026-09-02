@@ -90,34 +90,35 @@ const MOVE_EDITS = [
 ];
 
 /* ============ 4. wiki_monster_data.json 新增学习面 ============ */
+/* 来源规则: 更新说明中标注"(XX级时习得)"的 → '默认'(基础学习面)，其余 → '技能石' */
 const CATEGORY_TO_TYPE = { 'Physical Attack': '物攻', 'Magic Attack': '魔攻', 'Status': '状态', 'Defense': '防御' };
 const LEARNSET_ADD = [
-  ['加固', ['鸭吉吉（蓬松的样子）', '鸭吉吉（急急急鸭）', '鸭吉吉（燃了鸭）']],
-  ['热身运动', ['鸭吉吉（紧实的样子）', '鸭吉吉（等一等鸭）', '鸭吉吉（起来鸭）']],
-  ['血气', ['卡拉波斯']],
-  ['地刺', ['蝎子王']],
-  ['嘲弄', ['梦悠悠（穿旧睡衣的样子）', '梦悠悠（穿星星睡衣的样子）']],
-  ['洗礼', ['深蓝鲸']],
-  ['蒸汽进行曲', ['声波缇塔']],
-  ['入梦', ['半朽蜜果灵']],
-  ['追打', ['梦想三三']],
-  ['叠势', ['绅士鸡']],
-  ['回旋踢', ['针叶巡林']],
-  ['芳香诱引', ['怒目怂猫']],
-  ['超导加速', ['星云旅者']],
-  ['试飞', ['夜游魔']],
-  ['加油', ['珀尔鼬']],
-  ['轮班', ['立方人']],
-  ['吹散', ['格兰球']],
-  ['撒花', ['蒲公英娃娃']],
-  ['后发制人', ['森巨人']],
-  ['守护咒', ['克莱因龙']],
-  ['俯冲猛击', ['圣羽翼王']],
-  ['捧杀', ['红绒十字']],
-  ['毒液渗透', ['古啦多']],
-  ['惊雷', ['荆棘电环']],
-  ['电弧', ['星光狮（月光能量的样子）']],
-  ['掩护', ['风滚暮虫（枯叶的样子）', '风滚暮虫（金黄的样子）']],
+  ['加固', ['鸭吉吉（蓬松的样子）', '鸭吉吉（急急急鸭）', '鸭吉吉（燃了鸭）'], '技能石'],
+  ['热身运动', ['鸭吉吉（紧实的样子）', '鸭吉吉（等一等鸭）', '鸭吉吉（起来鸭）'], '技能石'],
+  ['血气', ['卡拉波斯'], '技能石'],
+  ['地刺', ['蝎子王'], '技能石'],
+  ['嘲弄', ['梦悠悠（穿旧睡衣的样子）', '梦悠悠（穿星星睡衣的样子）'], '技能石'],
+  ['洗礼', ['深蓝鲸'], '技能石'],
+  ['蒸汽进行曲', ['声波缇塔'], '技能石'],
+  ['入梦', ['半朽蜜果灵'], '技能石'],
+  ['追打', ['梦想三三'], '技能石'],
+  ['叠势', ['绅士鸡'], '技能石'],
+  ['回旋踢', ['针叶巡林'], '默认'],
+  ['芳香诱引', ['怒目怂猫'], '技能石'],
+  ['超导加速', ['星云旅者'], '技能石'],
+  ['试飞', ['夜游魔'], '技能石'],
+  ['加油', ['珀尔鼬'], '技能石'],
+  ['轮班', ['立方人'], '技能石'],
+  ['吹散', ['格兰球'], '技能石'],
+  ['撒花', ['蒲公英娃娃'], '技能石'],
+  ['后发制人', ['森巨人'], '技能石'],
+  ['守护咒', ['克莱因龙'], '技能石'],
+  ['俯冲猛击', ['圣羽翼王'], '技能石'],
+  ['捧杀', ['红绒十字'], '技能石'],
+  ['毒液渗透', ['古啦多'], '默认'],
+  ['惊雷', ['荆棘电环'], '技能石'],
+  ['电弧', ['星光狮（月光能量的样子）'], '技能石'],
+  ['掩护', ['风滚暮虫（枯叶的样子）', '风滚暮虫（金黄的样子）'], '技能石'],
 ];
 
 /* ==================== 执行 ==================== */
@@ -193,8 +194,8 @@ MOVE_EDITS.forEach(me => {
 console.log('==== 新增学习面 ====');
 const moveByName = {};
 moves.forEach(x => { const n = x.localized && x.localized.zh && x.localized.zh.name; if (n && !moveByName[n]) moveByName[n] = x; });
-LEARNSET_ADD.forEach(pair => {
-  const skillName = pair[0], petNames = pair[1];
+LEARNSET_ADD.forEach(triple => {
+  const skillName = triple[0], petNames = triple[1], sourceVal = triple[2] || '技能石';
   const mv = moveByName[skillName];
   if (!mv) { errors.push('学习面: moves.json 中找不到技能 ' + skillName); return; }
   petNames.forEach(pn => {
@@ -204,7 +205,7 @@ LEARNSET_ADD.forEach(pair => {
     if (entry.skills.some(s => s.name === skillName)) { console.log('  ' + pn + ' 已有【' + skillName + '】，跳过'); return; }
     const type = CATEGORY_TO_TYPE[mv.move_category] || mv.move_category;
     const element = (mv.move_type && mv.move_type.localized && mv.move_type.localized.zh) || '';
-    entry.skills.push({ name: skillName, source: '学习面', type: type, element: element, desc: (mv.localized && mv.localized.zh && mv.localized.zh.description) || '' });
+    entry.skills.push({ name: skillName, source: sourceVal, type: type, element: element, desc: (mv.localized && mv.localized.zh && mv.localized.zh.description) || '' });
     console.log('  ' + pn + ' +【' + skillName + '】(' + type + '/' + element + ')');
   });
 });
