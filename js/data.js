@@ -180,6 +180,12 @@ const RKData = (function () {
       types = Array.isArray(typeRes) ? typeRes : (typeRes.data || []);
       wikiData = wikiRes || {};
 
+      // 图片缓存击穿：为所有精灵图片 URL 附加会话级版本参数。
+      // 即使 WebView2 残留旧缓存（如头像替换前的旧图），URL 变化后也会强制重新加载。
+      const _imgVer = 'v=' + Date.now();
+      monsters.forEach(m => { if (m.image) m.image = m.image + '?' + _imgVer; });
+      Object.values(wikiData).forEach(wd => { if (wd && wd.image) wd.image = wd.image + '?' + _imgVer; });
+
       // 构建属性映射
       types.forEach(t => {
         typeMap[t.name] = t;

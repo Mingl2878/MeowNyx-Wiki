@@ -1032,6 +1032,9 @@ const DamagePage = (function () {
       state.atkPet = pet; state.atkNature = nature; state.atkIV = iv;
       searchBoxes.attacker.setValue(name);
       onAttackerSelected();
+      // 应用该精灵上次保存的技能设置记忆
+      const skillCfg = loadSkillConfig(pet.id);
+      if (skillCfg) applySkillConfig(skillCfg);
     } else {
       state.defPet = pet; state.defNature = nature; state.defIV = iv;
       searchBoxes.defender.setValue(name);
@@ -1622,6 +1625,9 @@ const DamagePage = (function () {
         state.atkIV = getIvForPet(petId);
         searchBoxes.attacker.setValue(name);
         onAttackerSelected();
+        // 应用该精灵上次保存的技能设置记忆
+        const skillCfg = loadSkillConfig(pet.id);
+        if (skillCfg) applySkillConfig(skillCfg);
         syncModifierButtons('attacker');
         updateAllRoleMarks();
       });
