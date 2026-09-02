@@ -846,11 +846,10 @@ const DamagePage = (function () {
           const saved = loadPetConfig(pet.id);
           state.atkNature = saved.nature || {};
           state.atkIV = saved.iv || {};
-          onAttackerSelected();
-          // 默认应用上次为该精灵保存的技能设置参数
-          const skillCfg = loadSkillConfig(pet.id);
-          if (skillCfg) applySkillConfig(skillCfg);
-          syncModifierButtons('attacker');
+        onAttackerSelected();
+        // 应用技能设置记忆；从未保存过则清空
+        applySkillMemory(pet.id);
+        syncModifierButtons('attacker');
         } else {
           state.defPet = pet;
           const saved = loadPetConfig(pet.id);
@@ -885,7 +884,16 @@ const DamagePage = (function () {
     } catch (e) { return {}; }
   }
 
-  /* ===== 技能设置参数记忆（按攻击方精灵ID保存，重新选择时默认应用） ===== */
+/* 技能设置记忆入口：有记忆则应用；从未保存过则清空（不沿用上一个精灵的参数） */
+  function applySkillMemory(petId) {
+    const skillCfg = loadSkillConfig(petId);
+    if (skillCfg) {
+      applySkillConfig(skillCfg);
+    } else {
+      resetSkillSettings();
+      renderSkillIcons(); // 清除上个精灵的技能选中高亮
+    }
+  }
   const SKILL_CONFIG_KEYS = ['basePower','fixedBonus','percentBonus','buff','comboCount',
     'debuffPercent','defenseMod','starMeteor','finalPowerManual'];
   function saveSkillConfig(petId) {
@@ -957,9 +965,7 @@ const DamagePage = (function () {
       state.atkIV = { attack: false, magic_attack: true, defense: false, magic_defense: false, hp: false, speed: false };
       searchBoxes.attacker.setValue(getPetName(atkPet));
       onAttackerSelected();
-      // 应用默认精灵上次保存的技能设置记忆（否则只会显示默认值100）
-      const skillCfg = loadSkillConfig(atkPet.id);
-      if (skillCfg) applySkillConfig(skillCfg);
+      applySkillMemory(atkPet.id);
       syncModifierButtons('attacker');
     }
     const defPet = RKData.getMonsterById(9001);
@@ -1037,9 +1043,8 @@ const DamagePage = (function () {
       state.atkPet = pet; state.atkNature = nature; state.atkIV = iv;
       searchBoxes.attacker.setValue(name);
       onAttackerSelected();
-      // 应用该精灵上次保存的技能设置记忆
-      const skillCfg = loadSkillConfig(pet.id);
-      if (skillCfg) applySkillConfig(skillCfg);
+      // 应用技能设置记忆；从未保存过则清空
+        applySkillMemory(pet.id);
     } else {
       state.defPet = pet; state.defNature = nature; state.defIV = iv;
       searchBoxes.defender.setValue(name);
@@ -1130,9 +1135,8 @@ const DamagePage = (function () {
     state.atkPet = state.defPet;
     state.defPet = tempPet;
     onAttackerSelected();
-    // 交换后应用新的攻击方精灵的技能设置记忆
-    const skillCfg = loadSkillConfig(state.atkPet && state.atkPet.id);
-    if (skillCfg) applySkillConfig(skillCfg);
+    // 应用技能设置记忆；从未保存过则清空
+    applySkillMemory(state.atkPet && state.atkPet.id);
     onDefenderSelected();
   }
 
@@ -1428,9 +1432,8 @@ const DamagePage = (function () {
       if (pet) {
         state.atkPet = pet;
         onAttackerSelected();
-        // 应用该精灵上次保存的技能设置记忆
-        const skillCfg = loadSkillConfig(pet.id);
-        if (skillCfg) applySkillConfig(skillCfg);
+        // 应用技能设置记忆；从未保存过则清空
+        applySkillMemory(pet.id);
       }
     });
     defInput.addEventListener('input', function(e) {
@@ -1630,9 +1633,8 @@ const DamagePage = (function () {
         state.atkIV = getIvForPet(petId);
         searchBoxes.attacker.setValue(name);
         onAttackerSelected();
-        // 应用该精灵上次保存的技能设置记忆
-        const skillCfg = loadSkillConfig(pet.id);
-        if (skillCfg) applySkillConfig(skillCfg);
+        // 应用技能设置记忆；从未保存过则清空
+        applySkillMemory(pet.id);
         syncModifierButtons('attacker');
         updateAllRoleMarks();
       });
