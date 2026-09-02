@@ -399,6 +399,13 @@ const SettingsPage = (function () {
   }
 
   function bindEvents() {
+    // 点击空白处（非交互控件）时清除结果提示（保存成功/已恢复默认等）
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('button, input, select, label, .settings-pill, .settings-route-item')) return;
+      var r = document.getElementById('settings-result');
+      if (r && r.innerHTML) r.innerHTML = '';
+    });
+
     // 关闭行为
     var closePills = document.getElementById('set-close-pills');
     if (closePills) {
