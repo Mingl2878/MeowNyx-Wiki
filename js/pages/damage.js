@@ -29,6 +29,19 @@ const DamagePage = (function () {
 
   /* 速度差威力技能：闪击 / 鸣沙陷阱 */
   const SPEED_BASED_SKILLS = ['闪击', '鸣沙陷阱'];
+
+  /* 安全表达式求值：支持 + - * / ( )，如 "30+40+50" → 120。
+     非法字符或除零等异常时返回 fallback */
+  function evalExpr(str, fallback) {
+    const s = String(str == null ? '' : str).trim();
+    if (s === '') return fallback;
+    if (/^[+-]?\d+(\.\d+)?$/.test(s)) return parseFloat(s);
+    if (!/^[0-9+\-*/().\s]+$/.test(s)) return fallback;
+    try {
+      const val = Function('"use strict"; return (' + s + ')')();
+      return (typeof val === 'number' && isFinite(val)) ? val : fallback;
+    } catch (e) { return fallback; }
+  }
   function calcSpeedBasedPower(diff) {
     if (diff < 0) return 60;
     if (diff < 15) return 100;
@@ -125,18 +138,18 @@ const DamagePage = (function () {
       return 1 / (1 + Math.abs(buffPercent) / 100);
     },
 
-    /** 减伤百分比解析 → debuffMod */
+    /** 减伤百分比解析 → debuffMod（支持 + - * / 表达式） */
     parseDebuffPercent(val) {
-      const num = parseFloat(val) || 0;
+      const num = evalExpr(String(val).replace(/^d/i, ''), 0);
       return (100 - num) / 100;
     },
 
-    /** 防御修正解析 → defenseMod
+    /** 防御修正解析 → defenseMod（支持 + - * / 表达式，可带 d 前缀）
      *  正值: 防御 × (1 + num%)
      *  负值: 防御 ÷ (1 + |num|%)  ← 不是 × (1 - |num|%)
      */
     parseDefenseMod(val) {
-      const num = parseFloat(val) || 0;
+      const num = evalExpr(String(val).replace(/^d/i, ''), 0);
       if (num >= 0) return 1 + num / 100;
       return 1 / (1 + Math.abs(num) / 100);
     },
@@ -148,7 +161,7 @@ const DamagePage = (function () {
 
     /** 计算最终威力 */
     calcFinalPower(basePower, fixedBonus, percentBonus, atkPet, defPet, skillAttr, buffPercent, manual) {
-      if (manual !== null && manual !== '') return parseInt(manual) || 0;
+      if (manual !== null && manual !== '') return Math.round(evalExpr(manual, 0));
       const skillBasePower = this.calcBasePower(basePower, fixedBonus, percentBonus);
       const sameTypeBonus = this.isSameType(atkPet, skillAttr) ? 1.25 : 1.0;
       const typeEff = this.calcTypeEff(skillAttr, defPet);
@@ -387,16 +400,16 @@ const DamagePage = (function () {
             <div class="input-row">
               <div class="input-group">
                 <label class="accent-label">基础威力:</label>
-                <input type="number" id="basePower" value="100" min="0">
+                <input type="text" id="basePower" value="100">
               </div>
               <div class="input-group">
                 <label class="accent-label">威力固定加成:</label>
-                <input type="number" id="fixedBonus" value="0">
+                <input type="text" id="fixedBonus" value="0">
               </div>
               <div class="input-group">
                 <label class="accent-label">威力百分比加成:</label>
                 <div class="input-with-suffix">
-                  <input type="number" id="percentBonus" value="0">
+                  <input type="text" id="percentBonus" value="0">
                   <span class="suffix">%</span>
                 </div>
               </div>
@@ -407,17 +420,17 @@ const DamagePage = (function () {
               <div class="input-group">
                 <label class="accent-label">增减益buff:</label>
                 <div class="input-with-suffix">
-                  <input type="number" id="buff" value="0">
+                  <input type="text" id="buff" value="0">
                   <span class="suffix">%</span>
                 </div>
               </div>
               <div class="input-group">
                 <label class="combo-label">连击数:</label>
-                <input type="number" id="comboCount" value="1" min="1">
+                <input type="text" id="comboCount" value="1">
               </div>
               <div class="input-group">
                 <label class="star-meteor-label">星陨印记:</label>
-                <input type="number" id="starMeteor" value="0" min="0" placeholder="层数">
+                <input type="text" id="starMeteor" value="0" placeholder="层数">
               </div>
             </div>
           </div>
@@ -426,20 +439,20 @@ const DamagePage = (function () {
               <div class="input-group">
                 <label class="defense-mod-label">防守方增减益:</label>
                 <div class="input-with-suffix">
-                  <input type="number" id="defenseMod" value="0" placeholder="">
+                  <input type="text" id="defenseMod" value="0" placeholder="">
                   <span class="suffix">%</span>
                 </div>
               </div>
               <div class="input-group">
                 <label class="debuff-percent-label">减伤百分比:</label>
                 <div class="input-with-suffix">
-                  <input type="number" id="debuffPercent" value="0" min="0" max="100">
+                  <input type="text" id="debuffPercent" value="0">
                   <span class="suffix">%</span>
                 </div>
               </div>
               <div class="input-group">
                 <label class="final-power-manual-label">最终威力:</label>
-                <input type="number" id="finalPowerManual" class="final-power-manual-input" value="" min="0" placeholder="">
+                <input type="text" id="finalPowerManual" class="final-power-manual-input" value="" placeholder="">
               </div>
             </div>
           </div>
@@ -674,6 +687,7 @@ const DamagePage = (function () {
         const comboInput = document.getElementById('comboCount');
         comboInput.value = combo;
         state.comboCount = combo;
+        saveSkillConfig(state.atkPet && state.atkPet.id);
 
         // 设置技能类型（物攻/魔攻）
         if (skillType === '物攻') {
@@ -769,14 +783,23 @@ const DamagePage = (function () {
 
   /* 从已有 state 恢复 UI（页面切换回来时不重置数据） */
   function restoreFromState() {
-    // 恢复搜索框文本
+    // 快照技能设置（下方 onAttackerSelected/onDefenderSelected 会触发
+    // checkJmfzBonus/updateSpeedBasedPower 等覆盖部分字段，最后用快照恢复）
+    const snap = {
+      basePower: state.basePower, fixedBonus: state.fixedBonus,
+      percentBonus: state.percentBonus, buff: state.buff,
+      comboCount: state.comboCount, debuffPercent: state.debuffPercent,
+      defenseMod: state.defenseMod, starMeteor: state.starMeteor,
+      finalPowerManual: state.finalPowerManual
+    };
+    // 恢复搜索框文本（传入精灵对象，确保头像同步显示）
     if (state.atkPet) {
-      searchBoxes.attacker.setValue(getPetName(state.atkPet));
+      searchBoxes.attacker.setValue(getPetName(state.atkPet), state.atkPet);
       onAttackerSelected();
       syncModifierButtons('attacker');
     }
     if (state.defPet) {
-      searchBoxes.defender.setValue(getPetName(state.defPet));
+      searchBoxes.defender.setValue(getPetName(state.defPet), state.defPet);
       onDefenderSelected();
       syncModifierButtons('defender');
     }
@@ -788,16 +811,17 @@ const DamagePage = (function () {
     }
     // 恢复技能属性按钮
     updateSkillAttrButton();
-    // 恢复技能设置输入框
-    document.getElementById('basePower').value = state.basePower;
-    document.getElementById('fixedBonus').value = state.fixedBonus;
-    document.getElementById('percentBonus').value = state.percentBonus;
-    document.getElementById('buff').value = state.buff;
-    document.getElementById('comboCount').value = state.comboCount;
-    document.getElementById('debuffPercent').value = state.debuffPercent || '0';
-    document.getElementById('defenseMod').value = state.defenseMod || '0';
-    document.getElementById('starMeteor').value = state.starMeteor || 0;
-    document.getElementById('finalPowerManual').value = state.finalPowerManual || '';
+    // 恢复技能设置输入框（用快照覆盖，避免被中途逻辑清空）
+    Object.assign(state, snap);
+    document.getElementById('basePower').value = snap.basePower;
+    document.getElementById('fixedBonus').value = snap.fixedBonus;
+    document.getElementById('percentBonus').value = snap.percentBonus;
+    document.getElementById('buff').value = snap.buff;
+    document.getElementById('comboCount').value = snap.comboCount;
+    document.getElementById('debuffPercent').value = snap.debuffPercent || '0';
+    document.getElementById('defenseMod').value = snap.defenseMod || '0';
+    document.getElementById('starMeteor').value = snap.starMeteor || 0;
+    document.getElementById('finalPowerManual').value = snap.finalPowerManual || '';
     checkSameType();
     updateTypeEffectiveness();
     updateFinalPower();
@@ -814,7 +838,6 @@ const DamagePage = (function () {
     const sb = CommonUI.createSearchBox({
       placeholder: '选择或搜索精灵',
       limit: 10,
-      filter: (m) => !m.is_leader_form,
       onSelect: (pet) => {
         if (side === 'attacker') {
           state.atkPet = pet;
@@ -823,6 +846,9 @@ const DamagePage = (function () {
           state.atkNature = saved.nature || {};
           state.atkIV = saved.iv || {};
           onAttackerSelected();
+          // 默认应用上次为该精灵保存的技能设置参数
+          const skillCfg = loadSkillConfig(pet.id);
+          if (skillCfg) applySkillConfig(skillCfg);
           syncModifierButtons('attacker');
         } else {
           state.defPet = pet;
@@ -856,6 +882,65 @@ const DamagePage = (function () {
       const configs = JSON.parse(raw);
       return configs[petId] || {};
     } catch (e) { return {}; }
+  }
+
+  /* ===== 技能设置参数记忆（按攻击方精灵ID保存，重新选择时默认应用） ===== */
+  const SKILL_CONFIG_KEYS = ['basePower','fixedBonus','percentBonus','buff','comboCount',
+    'debuffPercent','defenseMod','starMeteor','finalPowerManual'];
+  function saveSkillConfig(petId) {
+    if (!petId) return;
+    try {
+      const raw = localStorage.getItem('rk_damage_skill_configs');
+      const configs = raw ? JSON.parse(raw) : {};
+      configs[petId] = {
+        basePower: state.basePower, fixedBonus: state.fixedBonus,
+        percentBonus: state.percentBonus, buff: state.buff,
+        comboCount: state.comboCount, debuffPercent: state.debuffPercent,
+        defenseMod: state.defenseMod, starMeteor: state.starMeteor,
+        finalPowerManual: state.finalPowerManual,
+        skillType: state.skillType, skillAttr: state.skillAttr,
+        currentSkillName: state.currentSkillName || ''
+      };
+      localStorage.setItem('rk_damage_skill_configs', JSON.stringify(configs));
+    } catch (e) {}
+  }
+  function loadSkillConfig(petId) {
+    if (!petId) return null;
+    try {
+      const raw = localStorage.getItem('rk_damage_skill_configs');
+      if (!raw) return null;
+      const configs = JSON.parse(raw);
+      return configs[petId] || null;
+    } catch (e) { return null; }
+  }
+  function applySkillConfig(cfg) {
+    if (!cfg) return;
+    // 覆盖 state 与输入框
+    SKILL_CONFIG_KEYS.forEach(key => {
+      if (cfg[key] === undefined || cfg[key] === null) return;
+      state[key] = cfg[key];
+      const el = document.getElementById(key);
+      if (el) el.value = cfg[key];
+    });
+    // 恢复物攻/魔攻单选与技能属性按钮
+    if (cfg.skillType === 'magic_attack') {
+      const el = document.getElementById('skillTypeMagic');
+      if (el) el.checked = true;
+      state.skillType = 'magic_attack';
+    } else if (cfg.skillType === 'attack') {
+      const el = document.getElementById('skillTypeAttack');
+      if (el) el.checked = true;
+      state.skillType = 'attack';
+    }
+    if (cfg.skillAttr) {
+      state.skillAttr = cfg.skillAttr;
+      updateSkillAttrButton();
+    }
+    if (cfg.currentSkillName) state.currentSkillName = cfg.currentSkillName;
+    checkSameType();
+    updateTypeEffectiveness();
+    updateFinalPower();
+    calculate();
   }
 
   /* ============================================================
@@ -1158,7 +1243,7 @@ const DamagePage = (function () {
     const typeEffEl = document.getElementById('typeEffectiveness');
     const fpLabel = document.querySelector('.final-power-manual-label');
     if (manualVal !== '') {
-      fpEl.textContent = parseInt(manualVal) || 0;
+      fpEl.textContent = Math.round(evalExpr(manualVal, 0));
       // 最终威力标签和数值变红
       if (fpLabel) fpLabel.classList.add('manual-active');
       fpEl.classList.add('manual-active');
@@ -1200,20 +1285,21 @@ const DamagePage = (function () {
     const def = state.defPet;
     const stepsEl = document.getElementById('calculationSteps');
 
-    // 同步输入到 state
-    state.basePower = parseInt(document.getElementById('basePower').value) || 0;
+    // 同步输入到 state（支持 + - * / 表达式，如 30+40+50）
+    state.basePower = Math.round(evalExpr(document.getElementById('basePower').value, 0));
     // 速度差技能：在 calculate 时重新计算威力
     if (SPEED_BASED_SKILLS.includes(state.currentSkillName)) {
       updateSpeedBasedPower();
     }
-    state.fixedBonus = parseInt(document.getElementById('fixedBonus').value) || 0;
-    state.percentBonus = parseFloat(document.getElementById('percentBonus').value) || 0;
-    state.buff = parseFloat(document.getElementById('buff').value) || 0;
-    state.comboCount = parseInt(document.getElementById('comboCount').value) || 1;
+    state.fixedBonus = Math.round(evalExpr(document.getElementById('fixedBonus').value, 0));
+    state.percentBonus = evalExpr(document.getElementById('percentBonus').value, 0);
+    state.buff = evalExpr(document.getElementById('buff').value, 0);
+    state.comboCount = Math.max(1, Math.round(evalExpr(document.getElementById('comboCount').value, 1)));
     state.debuffPercent = (document.getElementById('debuffPercent').value || '0').trim();
     state.defenseMod = (document.getElementById('defenseMod').value || '0').trim();
-    state.starMeteor = parseInt(document.getElementById('starMeteor').value) || 0;
+    state.starMeteor = Math.max(0, Math.round(evalExpr(document.getElementById('starMeteor').value, 0)));
     state.finalPowerManual = (document.getElementById('finalPowerManual').value || '').trim();
+    saveSkillConfig(state.atkPet && state.atkPet.id);
 
     if (!atk || !def) {
       stepsEl.innerHTML = '<p class="process-step">请选择精灵和技能进行计算</p>';

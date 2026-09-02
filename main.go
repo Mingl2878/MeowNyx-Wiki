@@ -449,8 +449,42 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		handleSaveSettings(w, r)
 		return
 	}
+	// ---- 窗口状态（前端用于决定是否允许 Ctrl+滚轮缩放） ----
+	if path == "/api/window/state" && r.Method == http.MethodGet {
+		if isWindowMaximized() {
+			writeJSON(w, 200, []byte(`{"maximized":true}`))
+		} else {
+			writeJSON(w, 200, []byte(`{"maximized":false}`))
+		}
+		return
+	}
 
 	writeJSON(w, 200, []byte(`[]`))
+}
+
+// isWindowMaximized 检测主窗口是否最大化（SW_SHOWMAXIMIZED=3）
+func isWindowMaximized() bool {
+	user32 := syscall.NewLazyDLL("user32.dll")
+	findWindow := user32.NewProc("FindWindowW")
+	getPlacement := user32.NewProc("GetWindowPlacement")
+	title, _ := syscall.UTF16PtrFromString("小黑猫 Wiki")
+	hwnd, _, _ := findWindow.Call(0, uintptr(unsafe.Pointer(title)))
+	if hwnd == 0 {
+		return false
+	}
+	type RECT struct{ Left, Top, Right, Bottom int32 }
+	type POINT struct{ X, Y int32 }
+	type WINDOWPLACEMENT struct {
+		length           uint32
+		flags, showCmd   uint32
+		ptMinPosition    POINT
+		ptMaxPosition    POINT
+		rcNormalPosition RECT
+	}
+	var wp WINDOWPLACEMENT
+	wp.length = uint32(unsafe.Sizeof(wp))
+	getPlacement.Call(hwnd, uintptr(unsafe.Pointer(&wp)))
+	return wp.showCmd == 3 // SW_SHOWMAXIMIZED
 }
 
 func handleOpenURL(w http.ResponseWriter, r *http.Request) {

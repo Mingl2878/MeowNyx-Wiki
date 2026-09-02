@@ -89,8 +89,9 @@ const SpeedPage = (function () {
               <input type="number" id="tier-fixed" value="0" class="tier-num-input">
               <button class="tier-quick-btn" data-fixed="-20">-20</button>
               <button class="tier-quick-btn" data-fixed="0">0</button>
-              <button class="tier-quick-btn" data-fixed="20">+20</button>
-              <button class="tier-quick-btn" data-fixed="50">+50</button>
+<button class="tier-quick-btn" data-fixed="20">+20</button>
+<button class="tier-quick-btn" data-fixed="30">+30</button>
+<button class="tier-quick-btn" data-fixed="50">+50</button>
               <button class="tier-quick-btn" data-fixed="80">+80</button>
               <button class="tier-quick-btn" data-fixed="130">+130</button>
             </div>

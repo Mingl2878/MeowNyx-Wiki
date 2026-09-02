@@ -1425,6 +1425,10 @@ a:hover { color: var(--accent-hover); }
 /* 属性值面板（组队详情） */
 .detail-attr-panel { margin-top: 4px; }
 .detail-attr-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 10px 0; }
+/* 组队详情：属性值/种族值切换与性格个体选项居中 */
+.detail-attr-panel .detail-attr-header { justify-content: center; }
+.detail-attr-panel .final-stats-grid { justify-content: center; }
+.detail-attr-panel .final-stat-item { justify-self: center; }
 
 /* 统一属性值面板样式（与伤害计算页一致） */
 .final-stats-grid {
@@ -2466,7 +2470,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     color: var(--accent);
 }
 
-.input-group input[type="number"] {
+.input-group input[type="number"], .input-group input[type="text"] {
     width: 100%;
     padding: 10px 12px;
     font-size: 0.95em;
@@ -2485,11 +2489,11 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     margin: 0;
 }
 
-.input-group input[type="number"]:hover {
+.input-group input[type="number"]:hover, .input-group input[type="text"]:hover {
     border-color: var(--accent);
 }
 
-.input-group input[type="number"]:focus {
+.input-group input[type="number"]:focus, .input-group input[type="text"]:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
@@ -2610,7 +2614,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 
 /* 技能卡片输入框字体 */
-.skill-card .input-group input[type="number"],
+.skill-card .input-group input[type="number"], .skill-card .input-group input[type="text"],
 .skill-card .input-with-suffix input,
 .skill-card .input-with-suffix .suffix {
     font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
@@ -2657,11 +2661,11 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 
 .modifier-value.accent-bold.manual-active {
-    color: #ff7675;
+    color: var(--danger);
 }
 
 .modifier-item:last-child .modifier-label.manual-active {
-    color: #ff7675;
+    color: var(--danger);
 }
 
 .modifier-value.success {
@@ -3003,7 +3007,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 /* 最终威力手动输入 */
 .final-power-manual-label.manual-active {
-    color: #ff7675;
+    color: var(--danger);
 }
 .dimmed {
     opacity: 0.4;

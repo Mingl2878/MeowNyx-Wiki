@@ -4518,11 +4518,11 @@
     }
   },
   {
-    "base_hp": 120,
-    "base_mag_atk": 49,
-    "base_mag_def": 150,
-    "base_phy_atk": 135,
-    "base_phy_def": 159,
+    "base_hp": 130,
+    "base_mag_atk": 54,
+    "base_mag_def": 159,
+    "base_phy_atk": 144,
+    "base_phy_def": 168,
     "base_spd": 70,
     "default_legacy_type": {
       "id": 6,
@@ -4594,11 +4594,11 @@
     }
   },
   {
-    "base_hp": 125,
-    "base_mag_atk": 52,
-    "base_mag_def": 154,
-    "base_phy_atk": 139,
-    "base_phy_def": 164,
+    "base_hp": 136,
+    "base_mag_atk": 57,
+    "base_mag_def": 163,
+    "base_phy_atk": 148,
+    "base_phy_def": 173,
     "base_spd": 70,
     "default_legacy_type": {
       "id": 6,
@@ -4663,7 +4663,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "突破能量上限并立即回复10能量，入场前己方精灵每放1次地系技能，回复3能量。",
+          "description": "突破能量上限并立即回复10能量，入场前己方精灵每使用1次地系技能，回复3能量。",
           "name": "地脉馈赠"
         }
       }
@@ -8302,9 +8302,9 @@
   },
   {
     "base_hp": 85,
-    "base_mag_atk": 46,
+    "base_mag_atk": 38,
     "base_mag_def": 82,
-    "base_phy_atk": 128,
+    "base_phy_atk": 116,
     "base_phy_def": 101,
     "base_spd": 120,
     "default_legacy_type": {
@@ -8372,9 +8372,9 @@
   },
   {
     "base_hp": 85,
-    "base_mag_atk": 46,
+    "base_mag_atk": 38,
     "base_mag_def": 82,
-    "base_phy_atk": 128,
+    "base_phy_atk": 116,
     "base_phy_def": 101,
     "base_spd": 120,
     "default_legacy_type": {
@@ -10875,7 +10875,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用技能时，敌方获得2层中毒。",
+          "description": "使用草系技能时，敌方获得3层中毒。",
           "name": "高浓生物碱"
         }
       }
@@ -10967,7 +10967,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用技能时，敌方获得2层中毒。",
+          "description": "使用草系技能时，敌方获得3层中毒。",
           "name": "高浓生物碱"
         }
       }
@@ -11059,7 +11059,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用技能时，敌方获得2层中毒。",
+          "description": "使用草系技能时，敌方获得3层中毒。",
           "name": "高浓生物碱"
         }
       }
@@ -11151,7 +11151,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用技能时，敌方获得2层中毒。",
+          "description": "使用草系技能时，敌方获得3层中毒。",
           "name": "高浓生物碱"
         }
       }
@@ -12817,9 +12817,9 @@
   },
   {
     "base_hp": 80,
-    "base_mag_atk": 107,
+    "base_mag_atk": 95,
     "base_mag_def": 120,
-    "base_phy_atk": 95,
+    "base_phy_atk": 107,
     "base_phy_def": 90,
     "base_spd": 125,
     "default_legacy_type": {
@@ -14468,11 +14468,11 @@
     }
   },
   {
-    "base_hp": 122,
-    "base_mag_atk": 72,
-    "base_mag_def": 94,
-    "base_phy_atk": 67,
-    "base_phy_def": 84,
+    "base_hp": 132,
+    "base_mag_atk": 77,
+    "base_mag_def": 100,
+    "base_phy_atk": 72,
+    "base_phy_def": 89,
     "base_spd": 100,
     "default_legacy_type": {
       "id": 11,
@@ -19893,9 +19893,9 @@
   },
   {
     "base_hp": 137,
-    "base_mag_atk": 111,
+    "base_mag_atk": 126,
     "base_mag_def": 130,
-    "base_phy_atk": 51,
+    "base_phy_atk": 62,
     "base_phy_def": 88,
     "base_spd": 80,
     "default_legacy_type": {
@@ -20138,12 +20138,12 @@
     }
   },
   {
-    "base_hp": 105,
+    "base_hp": 83,
     "base_mag_atk": 104,
     "base_mag_def": 103,
-    "base_phy_atk": 110,
+    "base_phy_atk": 112,
     "base_phy_def": 103,
-    "base_spd": 105,
+    "base_spd": 130,
     "default_legacy_type": {
       "id": 4,
       "localized": {
@@ -20347,9 +20347,9 @@
   },
   {
     "base_hp": 92,
-    "base_mag_atk": 126,
+    "base_mag_atk": 130,
     "base_mag_def": 95,
-    "base_phy_atk": 132,
+    "base_phy_atk": 136,
     "base_phy_def": 111,
     "base_spd": 95,
     "default_legacy_type": {
@@ -20407,7 +20407,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "打断敌方时，被打断的技能进入2回合冷却。",
+          "description": "打断敌方技能时，获得双攻+30%，被打断的技能进入2回合冷却。",
           "name": "威慑"
         }
       }
@@ -21072,7 +21072,7 @@
     "form": "Original",
     "form_category": "主形态",
     "id": 277,
-    "image": "波波螺(被污染的样子).png",
+    "image": "波波螺.png",
     "is_leader_form": false,
     "leader_potential": false,
     "localized": {
@@ -21252,7 +21252,7 @@
     "form": "Original",
     "form_category": "主形态",
     "id": 279,
-    "image": "消波螺(被污染的样子).png",
+    "image": "消波螺.png",
     "is_leader_form": false,
     "leader_potential": false,
     "localized": {
@@ -21432,7 +21432,7 @@
     "form": "Original",
     "form_category": "主形态",
     "id": 281,
-    "image": "嗜波螺(被污染的样子).png",
+    "image": "嗜波螺.png",
     "is_leader_form": false,
     "leader_potential": false,
     "localized": {
@@ -24750,7 +24750,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用能耗为3的技能时，获得攻防+20%。",
+          "description": "使用能耗为3的技能时，获得双攻和双防+20%。",
           "name": "鼓气"
         }
       }
@@ -24816,7 +24816,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用能耗为3的技能时，获得攻防+20%。",
+          "description": "使用能耗为3的技能时，获得双攻和双防+20%。",
           "name": "鼓气"
         }
       }
@@ -24882,7 +24882,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用能耗为3的技能时，获得攻防+20%。",
+          "description": "使用能耗为3的技能时，获得双攻和双防+20%。",
           "name": "鼓气"
         }
       }
@@ -24948,7 +24948,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "使用能耗为3的技能后，获得攻防永久+20%。",
+          "description": "使用能耗为3的技能后，获得双攻和双防永久+20%。",
           "name": "三鼓作气"
         }
       }
@@ -26390,10 +26390,10 @@
   },
   {
     "base_hp": 105,
-    "base_mag_atk": 49,
+    "base_mag_atk": 13,
     "base_mag_def": 93,
-    "base_phy_atk": 117,
-    "base_phy_def": 135,
+    "base_phy_atk": 79,
+    "base_phy_def": 110,
     "base_spd": 65,
     "default_legacy_type": {
       "id": 3,
@@ -27457,9 +27457,9 @@
   {
     "base_hp": 92,
     "base_mag_atk": 20,
-    "base_mag_def": 79,
+    "base_mag_def": 97,
     "base_phy_atk": 77,
-    "base_phy_def": 108,
+    "base_phy_def": 120,
     "base_spd": 120,
     "default_legacy_type": {
       "id": 9,
@@ -27521,10 +27521,10 @@
   {
     "base_hp": 92,
     "base_mag_atk": 21,
-    "base_mag_def": 79,
-    "base_phy_atk": 79,
-    "base_phy_def": 108,
-    "base_spd": 120,
+    "base_mag_def": 101,
+    "base_phy_atk": 81,
+    "base_phy_def": 125,
+    "base_spd": 125,
     "default_legacy_type": {
       "id": 9,
       "localized": {
@@ -27667,10 +27667,10 @@
   {
     "base_hp": 92,
     "base_mag_atk": 48,
-    "base_mag_def": 92,
+    "base_mag_def": 85,
     "base_phy_atk": 124,
-    "base_phy_def": 122,
-    "base_spd": 90,
+    "base_phy_def": 113,
+    "base_spd": 105,
     "default_legacy_type": {
       "id": 17,
       "localized": {
@@ -30641,10 +30641,10 @@
     }
   },
   {
-    "base_hp": 112,
-    "base_mag_atk": 122,
+    "base_hp": 137,
+    "base_mag_atk": 108,
     "base_mag_def": 127,
-    "base_phy_atk": 47,
+    "base_phy_atk": 42,
     "base_phy_def": 100,
     "base_spd": 90,
     "default_legacy_type": {
@@ -33294,11 +33294,11 @@
     }
   },
   {
-    "base_hp": 122,
-    "base_mag_atk": 39,
-    "base_mag_def": 77,
-    "base_phy_atk": 88,
-    "base_phy_def": 121,
+    "base_hp": 132,
+    "base_mag_atk": 43,
+    "base_mag_def": 82,
+    "base_phy_atk": 95,
+    "base_phy_def": 128,
     "base_spd": 75,
     "default_legacy_type": {
       "id": 11,
@@ -38094,10 +38094,10 @@
     }
   },
   {
-    "base_hp": 79,
-    "base_mag_atk": 95,
+    "base_hp": 102,
+    "base_mag_atk": 74,
     "base_mag_def": 90,
-    "base_phy_atk": 85,
+    "base_phy_atk": 73,
     "base_phy_def": 103,
     "base_spd": 105,
     "default_legacy_type": {
@@ -38695,7 +38695,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "在场时，自己携带的普通系技能变为翼系技能，若后于对手行动，自己受到的伤害+25%。",
+          "description": "在场时，自己携带的普通系技能变为翼系技能，若后于敌方行动，自己受到的伤害+25%。",
           "name": "展翅"
         }
       }
@@ -38761,7 +38761,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "在场时，自己携带的普通系技能变为翼系技能，若后于对手行动，自己受到的伤害+25%。",
+          "description": "在场时，自己携带的普通系技能变为翼系技能，若后于敌方行动，自己受到的伤害+25%。",
           "name": "展翅"
         }
       }
@@ -38827,7 +38827,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "在场时，自己携带的普通系技能变为翼系技能，若后于对手行动，自己受到的伤害+25%。",
+          "description": "在场时，自己携带的普通系技能变为翼系技能，若后于敌方行动，自己受到的伤害+25%。",
           "name": "展翅"
         }
       }
@@ -38897,7 +38897,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "自己使用2次不同的冰系技能后，对手获得4层冻结，随后特性重置。",
+          "description": "自己使用2次不同的冰系技能后，敌方获得4层冻结，随后特性重置。",
           "name": "大雪球"
         }
       }
@@ -38967,7 +38967,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "自己使用2次不同的冰系技能后，对手获得4层冻结，随后特性重置。",
+          "description": "自己使用2次不同的冰系技能后，敌方获得4层冻结，随后特性重置。",
           "name": "大雪球"
         }
       }
@@ -39396,11 +39396,11 @@
   },
   {
     "base_hp": 116,
-    "base_mag_atk": 108,
+    "base_mag_atk": 92,
     "base_mag_def": 128,
-    "base_phy_atk": 108,
+    "base_phy_atk": 92,
     "base_phy_def": 128,
-    "base_spd": 95,
+    "base_spd": 100,
     "default_legacy_type": {
       "id": 4,
       "localized": {
@@ -39475,9 +39475,9 @@
   },
   {
     "base_hp": 116,
-    "base_mag_atk": 61,
+    "base_mag_atk": 58,
     "base_mag_def": 128,
-    "base_phy_atk": 155,
+    "base_phy_atk": 130,
     "base_phy_def": 128,
     "base_spd": 95,
     "default_legacy_type": {
@@ -39845,11 +39845,11 @@
     }
   },
   {
-    "base_hp": 76,
-    "base_mag_atk": 111,
-    "base_mag_def": 97,
-    "base_phy_atk": 44,
-    "base_phy_def": 62,
+    "base_hp": 95,
+    "base_mag_atk": 129,
+    "base_mag_def": 111,
+    "base_phy_atk": 55,
+    "base_phy_def": 73,
     "base_spd": 95,
     "default_legacy_type": {
       "id": 3,
@@ -40313,9 +40313,9 @@
   {
     "base_hp": 130,
     "base_mag_atk": 70,
-    "base_mag_def": 80,
+    "base_mag_def": 56,
     "base_phy_atk": 107,
-    "base_phy_def": 173,
+    "base_phy_def": 153,
     "base_spd": 80,
     "default_legacy_type": {
       "id": 17,
@@ -40759,11 +40759,11 @@
     }
   },
   {
-    "base_hp": 94,
-    "base_mag_atk": 100,
-    "base_mag_def": 121,
-    "base_phy_atk": 82,
-    "base_phy_def": 72,
+    "base_hp": 78,
+    "base_mag_atk": 81,
+    "base_mag_def": 106,
+    "base_phy_atk": 65,
+    "base_phy_def": 61,
     "base_spd": 120,
     "default_legacy_type": {
       "id": 3,
@@ -40933,7 +40933,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "对手本回合使用的技能，冷却1回合。",
+          "description": "敌方本回合使用的技能，冷却1回合。",
           "name": "上锁"
         }
       }
@@ -41029,7 +41029,7 @@
     "trait": {
       "localized": {
         "zh": {
-          "description": "对手本回合使用的技能，冷却1回合。",
+          "description": "敌方本回合使用的技能，冷却1回合。",
           "name": "上锁"
         }
       }
@@ -41855,9 +41855,9 @@
   },
   {
     "base_hp": 104,
-    "base_mag_atk": 24,
+    "base_mag_atk": 40,
     "base_mag_def": 103,
-    "base_phy_atk": 85,
+    "base_phy_atk": 110,
     "base_phy_def": 111,
     "base_spd": 125,
     "default_legacy_type": {
@@ -42341,10 +42341,10 @@
     }
   },
   {
-    "base_hp": 90,
-    "base_mag_atk": 122,
+    "base_hp": 100,
+    "base_mag_atk": 131,
     "base_mag_def": 105,
-    "base_phy_atk": 45,
+    "base_phy_atk": 50,
     "base_phy_def": 83,
     "base_spd": 100,
     "default_legacy_type": {
@@ -42806,11 +42806,11 @@
     }
   },
   {
-    "base_hp": 126,
-    "base_mag_atk": 98,
-    "base_mag_def": 123,
-    "base_phy_atk": 99,
-    "base_phy_def": 97,
+    "base_hp": 132,
+    "base_mag_atk": 101,
+    "base_mag_def": 127,
+    "base_phy_atk": 103,
+    "base_phy_def": 100,
     "base_spd": 55,
     "default_legacy_type": {
       "id": 13,
@@ -44329,9 +44329,9 @@
   },
   {
     "base_hp": 95,
-    "base_mag_atk": 14,
+    "base_mag_atk": 27,
     "base_mag_def": 95,
-    "base_phy_atk": 78,
+    "base_phy_atk": 100,
     "base_phy_def": 109,
     "base_spd": 125,
     "default_legacy_type": {
@@ -44723,10 +44723,10 @@
   },
   {
     "base_hp": 113,
-    "base_mag_atk": 51,
-    "base_mag_def": 78,
-    "base_phy_atk": 130,
-    "base_phy_def": 106,
+    "base_mag_atk": 60,
+    "base_mag_def": 87,
+    "base_phy_atk": 143,
+    "base_phy_def": 116,
     "base_spd": 110,
     "default_legacy_type": {
       "id": 4,
@@ -44870,12 +44870,12 @@
     }
   },
   {
-    "base_hp": 103,
-    "base_mag_atk": 34,
-    "base_mag_def": 51,
-    "base_phy_atk": 107,
-    "base_phy_def": 65,
-    "base_spd": 100,
+    "base_hp": 117,
+    "base_mag_atk": 23,
+    "base_mag_def": 68,
+    "base_phy_atk": 81,
+    "base_phy_def": 82,
+    "base_spd": 85,
     "default_legacy_type": {
       "id": 16,
       "localized": {
@@ -45195,10 +45195,10 @@
     }
   },
   {
-    "base_hp": 115,
-    "base_mag_atk": 120,
+    "base_hp": 128,
+    "base_mag_atk": 138,
     "base_mag_def": 106,
-    "base_phy_atk": 43,
+    "base_phy_atk": 54,
     "base_phy_def": 84,
     "base_spd": 110,
     "default_legacy_type": {
@@ -45366,11 +45366,11 @@
     }
   },
   {
-    "base_hp": 116,
-    "base_mag_atk": 88,
-    "base_mag_def": 112,
-    "base_phy_atk": 88,
-    "base_phy_def": 112,
+    "base_hp": 128,
+    "base_mag_atk": 96,
+    "base_mag_def": 121,
+    "base_phy_atk": 96,
+    "base_phy_def": 121,
     "base_spd": 55,
     "default_legacy_type": {
       "id": 14,

@@ -3,6 +3,27 @@
  * 提供跨页面复用的 UI 功能
  */
 
+/* ============================================================
+ * 窗口缩放控制：非最大化时禁用 Ctrl+滚轮缩放，最大化时允许
+ * ============================================================ */
+(function () {
+  let windowMaximized = false;
+  function refreshWindowState() {
+    fetch('/api/window/state')
+      .then(r => r.json())
+      .then(d => { windowMaximized = !!d.maximized; })
+      .catch(() => {});
+  }
+  // 窗口最大化/还原时会触发 resize
+  window.addEventListener('resize', refreshWindowState);
+  refreshWindowState();
+  window.addEventListener('wheel', function (e) {
+    if (e.ctrlKey && !windowMaximized) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+})();
+
 const CommonUI = (function () {
   const SVG_UP = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
   const SVG_DOWN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>';
