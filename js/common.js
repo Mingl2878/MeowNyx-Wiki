@@ -11,6 +11,8 @@
 (function () {
   let windowMaximized = false;
   let zoom = 1;
+  // 最大化时的缩放记忆：Ctrl+滚轮实时保存，再次最大化时恢复（设置页可改默认值）
+  let savedMaxZoom = Math.min(2, Math.max(1, parseFloat(localStorage.getItem('xwiki-max-zoom')) || 1));
   function applyZoom() {
     document.documentElement.style.zoom = zoom;
     // CSS 变量供 vh/vw 及坐标修正使用
@@ -21,8 +23,21 @@
       .then(r => r.json())
       .then(d => {
         windowMaximized = !!d.maximized;
-        // 非最大化时强制回到 100%
-        if (!windowMaximized && zoom !== 1) { zoom = 1; applyZoom(); }
+        const target = windowMaximized ? savedMaxZoom : 1;
+        if (zoom !== target) { zoom = target; applyZoom(); }
+      })
+      .catch(() => {});
+  }
+  // 首次使用时从设置文件读取默认缩放比例
+  if (localStorage.getItem('xwiki-max-zoom') == null) {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(s => {
+        if (s && s.default_max_zoom && s.default_max_zoom !== 100) {
+          savedMaxZoom = Math.min(2, Math.max(1, s.default_max_zoom / 100));
+          localStorage.setItem('xwiki-max-zoom', savedMaxZoom);
+          if (windowMaximized) { zoom = savedMaxZoom; applyZoom(); }
+        }
       })
       .catch(() => {});
   }
@@ -35,12 +50,16 @@
     if (!windowMaximized) return; // 非最大化：完全忽略
     const delta = e.deltaY < 0 ? 0.1 : -0.1;
     zoom = Math.min(2, Math.max(0.5, Math.round((zoom + delta) * 10) / 10));
+    savedMaxZoom = zoom;
+    localStorage.setItem('xwiki-max-zoom', zoom);
     applyZoom();
   }, { passive: false });
-  // Ctrl+0 复位 100%
+  // Ctrl+0 复位 100%（同时清除缩放记忆）
   window.addEventListener('keydown', function (e) {
     if (e.ctrlKey && (e.key === '0' || e.code === 'Digit0')) {
-      zoom = 1; applyZoom();
+      zoom = 1; savedMaxZoom = 1;
+      localStorage.setItem('xwiki-max-zoom', 1);
+      applyZoom();
     }
   });
   // 供 fixed 定位下拉框修正坐标（CSS zoom 下 getBoundingClientRect 返回视觉坐标）

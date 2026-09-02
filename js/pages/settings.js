@@ -1,4 +1,4 @@
-/**
+﻿/**
  * settings.js — 用户设置页面
  */
 const SettingsPage = (function () {
@@ -176,7 +176,17 @@ const SettingsPage = (function () {
     window_width: 1280,
     window_height: 800,
     window_maximized: false,
-    default_route: 'petdex'
+    default_route: 'petdex',
+    default_max_zoom: 100
+  };
+
+  var DEFAULT_SETTINGS = {
+    close_behavior: 'close',
+    window_width: 1280,
+    window_height: 800,
+    window_maximized: false,
+    default_route: 'petdex',
+    default_max_zoom: 100
   };
 
   let loaded = false;
@@ -208,8 +218,11 @@ const SettingsPage = (function () {
     const r = document.getElementById('settings-result');
     if (r) r.innerHTML = '<span style="color:var(--text-secondary);">正在保存...</span>';
     try {
-      // 同时更新 localStorage 中的默认路由
+      // 同时更新 localStorage 中的默认路由与最大化缩放记忆
       localStorage.setItem('xwiki-default-route', settings.default_route);
+      if (settings.default_max_zoom) {
+        localStorage.setItem('xwiki-max-zoom', settings.default_max_zoom / 100);
+      }
 
       const res = await fetch('/api/settings', {
         method: 'POST',
@@ -264,7 +277,7 @@ const SettingsPage = (function () {
       +       '<div class="settings-control">'
       +         '<div style="margin-bottom:10px;">'
       +           '<label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--text-secondary);font-weight:600;user-select:none;">'
-      +             '<input type="checkbox" id="set-lock-ratio" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent);"> 等比例缩放（锁定宽高比）'
+      +             '<input type="checkbox" id="set-lock-ratio" checked style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent);"> 等比例缩放（锁定宽高比）'
       +           '</label>'
       +         '</div>'
       +         '<div class="settings-input-group">'
@@ -281,6 +294,18 @@ const SettingsPage = (function () {
       +           '<span style="font-size:12px;color:var(--text-muted);">像素</span>'
       +         '</div>'
       +       '</div>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>'
+
+      // 最大化时界面缩放
+      + '<div class="settings-row">'
+      +   '<div class="settings-label">最大化时界面缩放<div class="settings-desc">最大化窗口时的缩放比例（Ctrl+滚轮会实时记忆）</div></div>'
+      +   '<div class="settings-control">'
+      +     '<div class="settings-input-group">'
+      +       '<input type="range" class="settings-slider" id="set-zoom-slider" min="100" max="200" step="5" value="' + (settings.default_max_zoom || 100) + '">'
+      +       '<input type="number" id="set-zoom" value="' + (settings.default_max_zoom || 100) + '" min="100" max="200" style="width:70px;padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:center;color:var(--text-primary);background:var(--bg-secondary);">'
+      +       '<span style="font-size:12px;color:var(--text-muted);">%</span>'
       +     '</div>'
       +   '</div>'
       + '</div>'
@@ -303,6 +328,7 @@ const SettingsPage = (function () {
       + '</div>'
 
       + '<div class="settings-btn-row">'
+      +   '<button type="button" class="btn ud-btn-lg" id="set-reset-btn" style="padding:10px 28px;font-size:15px;font-weight:700;border-radius:8px;background:var(--bg-secondary);border:2px solid var(--border);color:var(--text-secondary);cursor:pointer;">恢复默认</button>'
       +   '<button type="button" class="btn btn-primary ud-btn-lg" id="set-save-btn" style="padding:10px 40px;font-size:15px;font-weight:700;border-radius:8px;">保存设置</button>'
       + '</div>'
     + '</div></div>';
@@ -322,7 +348,7 @@ const SettingsPage = (function () {
       };
     }
 
-    // 窗口模式
+    // 窗口模式（点击后立即最大化/还原窗口）
     var maxPills = document.getElementById('set-max-pills');
     if (maxPills) {
       maxPills.onclick = function(e) {
@@ -334,7 +360,31 @@ const SettingsPage = (function () {
           + '<span class="settings-pill ' + (settings.window_maximized ? 'active' : '') + '" data-val="true">最大化</span>';
         var sizeRow = document.getElementById('set-size-row');
         if (sizeRow) sizeRow.style.display = settings.window_maximized ? 'none' : '';
+        // 立即应用窗口模式
+        fetch('/api/window/maximize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ maximized: settings.window_maximized })
+        }).catch(function() {});
       };
+    }
+
+    // 最大化时界面缩放（拖动即写入记忆，保存后持久化到设置文件）
+    var zoomSlider = document.getElementById('set-zoom-slider');
+    var zoomInput = document.getElementById('set-zoom');
+    function applyZoomSetting(v) {
+      v = Math.round(v);
+      if (v < 100) v = 100;
+      if (v > 200) v = 200;
+      settings.default_max_zoom = v;
+      if (zoomSlider) zoomSlider.value = v;
+      if (zoomInput) zoomInput.value = v;
+      // 实时写入缩放记忆，下次最大化立即生效
+      localStorage.setItem('xwiki-max-zoom', v / 100);
+    }
+    if (zoomSlider && zoomInput) {
+      zoomSlider.addEventListener('input', function() { applyZoomSetting(+zoomSlider.value); });
+      zoomInput.addEventListener('input', function() { applyZoomSetting(+zoomInput.value || 100); });
     }
 
     // 默认页面
@@ -413,8 +463,9 @@ const SettingsPage = (function () {
       });
     }
 
-    // 锁定比例复选框
+    // 锁定比例复选框（默认勾选，初始化时记录当前比例）
     if (lockCheckbox) {
+      if (lockCheckbox.checked) initLockRatio();
       lockCheckbox.addEventListener('change', function() {
         if (lockCheckbox.checked) initLockRatio();
       });
@@ -427,6 +478,23 @@ const SettingsPage = (function () {
         if (wInput) settings.window_width = +wInput.value || 1280;
         if (hInput) settings.window_height = +hInput.value || 800;
         await saveSettings();
+      });
+    }
+
+    // 恢复默认
+    var resetBtn = document.getElementById('set-reset-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', async function() {
+        Object.assign(settings, DEFAULT_SETTINGS);
+        localStorage.setItem('xwiki-max-zoom', DEFAULT_SETTINGS.default_max_zoom / 100);
+        await saveSettings();
+        var container = document.querySelector('.calc-root .scroll-container');
+        if (container) {
+          container.innerHTML = buildHtml();
+          bindEvents();
+        }
+        var r = document.getElementById('settings-result');
+        if (r) r.innerHTML = '<span style="color:var(--success);font-weight:600;">✓ 已恢复默认设置</span>';
       });
     }
   }

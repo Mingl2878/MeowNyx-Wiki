@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 	"unsafe"
@@ -33,10 +34,57 @@ var (
 	procShowWindow    = modUser32.NewProc("ShowWindow")
 	procSetForeground = modUser32.NewProc("SetForegroundWindow")
 	procIsIconic      = modUser32.NewProc("IsIconic")
+
+	procGetWindowLongPtr = modUser32.NewProc("GetWindowLongPtrW")
+	procSetWindowLongPtr = modUser32.NewProc("SetWindowLongPtrW")
+	procCallWindowProc   = modUser32.NewProc("CallWindowProcW")
 )
 
 const mutexName = "XiaoHeiMaoWikiSingleInstance"
 const SW_RESTORE = 9
+const SW_MAXIMIZE = 3
+const SW_MINIMIZE = 6
+const WM_CLOSE = 0x0010
+const GWLP_WNDPROC = ^uintptr(3) // -4
+
+// ---- 主窗口句柄与消息钩子 ----
+var (
+	mainHwnd     uintptr
+	gOldWndProc  uintptr
+	gCloseMu     sync.RWMutex
+	gCloseBehavior = "close"
+)
+
+// wndProc 主窗口消息钩子：关闭行为为“最小化到任务栏”时拦截 WM_CLOSE
+func wndProc(hwnd, msg, wParam, lParam uintptr) uintptr {
+	if msg == WM_CLOSE {
+		gCloseMu.RLock()
+		cb := gCloseBehavior
+		gCloseMu.RUnlock()
+		if cb == "minimize" {
+			iconic, _, _ := procIsIconic.Call(hwnd)
+			if iconic == 0 {
+				// 未最小化：拦截关闭，改为最小化（再次从任务栏关闭时允许真正退出）
+				procShowWindow.Call(hwnd, SW_MINIMIZE)
+				return 0
+			}
+		}
+	}
+	r, _, _ := procCallWindowProc.Call(gOldWndProc, hwnd, msg, wParam, lParam)
+	return r
+}
+
+// installWindowHook 安装主窗口消息钩子（须在窗口线程上调用）
+func installWindowHook(hwnd uintptr) {
+	mainHwnd = hwnd
+	if gOldWndProc != 0 {
+		return
+	}
+	old, _, _ := procGetWindowLongPtr.Call(hwnd, GWLP_WNDPROC)
+	gOldWndProc = old
+	cb := syscall.NewCallback(wndProc)
+	procSetWindowLongPtr.Call(hwnd, GWLP_WNDPROC, cb)
+}
 
 // 检查是否已有实例运行。
 // 返回 true = 已有实例（当前进程应退出），false = 首次启动。
@@ -458,6 +506,22 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	// ---- 立即最大化/还原窗口（设置页窗口模式即时应用） ----
+	if path == "/api/window/maximize" && r.Method == http.MethodPost {
+		var req struct {
+			Maximized bool `json:"maximized"`
+		}
+		json.NewDecoder(r.Body).Decode(&req)
+		if mainHwnd != 0 {
+			if req.Maximized {
+				procShowWindow.Call(mainHwnd, SW_MAXIMIZE)
+			} else {
+				procShowWindow.Call(mainHwnd, SW_RESTORE)
+			}
+		}
+		writeJSON(w, 200, []byte(`{"ok":true}`))
+		return
+	}
 
 	writeJSON(w, 200, []byte(`[]`))
 }
@@ -537,6 +601,7 @@ type UserSettings struct {
 	WindowHeight   int    `json:"window_height"`
 	WindowMaximized bool  `json:"window_maximized"`
 	DefaultRoute   string `json:"default_route"`
+	DefaultMaxZoom int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（100~200）
 }
 
 func getSettingsFilePath() string {
@@ -556,6 +621,7 @@ func loadSettings() UserSettings {
 		WindowHeight:   800,
 		WindowMaximized: false,
 		DefaultRoute:   "petdex",
+		DefaultMaxZoom: 100,
 	}
 	path := getSettingsFilePath()
 	data, err := os.ReadFile(path)
@@ -572,6 +638,7 @@ func loadSettings() UserSettings {
 	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
 	if s.CloseBehavior == "" { s.CloseBehavior = "close" }
 	if s.DefaultRoute == "" { s.DefaultRoute = "petdex" }
+	if s.DefaultMaxZoom < 100 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
 	return s
 }
 
@@ -601,6 +668,11 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 	if s.WindowWidth <= 0 { s.WindowWidth = 1280 }
 	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
 	if s.DefaultRoute == "" { s.DefaultRoute = "petdex" }
+	if s.DefaultMaxZoom < 100 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
+	// 同步到消息钩子（关闭行为实时生效）
+	gCloseMu.Lock()
+	gCloseBehavior = s.CloseBehavior
+	gCloseMu.Unlock()
 	if err := saveSettings(s); err != nil {
 		writeJSON(w, 500, []byte(`{"ok":false,"error":"保存失败"}`))
 		return
@@ -1167,6 +1239,9 @@ func main() {
 
 	// 加载用户设置
 	settings := loadSettings()
+	gCloseMu.Lock()
+	gCloseBehavior = settings.CloseBehavior
+	gCloseMu.Unlock()
 
 	// 创建 WebView2 窗口
 	wWidth, wHeight := uint(1280), uint(800)
@@ -1190,6 +1265,8 @@ func main() {
 	defer wv.Destroy()
 
 	wv.SetTitle("小黑猫 Wiki")
+	// 在窗口线程上安装消息钩子（关闭行为拦截）
+	wv.Dispatch(func() { installWindowHook(uintptr(wv.Window())) })
 	if settings.WindowMaximized {
 		wv.SetSize(0, 0, webview.HintMax)
 	} else {

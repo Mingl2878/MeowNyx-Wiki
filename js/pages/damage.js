@@ -400,16 +400,16 @@ const DamagePage = (function () {
             <div class="input-row">
               <div class="input-group">
                 <label class="accent-label">基础威力:</label>
-                <input type="text" id="basePower" value="100">
+                <input type="text" id="basePower" autocomplete="off" value="100">
               </div>
               <div class="input-group">
                 <label class="accent-label">威力固定加成:</label>
-                <input type="text" id="fixedBonus" value="0">
+                <input type="text" id="fixedBonus" autocomplete="off" value="0">
               </div>
               <div class="input-group">
                 <label class="accent-label">威力百分比加成:</label>
                 <div class="input-with-suffix">
-                  <input type="text" id="percentBonus" value="0">
+                  <input type="text" id="percentBonus" autocomplete="off" value="0">
                   <span class="suffix">%</span>
                 </div>
               </div>
@@ -420,17 +420,17 @@ const DamagePage = (function () {
               <div class="input-group">
                 <label class="accent-label">增减益buff:</label>
                 <div class="input-with-suffix">
-                  <input type="text" id="buff" value="0">
+                  <input type="text" id="buff" autocomplete="off" value="0">
                   <span class="suffix">%</span>
                 </div>
               </div>
               <div class="input-group">
                 <label class="combo-label">连击数:</label>
-                <input type="text" id="comboCount" value="1">
+                <input type="text" id="comboCount" autocomplete="off" value="1">
               </div>
               <div class="input-group">
                 <label class="star-meteor-label">星陨印记:</label>
-                <input type="text" id="starMeteor" value="0" placeholder="层数">
+                <input type="text" id="starMeteor" autocomplete="off" value="0" placeholder="层数">
               </div>
             </div>
           </div>
@@ -439,20 +439,20 @@ const DamagePage = (function () {
               <div class="input-group">
                 <label class="defense-mod-label">防守方增减益:</label>
                 <div class="input-with-suffix">
-                  <input type="text" id="defenseMod" value="0" placeholder="">
+                  <input type="text" id="defenseMod" autocomplete="off" value="0" placeholder="">
                   <span class="suffix">%</span>
                 </div>
               </div>
               <div class="input-group">
                 <label class="debuff-percent-label">减伤百分比:</label>
                 <div class="input-with-suffix">
-                  <input type="text" id="debuffPercent" value="0">
+                  <input type="text" id="debuffPercent" autocomplete="off" value="0">
                   <span class="suffix">%</span>
                 </div>
               </div>
               <div class="input-group">
                 <label class="final-power-manual-label">最终威力:</label>
-                <input type="text" id="finalPowerManual" class="final-power-manual-input" value="" placeholder="">
+                <input type="text" id="finalPowerManual" autocomplete="off" class="final-power-manual-input" value="" placeholder="">
               </div>
             </div>
           </div>
