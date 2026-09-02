@@ -34,7 +34,7 @@
       .then(r => r.json())
       .then(s => {
         if (s && s.default_max_zoom && s.default_max_zoom !== 100) {
-          savedMaxZoom = Math.min(2, Math.max(1, s.default_max_zoom / 100));
+          savedMaxZoom = Math.min(2, Math.max(0.5, s.default_max_zoom / 100));
           localStorage.setItem('xwiki-max-zoom', savedMaxZoom);
           if (windowMaximized) { zoom = savedMaxZoom; applyZoom(); }
         }

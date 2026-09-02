@@ -674,7 +674,7 @@ type UserSettings struct {
 	WindowHeight   int    `json:"window_height"`
 	WindowMaximized bool  `json:"window_maximized"`
 	DefaultRoute   string `json:"default_route"`
-	DefaultMaxZoom int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（100~200）
+	DefaultMaxZoom int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（50~200）
 	HotkeyMods     int    `json:"hotkey_mods"`     // 热键修饰键位掩码（1=ALT 2=CTRL 4=SHIFT 8=WIN）
 	HotkeyVK       int    `json:"hotkey_vk"`       // 热键虚拟键码（0=未绑定）
 }
@@ -715,7 +715,7 @@ func loadSettings() UserSettings {
 	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
 	if s.CloseBehavior == "" { s.CloseBehavior = "close" }
 	if s.DefaultRoute == "" { s.DefaultRoute = "petdex" }
-	if s.DefaultMaxZoom < 100 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
+	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
 	return s
 }
 
@@ -745,7 +745,7 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 	if s.WindowWidth <= 0 { s.WindowWidth = 1280 }
 	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
 	if s.DefaultRoute == "" { s.DefaultRoute = "petdex" }
-	if s.DefaultMaxZoom < 100 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
+	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
 	if s.HotkeyMods < 0 || s.HotkeyMods > 15 { s.HotkeyMods = 0 }
 	if s.HotkeyVK < 0 || s.HotkeyVK > 255 { s.HotkeyVK = 0 }
 	// 同步到消息钩子（关闭行为实时生效），并通知窗口线程重载热键

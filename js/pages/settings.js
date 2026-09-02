@@ -294,8 +294,8 @@ const SettingsPage = (function () {
       +   '<div class="settings-label">最大化时界面缩放</div>'
       +   '<div class="settings-control">'
       +     '<div class="settings-input-group">'
-      +       '<input type="range" class="settings-slider" id="set-zoom-slider" min="100" max="200" step="5" value="' + (settings.default_max_zoom || 100) + '">'
-      +       '<input type="number" id="set-zoom" value="' + (settings.default_max_zoom || 100) + '" min="100" max="200" style="width:70px;padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:center;color:var(--text-primary);background:var(--bg-secondary);">'
+      +       '<input type="range" class="settings-slider" id="set-zoom-slider" min="50" max="200" step="5" value="' + (settings.default_max_zoom || 100) + '">'
+      +       '<input type="number" id="set-zoom" value="' + (settings.default_max_zoom || 100) + '" min="50" max="200" style="width:70px;padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:center;color:var(--text-primary);background:var(--bg-secondary);">'
       +       '<span style="font-size:12px;color:var(--text-muted);">%</span>'
       +     '</div>'
       +   '</div>'
@@ -406,7 +406,7 @@ const SettingsPage = (function () {
     var zoomInput = document.getElementById('set-zoom');
     function applyZoomSetting(v) {
       v = Math.round(v);
-      if (v < 100) v = 100;
+      if (v < 50) v = 50;
       if (v > 200) v = 200;
       settings.default_max_zoom = v;
       markDirty();
