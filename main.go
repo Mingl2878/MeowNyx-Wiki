@@ -2,6 +2,7 @@
 
 import (
 	"compress/gzip"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -13,6 +14,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"sync"
 	"syscall"
@@ -38,6 +40,12 @@ var (
 	procGetWindowLongPtr = modUser32.NewProc("GetWindowLongPtrW")
 	procSetWindowLongPtr = modUser32.NewProc("SetWindowLongPtrW")
 	procCallWindowProc   = modUser32.NewProc("CallWindowProcW")
+	procRegisterHotKey   = modUser32.NewProc("RegisterHotKey")
+	procUnregisterHotKey = modUser32.NewProc("UnregisterHotKey")
+	procPostMessage      = modUser32.NewProc("PostMessageW")
+	procPostThreadMsg    = modUser32.NewProc("PostThreadMessageW")
+	procGetMessage       = modUser32.NewProc("GetMessageW")
+	procGetThreadID      = modKernel32.NewProc("GetCurrentThreadId")
 )
 
 const mutexName = "XiaoHeiMaoWikiSingleInstance"
@@ -45,17 +53,73 @@ const SW_RESTORE = 9
 const SW_MAXIMIZE = 3
 const SW_MINIMIZE = 6
 const WM_CLOSE = 0x0010
+const WM_HOTKEY = 0x0312
+const WM_APP_RELOAD_HOTKEY = 0x8010 // WM_APP+0x10: 通知热键线程重载设置
+const WM_QUIT = 0x0012
 const GWLP_WNDPROC = ^uintptr(3) // -4
+const HOTKEY_ID = 1
 
 // ---- 主窗口句柄与消息钩子 ----
 var (
-	mainHwnd     uintptr
-	gOldWndProc  uintptr
-	gCloseMu     sync.RWMutex
+	mainHwnd       uintptr
+	gOldWndProc    uintptr
+	gCloseMu       sync.RWMutex
 	gCloseBehavior = "close"
 )
 
-// wndProc 主窗口消息钩子：关闭行为为“最小化到任务栏”时拦截 WM_CLOSE
+// ---- 全局热键：独立线程 + 独立消息循环（与 WebView 消息循环解耦，确保可靠接收）----
+var hotkeyThreadID uintptr
+
+// winMsg 与 Windows MSG 结构对应
+
+type winMsg struct {
+	Hwnd    uintptr
+	Message uint32
+	WParam  uintptr
+	LParam  uintptr
+	Time    uint32
+	PtX     int32
+	PtY     int32
+}
+
+// applyHotkeyOnThread 在当前（热键）线程上按设置注册热键，hwnd=NULL 时 WM_HOTKEY 投递到线程队列
+func applyHotkeyOnThread() {
+	procUnregisterHotKey.Call(0, HOTKEY_ID)
+	s := loadSettings()
+	if s.HotkeyVK != 0 {
+		procRegisterHotKey.Call(0, HOTKEY_ID, uintptr(s.HotkeyMods), uintptr(s.HotkeyVK))
+	}
+}
+
+// hotkeyThreadProc 热键专用线程：注册热键并泵消息，按下时唤起主窗口
+func hotkeyThreadProc() {
+	runtime.LockOSThread()
+	hotkeyThreadID, _, _ = procGetThreadID.Call()
+	applyHotkeyOnThread()
+	var msg winMsg
+	for {
+		r, _, _ := procGetMessage.Call(uintptr(unsafe.Pointer(&msg)), 0, 0, 0)
+		if int32(r) <= 0 {
+			continue
+		}
+		if msg.Message == WM_QUIT {
+			return
+		}
+		if msg.Message == WM_APP_RELOAD_HOTKEY {
+			applyHotkeyOnThread()
+			continue
+		}
+		if msg.Message == WM_HOTKEY && msg.WParam == HOTKEY_ID && mainHwnd != 0 {
+			iconic, _, _ := procIsIconic.Call(mainHwnd)
+			if iconic != 0 {
+				procShowWindow.Call(mainHwnd, SW_RESTORE)
+			}
+			procSetForeground.Call(mainHwnd)
+		}
+	}
+}
+
+// wndProc 主窗口消息钩子：拦截 WM_CLOSE（最小化到任务栏）
 func wndProc(hwnd, msg, wParam, lParam uintptr) uintptr {
 	if msg == WM_CLOSE {
 		gCloseMu.RLock()
@@ -602,6 +666,8 @@ type UserSettings struct {
 	WindowMaximized bool  `json:"window_maximized"`
 	DefaultRoute   string `json:"default_route"`
 	DefaultMaxZoom int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（100~200）
+	HotkeyMods     int    `json:"hotkey_mods"`     // 热键修饰键位掩码（1=ALT 2=CTRL 4=SHIFT 8=WIN）
+	HotkeyVK       int    `json:"hotkey_vk"`       // 热键虚拟键码（0=未绑定）
 }
 
 func getSettingsFilePath() string {
@@ -633,6 +699,8 @@ func loadSettings() UserSettings {
 			return s
 		}
 	}
+	// 容错：去掉 UTF-8 BOM（记事本等编辑器保存的文件可能带 BOM，否则 Unmarshal 失败静默回退默认值）
+	data = bytes.TrimPrefix(data, []byte{0xEF, 0xBB, 0xBF})
 	json.Unmarshal(data, &s)
 	if s.WindowWidth <= 0 { s.WindowWidth = 1280 }
 	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
@@ -669,10 +737,16 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
 	if s.DefaultRoute == "" { s.DefaultRoute = "petdex" }
 	if s.DefaultMaxZoom < 100 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
-	// 同步到消息钩子（关闭行为实时生效）
+	if s.HotkeyMods < 0 || s.HotkeyMods > 15 { s.HotkeyMods = 0 }
+	if s.HotkeyVK < 0 || s.HotkeyVK > 255 { s.HotkeyVK = 0 }
+	// 同步到消息钩子（关闭行为实时生效），并通知窗口线程重载热键
 	gCloseMu.Lock()
 	gCloseBehavior = s.CloseBehavior
 	gCloseMu.Unlock()
+	// 通知热键线程重载热键
+	if hotkeyThreadID != 0 {
+		procPostThreadMsg.Call(hotkeyThreadID, WM_APP_RELOAD_HOTKEY, 0, 0)
+	}
 	if err := saveSettings(s); err != nil {
 		writeJSON(w, 500, []byte(`{"ok":false,"error":"保存失败"}`))
 		return
@@ -1265,8 +1339,10 @@ func main() {
 	defer wv.Destroy()
 
 	wv.SetTitle("小黑猫 Wiki")
-	// 在窗口线程上安装消息钩子（关闭行为拦截）
-	wv.Dispatch(func() { installWindowHook(uintptr(wv.Window())) })
+	// 窗口已创建、消息循环尚未启动：直接（同线程）安装消息钩子与热键
+	installWindowHook(uintptr(wv.Window()))
+	// 启动全局热键线程
+	go hotkeyThreadProc()
 	if settings.WindowMaximized {
 		wv.SetSize(0, 0, webview.HintMax)
 	} else {

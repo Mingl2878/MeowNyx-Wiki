@@ -177,7 +177,9 @@ const SettingsPage = (function () {
     window_height: 800,
     window_maximized: false,
     default_route: 'petdex',
-    default_max_zoom: 100
+    default_max_zoom: 100,
+    hotkey_mods: 0,
+    hotkey_vk: 0
   };
 
   var DEFAULT_SETTINGS = {
@@ -186,7 +188,9 @@ const SettingsPage = (function () {
     window_height: 800,
     window_maximized: false,
     default_route: 'petdex',
-    default_max_zoom: 100
+    default_max_zoom: 100,
+    hotkey_mods: 0,
+    hotkey_vk: 0
   };
 
   let loaded = false;
@@ -264,7 +268,7 @@ const SettingsPage = (function () {
       +   '<div class="settings-card-header">窗口大小</div>'
       +   '<div class="settings-card-body">'
       +     '<div class="settings-row">'
-      +       '<div class="settings-label">窗口模式<div class="settings-desc">打开时的窗口状态</div></div>'
+      +       '<div class="settings-label">窗口模式<div class="settings-desc">打开软件时的窗口状态（下次启动生效）</div></div>'
       +       '<div class="settings-control">'
       +         '<div class="settings-pills" id="set-max-pills">'
       +           '<span class="settings-pill ' + (!settings.window_maximized ? 'active' : '') + '" data-val="false">窗口化</span>'
@@ -272,6 +276,19 @@ const SettingsPage = (function () {
       +         '</div>'
       +       '</div>'
       +     '</div>'
+
+      // 最大化时界面缩放（窗口大小卡片内，窗口模式选项下方）
+      + '<div class="settings-row">'
+      +   '<div class="settings-label">最大化时界面缩放<div class="settings-desc">最大化窗口时的缩放比例（Ctrl+滚轮会实时记忆）</div></div>'
+      +   '<div class="settings-control">'
+      +     '<div class="settings-input-group">'
+      +       '<input type="range" class="settings-slider" id="set-zoom-slider" min="100" max="200" step="5" value="' + (settings.default_max_zoom || 100) + '">'
+      +       '<input type="number" id="set-zoom" value="' + (settings.default_max_zoom || 100) + '" min="100" max="200" style="width:70px;padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:center;color:var(--text-primary);background:var(--bg-secondary);">'
+      +       '<span style="font-size:12px;color:var(--text-muted);">%</span>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>'
+
       +     '<div class="settings-row" id="set-size-row" style="' + (settings.window_maximized ? 'display:none;' : '') + '">'
       +       '<div class="settings-label">窗口尺寸<div class="settings-desc">窗口化时的宽度和高度</div></div>'
       +       '<div class="settings-control">'
@@ -298,14 +315,16 @@ const SettingsPage = (function () {
       +   '</div>'
       + '</div>'
 
-      // 最大化时界面缩放
-      + '<div class="settings-row">'
-      +   '<div class="settings-label">最大化时界面缩放<div class="settings-desc">最大化窗口时的缩放比例（Ctrl+滚轮会实时记忆）</div></div>'
-      +   '<div class="settings-control">'
-      +     '<div class="settings-input-group">'
-      +       '<input type="range" class="settings-slider" id="set-zoom-slider" min="100" max="200" step="5" value="' + (settings.default_max_zoom || 100) + '">'
-      +       '<input type="number" id="set-zoom" value="' + (settings.default_max_zoom || 100) + '" min="100" max="200" style="width:70px;padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:14px;text-align:center;color:var(--text-primary);background:var(--bg-secondary);">'
-      +       '<span style="font-size:12px;color:var(--text-muted);">%</span>'
+      // 全局唤醒快捷键
+      + '<div class="settings-card">'
+      +   '<div class="settings-card-header">全局唤醒快捷键</div>'
+      +   '<div class="settings-card-body">'
+      +     '<div class="settings-row">'
+      +       '<div class="settings-label">唤起窗口<div class="settings-desc">任意界面按下快捷键即可唤起窗口；默认未绑定。点击输入框后按下组合键，按 Esc 清除</div></div>'
+      +       '<div class="settings-control">'
+      +         '<input type="text" id="set-hotkey" readonly placeholder="未绑定（点击后按下快捷键）" '
+      +           'style="width:280px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--bg-secondary);cursor:pointer;">'
+      +       '</div>'
       +     '</div>'
       +   '</div>'
       + '</div>'
@@ -328,8 +347,8 @@ const SettingsPage = (function () {
       + '</div>'
 
       + '<div class="settings-btn-row">'
-      +   '<button type="button" class="btn ud-btn-lg" id="set-reset-btn" style="padding:10px 28px;font-size:15px;font-weight:700;border-radius:8px;background:var(--bg-secondary);border:2px solid var(--border);color:var(--text-secondary);cursor:pointer;">恢复默认</button>'
       +   '<button type="button" class="btn btn-primary ud-btn-lg" id="set-save-btn" style="padding:10px 40px;font-size:15px;font-weight:700;border-radius:8px;">保存设置</button>'
+      +   '<button type="button" class="btn ud-btn-lg" id="set-reset-btn" style="padding:10px 28px;font-size:15px;font-weight:700;border-radius:8px;background:var(--bg-secondary);border:2px solid var(--border);color:var(--text-secondary);cursor:pointer;">恢复默认</button>'
       + '</div>'
     + '</div></div>';
   }
@@ -348,7 +367,7 @@ const SettingsPage = (function () {
       };
     }
 
-    // 窗口模式（点击后立即最大化/还原窗口）
+    // 窗口模式（仅设置启动时的默认状态，不改变当前窗口）
     var maxPills = document.getElementById('set-max-pills');
     if (maxPills) {
       maxPills.onclick = function(e) {
@@ -360,12 +379,6 @@ const SettingsPage = (function () {
           + '<span class="settings-pill ' + (settings.window_maximized ? 'active' : '') + '" data-val="true">最大化</span>';
         var sizeRow = document.getElementById('set-size-row');
         if (sizeRow) sizeRow.style.display = settings.window_maximized ? 'none' : '';
-        // 立即应用窗口模式
-        fetch('/api/window/maximize', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ maximized: settings.window_maximized })
-        }).catch(function() {});
       };
     }
 
@@ -478,6 +491,46 @@ const SettingsPage = (function () {
         if (wInput) settings.window_width = +wInput.value || 1280;
         if (hInput) settings.window_height = +hInput.value || 800;
         await saveSettings();
+      });
+    }
+
+    // 全局唤醒快捷键录入
+    var hotkeyInput = document.getElementById('set-hotkey');
+    function hotkeyLabel(mods, vk) {
+      if (!vk) return '未绑定（点击后按下快捷键）';
+      var parts = [];
+      if (mods & 2) parts.push('Ctrl');
+      if (mods & 1) parts.push('Alt');
+      if (mods & 4) parts.push('Shift');
+      if (mods & 8) parts.push('Win');
+      // 可打印字符直接显示，特殊键用keyCode表示
+      var key = (vk >= 65 && vk <= 90) ? String.fromCharCode(vk)
+        : (vk >= 48 && vk <= 57) ? String.fromCharCode(vk)
+        : (vk >= 112 && vk <= 123) ? 'F' + (vk - 111)
+        : (vk === 32) ? 'Space'
+        : (vk === 19) ? 'Pause'
+        : 'Key(' + vk + ')';
+      parts.push(key);
+      return parts.join(' + ');
+    }
+    if (hotkeyInput) {
+      // 回显当前设置
+      hotkeyInput.value = hotkeyLabel(settings.hotkey_mods || 0, settings.hotkey_vk || 0);
+      hotkeyInput.addEventListener('keydown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.key === 'Escape') {
+          settings.hotkey_mods = 0;
+          settings.hotkey_vk = 0;
+          hotkeyInput.value = hotkeyLabel(0, 0);
+          return;
+        }
+        // 忽略单纯按下修饰键
+        if (['Control', 'Shift', 'Alt', 'Meta'].indexOf(e.key) !== -1) return;
+        var mods = (e.ctrlKey ? 2 : 0) | (e.altKey ? 1 : 0) | (e.shiftKey ? 4 : 0) | (e.metaKey ? 8 : 0);
+        settings.hotkey_mods = mods;
+        settings.hotkey_vk = e.keyCode;
+        hotkeyInput.value = hotkeyLabel(mods, e.keyCode);
       });
     }
 

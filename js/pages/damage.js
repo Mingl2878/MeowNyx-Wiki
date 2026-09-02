@@ -916,9 +916,11 @@ const DamagePage = (function () {
   }
   function applySkillConfig(cfg) {
     if (!cfg) return;
-    // 覆盖 state 与输入框
+    // 覆盖 state 与输入框（跳过空值，避免应用未填/残留的空配置导致参数全空）
     SKILL_CONFIG_KEYS.forEach(key => {
       if (cfg[key] === undefined || cfg[key] === null) return;
+      // 空字符串仅对最终威力（手动模式）有效，其余参数视为无效不应用
+      if (cfg[key] === '' && key !== 'finalPowerManual') return;
       state[key] = cfg[key];
       const el = document.getElementById(key);
       if (el) el.value = cfg[key];
@@ -955,6 +957,9 @@ const DamagePage = (function () {
       state.atkIV = { attack: false, magic_attack: true, defense: false, magic_defense: false, hp: false, speed: false };
       searchBoxes.attacker.setValue(getPetName(atkPet));
       onAttackerSelected();
+      // 应用默认精灵上次保存的技能设置记忆（否则只会显示默认值100）
+      const skillCfg = loadSkillConfig(atkPet.id);
+      if (skillCfg) applySkillConfig(skillCfg);
       syncModifierButtons('attacker');
     }
     const defPet = RKData.getMonsterById(9001);
