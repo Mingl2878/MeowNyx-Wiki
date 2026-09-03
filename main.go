@@ -718,22 +718,93 @@ func handleOpenURL(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, []byte(`{"ok":true}`))
 }
 
+// ---- 用户数据目录（独立于安装目录：覆盖安装/卸载均不影响用户数据）----
+func getUserDataDir() string {
+	base, err := os.UserConfigDir()
+	if err != nil || base == "" {
+		base = os.Getenv("AppData")
+	}
+	return filepath.Join(base, "小黑猫Wiki")
+}
+
+// copyDir 递归复制目录
+func copyDir(src, dst string) error {
+	return filepath.Walk(src, func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, rerr := filepath.Rel(src, p)
+		if rerr != nil {
+			return rerr
+		}
+		target := filepath.Join(dst, rel)
+		if info.IsDir() {
+			return os.MkdirAll(target, 0755)
+		}
+		data, rerr := os.ReadFile(p)
+		if rerr != nil {
+			return rerr
+		}
+		return os.WriteFile(target, data, 0644)
+	})
+}
+
+// migrateWebView2Data 将旧版默认的 WebView2 数据目录（%AppData%\<exe文件名>）迁移到用户数据目录
+// 仅在新目录为空时执行复制，旧目录保留不删除（安全迁移）
+func migrateWebView2Data() {
+	newUdf := filepath.Join(getUserDataDir(), "webview2")
+	if entries, err := os.ReadDir(newUdf); err == nil && len(entries) > 0 {
+		return // 已有数据，不迁移
+	}
+	exePath, err := os.Executable()
+	if err != nil {
+		return
+	}
+	exeName := filepath.Base(exePath)
+	// 旧版库的默认目录名 = exe 文件名（含 .exe）；不同版本 exe 名可能带或不带空格
+	candidates := []string{
+		filepath.Join(os.Getenv("AppData"), exeName),
+		filepath.Join(os.Getenv("AppData"), strings.TrimSuffix(exeName, ".exe")+".exe"),
+		filepath.Join(os.Getenv("AppData"), strings.ReplaceAll(exeName, " ", "")+".exe"),
+	}
+	seen := map[string]bool{}
+	for _, old := range candidates {
+		if seen[old] {
+			continue
+		}
+		seen[old] = true
+		if st, err := os.Stat(old); err == nil && st.IsDir() {
+			os.MkdirAll(newUdf, 0755)
+			copyDir(old, newUdf)
+			return
+		}
+	}
+}
+
 // ---- 数据编辑 API 处理函数 ----
 
-// getDataFilePath 返回数据文件的绝对路径
+// getDataFilePath 返回数据文件的绝对路径（用户目录优先，首次运行时从程序自带数据播种）
 func getDataFilePath(filename string) string {
+	userDir := filepath.Join(getUserDataDir(), "data")
+	userPath := filepath.Join(userDir, filename)
+	if _, err := os.Stat(userPath); err == nil {
+		return userPath
+	}
+	// 用户目录无此文件：从安装目录/开发目录播种副本（此后编辑写用户目录，安装更新不覆盖）
 	exeDir := getExeDir()
-	candidates := []string{
+	seeds := []string{
 		filepath.Join(exeDir, "data", filename),
 		filepath.Join(exeDir, "Xwiki", "data", filename),
 		filepath.Join(exeDir, "..", "Xwiki", "data", filename),
 	}
-	for _, c := range candidates {
-		if _, err := os.Stat(c); err == nil {
-			return c
+	for _, c := range seeds {
+		if d, err := os.ReadFile(c); err == nil {
+			os.MkdirAll(userDir, 0755)
+			os.WriteFile(userPath, d, 0644)
+			return userPath
 		}
 	}
-	return candidates[0]
+	return userPath
 }
 
 func getMonstersFilePath() string { return getDataFilePath("monsters.json") }
@@ -753,13 +824,7 @@ type UserSettings struct {
 }
 
 func getSettingsFilePath() string {
-	exeDir := getExeDir()
-	// 优先 exe 同级，其次 Xwiki 子目录
-	p1 := filepath.Join(exeDir, "settings.json")
-	if _, err := os.Stat(p1); err == nil {
-		return p1
-	}
-	return filepath.Join(exeDir, "Xwiki", "settings.json")
+	return filepath.Join(getUserDataDir(), "settings.json")
 }
 
 func loadSettings() UserSettings {
@@ -773,14 +838,26 @@ func loadSettings() UserSettings {
 		DefaultMonitor: 0,
 	}
 	path := getSettingsFilePath()
-	data, err := os.ReadFile(path)
-	if err != nil {
-		// 尝试备用路径
-		path2 := filepath.Join(getExeDir(), "settings.json")
-		data, err = os.ReadFile(path2)
-		if err != nil {
-			return s
+	var data []byte
+	if d, e := os.ReadFile(path); e == nil {
+		data = d
+	} else {
+		// 旧版兼容：从安装目录旧位置读取并迁移到用户目录
+		oldPaths := []string{
+			filepath.Join(getExeDir(), "settings.json"),
+			filepath.Join(getExeDir(), "Xwiki", "settings.json"),
 		}
+		for _, old := range oldPaths {
+			if d2, e2 := os.ReadFile(old); e2 == nil {
+				data = d2
+				os.MkdirAll(filepath.Dir(path), 0755)
+				os.WriteFile(path, d2, 0644)
+				break
+			}
+		}
+	}
+	if data == nil {
+		return s
 	}
 	// 容错：去掉 UTF-8 BOM（记事本等编辑器保存的文件可能带 BOM，否则 Unmarshal 失败静默回退默认值）
 	data = bytes.TrimPrefix(data, []byte{0xEF, 0xBB, 0xBF})
@@ -1418,6 +1495,13 @@ func main() {
 	gCloseBehavior = settings.CloseBehavior
 	gCloseMu.Unlock()
 
+	// 迁移旧版 WebView2 数据目录（localStorage：配队/技能设置等）到用户数据目录
+	// 旧版库默认路径为 %AppData%\<exe文件名>（如 "小黑猫 Wiki.exe"）
+	migrateWebView2Data()
+
+	// 创建用户数据目录（settings.json / webview2 / data 的宿主目录）
+	os.MkdirAll(getUserDataDir(), 0755)
+
 	// 创建 WebView2 窗口
 	wWidth, wHeight := uint(1280), uint(800)
 	if settings.WindowWidth > 0 { wWidth = uint(settings.WindowWidth) }
@@ -1426,6 +1510,7 @@ func main() {
 	wv := webview.NewWithOptions(webview.WebViewOptions{
 		Debug: false,
 		Window: nil,
+		DataPath: filepath.Join(getUserDataDir(), "webview2"), // localStorage 等浏览器数据存用户目录
 		WindowOptions: webview.WindowOptions{
 			Title:  "小黑猫 Wiki",
 			Width:  wWidth,
