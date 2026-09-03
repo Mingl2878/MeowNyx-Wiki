@@ -207515,5 +207515,13 @@
         "type": "物攻"
       }
     ]
+  },
+  "圣剑-X": {
+    "image": "assets/monster/images/wiki/圣剑_X.png",
+    "skills": []
+  },
+  "权杖-V": {
+    "image": "assets/monster/images/wiki/权杖_V.png",
+    "skills": []
   }
 }
