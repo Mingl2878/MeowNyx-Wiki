@@ -783,28 +783,20 @@ func migrateWebView2Data() {
 
 // ---- 数据编辑 API 处理函数 ----
 
-// getDataFilePath 返回数据文件的绝对路径（用户目录优先，首次运行时从程序自带数据播种）
+// getDataFilePath 返回数据文件的绝对路径（随安装目录分发，更新时会被新版本数据覆盖）
 func getDataFilePath(filename string) string {
-	userDir := filepath.Join(getUserDataDir(), "data")
-	userPath := filepath.Join(userDir, filename)
-	if _, err := os.Stat(userPath); err == nil {
-		return userPath
-	}
-	// 用户目录无此文件：从安装目录/开发目录播种副本（此后编辑写用户目录，安装更新不覆盖）
 	exeDir := getExeDir()
-	seeds := []string{
+	candidates := []string{
 		filepath.Join(exeDir, "data", filename),
 		filepath.Join(exeDir, "Xwiki", "data", filename),
 		filepath.Join(exeDir, "..", "Xwiki", "data", filename),
 	}
-	for _, c := range seeds {
-		if d, err := os.ReadFile(c); err == nil {
-			os.MkdirAll(userDir, 0755)
-			os.WriteFile(userPath, d, 0644)
-			return userPath
+	for _, c := range candidates {
+		if _, err := os.Stat(c); err == nil {
+			return c
 		}
 	}
-	return userPath
+	return candidates[0]
 }
 
 func getMonstersFilePath() string { return getDataFilePath("monsters.json") }
