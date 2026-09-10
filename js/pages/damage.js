@@ -215,18 +215,16 @@ const DamagePage = (function () {
       const singleHit = Math.ceil(dmg3 / defStat);
       let totalDamage = singleHit * comboCount;
 
-      // 星陨伤害：仅在非手动最终威力时计算
+      // 星陨伤害独立于普通技能威力：不受本系、固定/百分比威力、37/41常数或连击影响。
       let starMeteorDamage = 0;
+      let starMeteorBase = 0;
       const starMeteorLayers = state.starMeteor || 0;
-      if (!isManual && starMeteorLayers > 0) {
-        const starBase = this.calcStarMeteorBase(starMeteorLayers);
-        // 幻属性伤害，受攻击力、防御力、buff、抗性、减伤影响
-        const starTypeEff = this.calcTypeEff('幻', def);
-        const starDmg1 = Math.ceil(starBase * atkStat);
-        const starDmg2 = Math.ceil(starDmg1 * (37 / 41));
-        const starDmg3 = Math.ceil(starDmg2 * starTypeEff * debuffMod);
-        const starSingleHit = Math.ceil(starDmg3 / defStat);
-        starMeteorDamage = starSingleHit * comboCount;
+      if (starMeteorLayers > 0) {
+        starMeteorBase = this.calcStarMeteorBase(starMeteorLayers);
+        const starDmg1 = Math.ceil(starMeteorBase * atkStat);
+        const starDmg2 = Math.ceil(starDmg1 * buffMod);
+        const starDmg3 = Math.ceil(starDmg2 * typeEff * debuffMod);
+        starMeteorDamage = Math.ceil(starDmg3 / defStat);
         totalDamage += starMeteorDamage;
       }
 
@@ -242,7 +240,7 @@ const DamagePage = (function () {
         isSameType, sameTypeBonus, typeEff, buffMod,
         debuffMod, defenseMod, hasDefenseMod, hasDebuffMod,
         singleHit, totalDamage, comboCount,
-        starMeteorDamage, starMeteorLayers,
+        starMeteorDamage, starMeteorLayers, starMeteorBase,
         defHP, remainingHP, damagePercent,
         atkIVText: state.atkIV[atkStatKey] ? '√个体' : '×个体',
         atkNatureText: state.atkNature[atkStatKey] === 1 ? '+性格' : state.atkNature[atkStatKey] === 2 ? '-性格' : '×性格',
@@ -296,12 +294,21 @@ const DamagePage = (function () {
       let dmgParts = [`${r.skillFinalPower} × (${r.atkStat} ÷ ${r.defStat})`, '0.9'];
       if (r.hasDebuffMod) dmgParts.push(`减伤${r.debuffMod.toFixed(2)}`);
       if (r.comboCount > 1) dmgParts.push(`${r.comboCount}连击`);
-      let step5Left = dmgParts.join(' × ');
-      let step5Right = `= <span class="danger-text">${r.totalDamage}</span>`;
+      const normalDamage = r.totalDamage - r.starMeteorDamage;
       if (r.starMeteorDamage > 0) {
-        step5Right = `= <span class="danger-text">${r.totalDamage - r.starMeteorDamage}</span> + <span class="danger-text">${r.starMeteorDamage}</span>(${r.starMeteorLayers}层星陨印记) = <span class="danger-text">${r.totalDamage}</span>`;
+        steps.push(`⑤ 普通伤害 = ${dmgParts.join(' × ')} = <span class="danger-text">${normalDamage}</span>`);
+        let starParts = [`${r.starMeteorLayers}层星陨印记（基础威力${r.starMeteorBase}）`, `(${r.atkStat} ÷ ${r.defStat})`];
+        if (r.buffPercent !== 0) {
+          if (r.buffPercent >= 0) starParts.push(`BUFF${r.buffMod.toFixed(2)}`);
+          else starParts.push(`BUFF÷${(1 / r.buffMod).toFixed(2)}`);
+        }
+        if (r.typeEff !== 1.0) starParts.push(`克制${r.typeEff}`);
+        if (r.hasDebuffMod) starParts.push(`减伤${r.debuffMod.toFixed(2)}`);
+        steps.push(`　星陨追加伤害 = ${starParts.join(' × ')} = <span class="danger-text">${r.starMeteorDamage}</span>`);
+        steps.push(`　最终伤害 = ${normalDamage} + ${r.starMeteorDamage} = <span class="danger-text">${r.totalDamage}</span>`);
+      } else {
+        steps.push(`⑤ 最终伤害 = ${dmgParts.join(' × ')} = <span class="danger-text">${r.totalDamage}</span>`);
       }
-      steps.push(`⑤ 最终伤害 = ${step5Left} ${step5Right}`);
       steps.push(`⑥ 伤害占比 = ${r.totalDamage} ÷ ${r.defHP} (${r.hpIVText}&${r.hpNatureText}) = <span class="highlight">${r.damagePercent.toFixed(2)}%</span>`);
 
       return steps;
@@ -388,6 +395,7 @@ const DamagePage = (function () {
                 <label class="radio-label"><input type="radio" id="skillTypeAttack" name="skillType" value="attack" checked><span>物攻</span></label>
                 <label class="radio-label"><input type="radio" id="skillTypeMagic" name="skillType" value="magic_attack"><span>魔攻</span></label>
               </div>
+              <button id="resetSkillSettingsBtn" class="reset-stats-btn" title="重置技能计算参数">↻</button>
               <div id="skillAttrPicker" class="skill-attr-picker">
                 <button id="skillAttrBtn" class="skill-attr-btn" title="点击选择技能属性">
                   <img id="skillAttrIcon" src="assets/icons/type/normal.png" class="skill-attr-icon" alt="普">
@@ -607,15 +615,14 @@ const DamagePage = (function () {
     const pet = state.atkPet;
     if (!pet) { grid.innerHTML = '<p class="ext-placeholder">请先选择攻击方精灵</p>'; return; }
 
-    const petName = getPetName(pet);
-    const wiki = RKData.getWikiData(petName) || RKData.getWikiData(RKData.getMonsterName(pet));
+    const wiki = RKData.getResolvedWikiData(pet);
     if (!wiki || !wiki.skills) { grid.innerHTML = '<p class="ext-placeholder">未找到技能数据</p>'; return; }
 
     // 筛选物攻和魔攻技能
     const attackSkills = wiki.skills.filter(s => s.type === '物攻' || s.type === '魔攻');
     if (attackSkills.length === 0) { grid.innerHTML = '<p class="ext-placeholder">无攻击技能</p>'; return; }
 
-    // 分为基础技能和血脉技能
+    // 传说攻击技能与普通攻击技能一并显示；仅血脉技能单独分组。
     const baseSkills = attackSkills.filter(s => s.source !== '血脉');
     const bloodlineSkills = attackSkills.filter(s => s.source === '血脉');
 
@@ -1493,6 +1500,9 @@ const DamagePage = (function () {
     });
     document.getElementById('resetDefenderBtn').addEventListener('click', () => {
       resetModifiers('defender'); updateFinalStats('defender'); calculate();
+    });
+    document.getElementById('resetSkillSettingsBtn').addEventListener('click', () => {
+      resetSkillSettings();
     });
   }
 

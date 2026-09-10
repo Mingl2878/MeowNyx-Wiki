@@ -30,6 +30,9 @@
   --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
   --nav-height: 52px;
   --transition: 0.15s ease;
+  /* 唯一字体入口：由 WebView2 解析当前 Windows 的系统 UI 字体。 */
+  --app-font-family: system-ui, sans-serif;
+  --app-font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
 
  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -68,11 +71,15 @@
 html, body {
   height: 100%;
   overflow: hidden;
-  font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  font-family: var(--app-font-family);
   background: var(--bg-primary);
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
+}
+
+button, input, select, textarea {
+  font: inherit;
 }
 
 a { color: var(--accent); text-decoration: none; }
@@ -183,6 +190,29 @@ a:hover { color: var(--accent-hover); }
    max-width: 1400px;
    margin: 0 auto;
  }
+
+.petdex-page-layout {
+  height: calc(100vh / var(--page-zoom, 1) - var(--nav-height) - 40px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.petdex-page-layout > .filter-panel {
+  flex: 0 0 auto;
+}
+
+.petdex-page-layout > .scroll-wrapper-container {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.petdex-page-layout #data-table-wrapper {
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+}
 
 /* ===================== 通用组件 ===================== */
 .page-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; text-align: center; }
@@ -585,14 +615,8 @@ a:hover { color: var(--accent-hover); }
 /* 精灵名称单元格 */
 .pet-name-cell { display: flex; align-items: center; gap: 8px; }
 .pet-icon-placeholder {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--bg-tag);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
 }
 .pet-icon-img {
@@ -1408,7 +1432,7 @@ a:hover { color: var(--accent-hover); }
 /* 分页 */
 /* 精灵详情 */
 .team-panel-detail { flex: 1; min-width: 0; }
-.team-detail-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px; font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif; }
+.team-detail-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px; font-family: var(--app-font-family); }
 .team-detail-empty { text-align: center; color: var(--text-muted); padding: 48px 0; font-size: 14px; }
 .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .detail-header .detail-pet-img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; }
@@ -2620,14 +2644,14 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 .skill-card .input-group input[type="number"], .skill-card .input-group input[type="text"],
 .skill-card .input-with-suffix input,
 .skill-card .input-with-suffix .suffix {
-    font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--app-font-family);
 }
 
 /* 修正系数显示 */
 .modifiers {
     display: flex;
     gap: 20px;
-    padding: 15px;
+    padding: 8px;
     background: var(--bg-primary);
     border-radius: var(--radius-md);
     flex-wrap: nowrap;
@@ -2768,7 +2792,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 .process-title {
     font-size: 1em;
     color: var(--text-primary);
-    font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--app-font-family);
     font-weight: 900;
     margin: 0;
 }
@@ -2793,7 +2817,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.85em;
-    font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--app-font-family);
     font-weight: 900;
     white-space: nowrap;
 }
@@ -2826,7 +2850,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     color: var(--text-secondary);
     margin: 8px 0;
     line-height: 1.6;
-    font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--app-font-family);
 }
 
 .process-step:first-child {

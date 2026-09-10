@@ -22,7 +22,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 2,
@@ -47,7 +48,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 3,
@@ -72,7 +74,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 4,
@@ -97,7 +100,8 @@
     "alt_power_total": 215,
     "alt_condition_zh": "能量耗尽时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 5,
@@ -122,7 +126,8 @@
     "alt_power_total": 325,
     "alt_condition_zh": "对方能量≤2时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 6,
@@ -147,7 +152,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 7,
@@ -172,7 +178,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 8,
@@ -197,7 +204,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 9,
@@ -222,7 +230,8 @@
     "alt_power_total": 180,
     "alt_condition_zh": "对方换场时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 10,
@@ -247,7 +256,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 11,
@@ -297,7 +307,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 12,
@@ -347,7 +358,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 13,
@@ -372,7 +384,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 14,
@@ -397,7 +410,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 15,
@@ -422,7 +436,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 16,
@@ -472,7 +487,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 17,
@@ -497,7 +513,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 18,
@@ -522,7 +539,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 19,
@@ -547,7 +565,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 20,
@@ -572,7 +591,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 21,
@@ -597,7 +617,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 22,
@@ -647,7 +668,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 23,
@@ -672,7 +694,8 @@
     "alt_power_total": 120,
     "alt_condition_zh": "上回合使用状态技能时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 24,
@@ -697,7 +720,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 25,
@@ -722,7 +746,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 26,
@@ -747,7 +772,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 27,
@@ -797,7 +823,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 28,
@@ -847,7 +874,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 29,
@@ -872,7 +900,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 30,
@@ -897,7 +926,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 31,
@@ -922,7 +952,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 32,
@@ -947,7 +978,8 @@
     "alt_power_total": 180,
     "alt_condition_zh": "对方换场时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 33,
@@ -972,7 +1004,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 34,
@@ -1022,7 +1055,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 35,
@@ -1047,7 +1081,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": "energy",
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 36,
@@ -1072,7 +1107,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 37,
@@ -1097,7 +1133,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 38,
@@ -1122,7 +1159,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 39,
@@ -1147,7 +1185,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 40,
@@ -1197,7 +1236,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 41,
@@ -1222,7 +1262,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 42,
@@ -1247,7 +1288,8 @@
     "alt_power_total": 260,
     "alt_condition_zh": "上回合应对成功时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 43,
@@ -1272,7 +1314,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 44,
@@ -1297,7 +1340,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 45,
@@ -1322,7 +1366,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 46,
@@ -1372,7 +1417,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 47,
@@ -1422,7 +1468,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 48,
@@ -1447,7 +1494,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 49,
@@ -1472,7 +1520,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 50,
@@ -1522,7 +1571,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 51,
@@ -1547,7 +1597,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 52,
@@ -1572,7 +1623,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 53,
@@ -1597,7 +1649,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 54,
@@ -1622,7 +1675,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 55,
@@ -1647,7 +1701,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 56,
@@ -1697,7 +1752,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 57,
@@ -1747,7 +1803,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 58,
@@ -1772,7 +1829,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 59,
@@ -1797,7 +1855,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 60,
@@ -1822,7 +1881,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 61,
@@ -1847,7 +1907,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 62,
@@ -1872,7 +1933,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 63,
@@ -1897,7 +1959,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 64,
@@ -1922,7 +1985,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 65,
@@ -1972,7 +2036,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 66,
@@ -1997,7 +2062,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 67,
@@ -2022,7 +2088,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 68,
@@ -2047,7 +2114,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 69,
@@ -2072,7 +2140,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 70,
@@ -2097,7 +2166,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 71,
@@ -2122,7 +2192,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 72,
@@ -2147,7 +2218,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 73,
@@ -2172,7 +2244,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 74,
@@ -2222,7 +2295,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 75,
@@ -2247,7 +2321,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 76,
@@ -2272,7 +2347,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 77,
@@ -2297,7 +2373,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 78,
@@ -2322,7 +2399,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 79,
@@ -2347,7 +2425,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 80,
@@ -2372,7 +2451,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 81,
@@ -2397,7 +2477,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 82,
@@ -2422,7 +2503,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 83,
@@ -2447,7 +2529,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 84,
@@ -2497,7 +2580,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 85,
@@ -2522,7 +2606,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 86,
@@ -2547,7 +2632,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 87,
@@ -2572,7 +2658,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 88,
@@ -2597,7 +2684,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 89,
@@ -2647,7 +2735,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 90,
@@ -2672,7 +2761,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 91,
@@ -2697,7 +2787,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 92,
@@ -2722,7 +2813,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 93,
@@ -2747,7 +2839,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 94,
@@ -2772,7 +2865,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 95,
@@ -2797,7 +2891,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 96,
@@ -2847,7 +2942,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 97,
@@ -2897,7 +2993,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 98,
@@ -2922,7 +3019,8 @@
     "alt_power_total": 155,
     "alt_condition_zh": "血量>80%时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 99,
@@ -2972,7 +3070,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 100,
@@ -2997,7 +3096,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 101,
@@ -3022,7 +3122,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 102,
@@ -3047,7 +3148,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 103,
@@ -3072,7 +3174,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 104,
@@ -3122,7 +3225,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 105,
@@ -3172,7 +3276,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 106,
@@ -3197,7 +3302,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 107,
@@ -3222,7 +3328,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 108,
@@ -3247,7 +3354,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 109,
@@ -3272,7 +3380,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 110,
@@ -3297,7 +3406,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 111,
@@ -3322,7 +3432,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 112,
@@ -3347,7 +3458,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 113,
@@ -3372,7 +3484,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 114,
@@ -3422,7 +3535,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 115,
@@ -3447,7 +3561,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 116,
@@ -3472,7 +3587,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 117,
@@ -3497,7 +3613,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 118,
@@ -3522,7 +3639,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 119,
@@ -3572,7 +3690,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 120,
@@ -3597,7 +3716,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 121,
@@ -3622,7 +3742,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 122,
@@ -3647,7 +3768,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 123,
@@ -3672,7 +3794,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 124,
@@ -3697,7 +3820,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 125,
@@ -3722,7 +3846,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 126,
@@ -3747,7 +3872,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 127,
@@ -3797,7 +3923,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 128,
@@ -3822,7 +3949,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 129,
@@ -3847,7 +3975,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 130,
@@ -3897,7 +4026,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 131,
@@ -3922,7 +4052,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 132,
@@ -3947,7 +4078,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 133,
@@ -3972,7 +4104,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 134,
@@ -3997,7 +4130,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 135,
@@ -4022,7 +4156,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 136,
@@ -4047,7 +4182,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 137,
@@ -4072,7 +4208,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 138,
@@ -4097,7 +4234,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 139,
@@ -4122,7 +4260,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 140,
@@ -4147,7 +4286,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 141,
@@ -4172,7 +4312,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 142,
@@ -4197,7 +4338,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 143,
@@ -4247,7 +4389,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 144,
@@ -4272,7 +4415,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 145,
@@ -4297,7 +4441,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 146,
@@ -4322,7 +4467,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 147,
@@ -4347,7 +4493,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 148,
@@ -4397,7 +4544,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 149,
@@ -4422,7 +4570,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 150,
@@ -4447,7 +4596,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 151,
@@ -4497,7 +4647,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 152,
@@ -4522,7 +4673,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 153,
@@ -4547,7 +4699,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 154,
@@ -4572,7 +4725,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 155,
@@ -4597,7 +4751,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 156,
@@ -4622,7 +4777,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 157,
@@ -4647,7 +4803,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 158,
@@ -4672,7 +4829,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 159,
@@ -4722,7 +4880,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 160,
@@ -4747,7 +4906,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 161,
@@ -4797,7 +4957,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 162,
@@ -4822,7 +4983,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 163,
@@ -4847,7 +5009,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 164,
@@ -4872,7 +5035,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 165,
@@ -4897,7 +5061,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 166,
@@ -4922,7 +5087,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 167,
@@ -4947,7 +5113,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 168,
@@ -4972,7 +5139,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 169,
@@ -4997,7 +5165,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 170,
@@ -5022,7 +5191,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 171,
@@ -5047,7 +5217,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 172,
@@ -5072,7 +5243,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 173,
@@ -5097,7 +5269,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 174,
@@ -5122,7 +5295,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 175,
@@ -5172,7 +5346,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 176,
@@ -5197,7 +5372,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 177,
@@ -5222,7 +5398,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 178,
@@ -5247,7 +5424,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 179,
@@ -5272,7 +5450,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 180,
@@ -5297,7 +5476,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 181,
@@ -5322,7 +5502,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 182,
@@ -5347,7 +5528,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 183,
@@ -5372,7 +5554,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 184,
@@ -5422,7 +5605,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 185,
@@ -5472,7 +5656,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 186,
@@ -5522,7 +5707,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 187,
@@ -5547,7 +5733,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 188,
@@ -5572,7 +5759,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 189,
@@ -5597,7 +5785,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 190,
@@ -5647,7 +5836,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 191,
@@ -5672,7 +5862,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 192,
@@ -5697,7 +5888,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 193,
@@ -5722,7 +5914,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 194,
@@ -5747,7 +5940,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 195,
@@ -5772,7 +5966,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": "phy_def_diff",
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 196,
@@ -5797,7 +5992,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 197,
@@ -5822,7 +6018,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 198,
@@ -5872,7 +6069,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 199,
@@ -5897,7 +6095,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 200,
@@ -5922,7 +6121,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 201,
@@ -5947,7 +6147,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 202,
@@ -5997,7 +6198,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 203,
@@ -6022,7 +6224,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 204,
@@ -6047,7 +6250,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 205,
@@ -6072,7 +6276,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 206,
@@ -6097,7 +6302,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 207,
@@ -6147,7 +6353,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 208,
@@ -6197,7 +6404,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 209,
@@ -6222,7 +6430,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 210,
@@ -6247,7 +6456,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 211,
@@ -6297,7 +6507,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 212,
@@ -6322,7 +6533,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 213,
@@ -6347,7 +6559,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 214,
@@ -6372,7 +6585,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 215,
@@ -6397,7 +6611,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 216,
@@ -6422,7 +6637,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 217,
@@ -6447,7 +6663,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 218,
@@ -6497,7 +6714,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 219,
@@ -6547,7 +6765,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 220,
@@ -6572,7 +6791,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 221,
@@ -6597,7 +6817,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 222,
@@ -6622,7 +6843,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 223,
@@ -6647,7 +6869,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 224,
@@ -6672,7 +6895,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 225,
@@ -6725,7 +6949,8 @@
         "usage": "move_specific",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 226,
@@ -6750,7 +6975,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 227,
@@ -6800,7 +7026,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 228,
@@ -6825,7 +7052,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 229,
@@ -6850,7 +7078,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 230,
@@ -6875,7 +7104,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 231,
@@ -6900,7 +7130,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 232,
@@ -6925,7 +7156,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 233,
@@ -6975,7 +7207,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 234,
@@ -7025,7 +7258,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 235,
@@ -7075,7 +7309,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 236,
@@ -7100,7 +7335,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 237,
@@ -7150,7 +7386,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 238,
@@ -7175,7 +7412,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 239,
@@ -7200,7 +7438,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 240,
@@ -7225,7 +7464,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 241,
@@ -7250,7 +7490,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 242,
@@ -7275,7 +7516,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 243,
@@ -7300,7 +7542,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 244,
@@ -7325,7 +7568,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 245,
@@ -7350,7 +7594,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 246,
@@ -7375,7 +7620,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 247,
@@ -7400,7 +7646,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 248,
@@ -7450,7 +7697,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 249,
@@ -7475,7 +7723,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 250,
@@ -7500,7 +7749,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 251,
@@ -7550,7 +7800,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 252,
@@ -7575,7 +7826,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 253,
@@ -7600,7 +7852,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 254,
@@ -7625,7 +7878,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 255,
@@ -7650,7 +7904,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 256,
@@ -7675,7 +7930,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 257,
@@ -7725,7 +7981,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 258,
@@ -7750,7 +8007,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 259,
@@ -7775,7 +8033,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 260,
@@ -7800,7 +8059,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 261,
@@ -7850,7 +8110,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 262,
@@ -7875,7 +8136,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 263,
@@ -7925,7 +8187,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 264,
@@ -7950,7 +8213,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 265,
@@ -7975,7 +8239,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 266,
@@ -8000,7 +8265,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 267,
@@ -8050,7 +8316,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 268,
@@ -8075,7 +8342,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 269,
@@ -8100,7 +8368,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 270,
@@ -8125,7 +8394,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 271,
@@ -8150,7 +8420,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 272,
@@ -8175,7 +8446,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 273,
@@ -8200,7 +8472,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 274,
@@ -8225,7 +8498,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 275,
@@ -8250,7 +8524,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 276,
@@ -8275,7 +8550,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 277,
@@ -8300,7 +8576,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 278,
@@ -8325,7 +8602,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 279,
@@ -8350,7 +8628,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 280,
@@ -8375,7 +8654,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 281,
@@ -8425,7 +8705,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 282,
@@ -8450,7 +8731,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 283,
@@ -8475,7 +8757,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 284,
@@ -8500,7 +8783,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 285,
@@ -8525,7 +8809,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 286,
@@ -8550,7 +8835,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 287,
@@ -8575,7 +8861,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 288,
@@ -8600,7 +8887,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 289,
@@ -8650,7 +8938,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 290,
@@ -8675,7 +8964,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 291,
@@ -8700,7 +8990,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 292,
@@ -8725,7 +9016,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 293,
@@ -8750,7 +9042,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 294,
@@ -8775,7 +9068,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 295,
@@ -8800,7 +9094,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 296,
@@ -8850,7 +9145,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 297,
@@ -8875,7 +9171,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 298,
@@ -8900,7 +9197,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 299,
@@ -8925,7 +9223,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 300,
@@ -8950,7 +9249,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 301,
@@ -8975,7 +9275,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 302,
@@ -9000,7 +9301,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 303,
@@ -9025,7 +9327,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 304,
@@ -9050,7 +9353,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 305,
@@ -9100,7 +9404,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 306,
@@ -9125,7 +9430,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 307,
@@ -9150,7 +9456,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 308,
@@ -9175,7 +9482,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 309,
@@ -9200,7 +9508,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 310,
@@ -9225,7 +9534,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 311,
@@ -9250,7 +9560,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 312,
@@ -9275,7 +9586,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 313,
@@ -9300,7 +9612,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 314,
@@ -9325,7 +9638,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 315,
@@ -9350,7 +9664,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 316,
@@ -9375,7 +9690,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 317,
@@ -9400,7 +9716,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 318,
@@ -9425,7 +9742,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 319,
@@ -9475,7 +9793,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 320,
@@ -9500,7 +9819,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 321,
@@ -9550,7 +9870,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 322,
@@ -9575,7 +9896,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 323,
@@ -9600,7 +9922,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 324,
@@ -9625,7 +9948,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 325,
@@ -9650,7 +9974,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 326,
@@ -9675,7 +10000,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 327,
@@ -9700,7 +10026,8 @@
     "alt_power_total": 75,
     "alt_condition_zh": "后手时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 328,
@@ -9750,7 +10077,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 329,
@@ -9775,7 +10103,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 330,
@@ -9825,7 +10154,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 331,
@@ -9850,7 +10180,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 332,
@@ -9875,7 +10206,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 333,
@@ -9925,7 +10257,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 334,
@@ -9975,7 +10308,8 @@
         "usage": "attack_only",
         "affect": "opponent"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 335,
@@ -10000,7 +10334,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 336,
@@ -10050,7 +10385,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 337,
@@ -10075,7 +10411,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 338,
@@ -10125,7 +10462,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 339,
@@ -10175,7 +10513,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 340,
@@ -10200,7 +10539,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 341,
@@ -10225,7 +10565,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 342,
@@ -10250,7 +10591,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 343,
@@ -10275,7 +10617,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 344,
@@ -10325,7 +10668,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 345,
@@ -10350,7 +10694,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 346,
@@ -10375,7 +10720,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 347,
@@ -10425,7 +10771,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 348,
@@ -10450,7 +10797,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 349,
@@ -10500,7 +10848,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 350,
@@ -10525,7 +10874,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 351,
@@ -10550,7 +10900,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 352,
@@ -10575,7 +10926,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 353,
@@ -10600,7 +10952,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 354,
@@ -10625,7 +10978,8 @@
     "alt_power_total": 75,
     "alt_condition_zh": "先手时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 355,
@@ -10650,7 +11004,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 356,
@@ -10675,7 +11030,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 357,
@@ -10700,7 +11056,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 358,
@@ -10725,7 +11082,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": "speed_diff",
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 359,
@@ -10750,7 +11108,8 @@
     "alt_power_total": 113,
     "alt_condition_zh": "先手时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 360,
@@ -10775,7 +11134,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 361,
@@ -10800,7 +11160,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 362,
@@ -10850,7 +11211,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 363,
@@ -10875,7 +11237,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 364,
@@ -10900,7 +11263,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 365,
@@ -10950,7 +11314,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 366,
@@ -10975,7 +11340,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 367,
@@ -11000,7 +11366,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 368,
@@ -11025,7 +11392,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 369,
@@ -11050,7 +11418,8 @@
     "alt_power_total": 160,
     "alt_condition_zh": "若精灵不处于最低进化形态",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 370,
@@ -11075,7 +11444,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 371,
@@ -11100,7 +11470,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 372,
@@ -11125,7 +11496,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 373,
@@ -11175,7 +11547,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 374,
@@ -11200,7 +11573,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 375,
@@ -11225,7 +11599,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 376,
@@ -11250,7 +11625,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 377,
@@ -11275,7 +11651,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 378,
@@ -11300,7 +11677,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 379,
@@ -11325,7 +11703,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 380,
@@ -11350,7 +11729,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 381,
@@ -11375,7 +11755,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 382,
@@ -11428,7 +11809,8 @@
         "usage": "move_specific",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 383,
@@ -11478,7 +11860,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 384,
@@ -11503,7 +11886,8 @@
     "alt_power_total": 800,
     "alt_condition_zh": "对方能量为0时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 385,
@@ -11553,7 +11937,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 386,
@@ -11578,7 +11963,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 387,
@@ -11603,7 +11989,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 388,
@@ -11628,7 +12015,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 389,
@@ -11653,7 +12041,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 390,
@@ -11678,7 +12067,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 391,
@@ -11703,7 +12093,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 392,
@@ -11728,7 +12119,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 393,
@@ -11753,7 +12145,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 394,
@@ -11778,7 +12171,8 @@
     "alt_power_total": 150,
     "alt_condition_zh": "对方换场时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 395,
@@ -11803,7 +12197,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 396,
@@ -11828,7 +12223,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 397,
@@ -11878,7 +12274,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 398,
@@ -11903,7 +12300,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 399,
@@ -11928,7 +12326,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 400,
@@ -11953,7 +12352,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 401,
@@ -12003,7 +12403,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 402,
@@ -12028,7 +12429,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 403,
@@ -12053,7 +12455,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 404,
@@ -12078,7 +12481,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 405,
@@ -12103,7 +12507,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 406,
@@ -12153,7 +12558,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 407,
@@ -12178,7 +12584,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 408,
@@ -12203,7 +12610,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 409,
@@ -12228,7 +12636,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 410,
@@ -12253,7 +12662,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 411,
@@ -12278,7 +12688,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 412,
@@ -12328,7 +12739,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 413,
@@ -12353,7 +12765,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 414,
@@ -12378,7 +12791,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 415,
@@ -12403,7 +12817,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 416,
@@ -12428,7 +12843,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 417,
@@ -12453,7 +12869,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 418,
@@ -12478,7 +12895,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 419,
@@ -12503,7 +12921,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 420,
@@ -12528,7 +12947,8 @@
     "alt_power_total": 150,
     "alt_condition_zh": "血量<50%时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 421,
@@ -12553,7 +12973,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 422,
@@ -12578,7 +12999,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 423,
@@ -12628,7 +13050,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 424,
@@ -12653,7 +13076,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 425,
@@ -12678,7 +13102,8 @@
     "alt_power_total": 180,
     "alt_condition_zh": "应对成功时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 426,
@@ -12703,7 +13128,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 427,
@@ -12728,7 +13154,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 428,
@@ -12753,7 +13180,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 429,
@@ -12778,7 +13206,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 430,
@@ -12803,7 +13232,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 431,
@@ -12828,7 +13258,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 432,
@@ -12853,7 +13284,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 433,
@@ -12878,7 +13310,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 434,
@@ -12903,7 +13336,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 435,
@@ -12928,7 +13362,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 436,
@@ -12953,7 +13388,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 437,
@@ -12978,7 +13414,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 438,
@@ -13003,7 +13440,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 439,
@@ -13053,7 +13491,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 440,
@@ -13103,7 +13542,8 @@
         "usage": "attack_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 441,
@@ -13128,7 +13568,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 442,
@@ -13153,7 +13594,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 443,
@@ -13178,7 +13620,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 444,
@@ -13203,7 +13646,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 445,
@@ -13228,7 +13672,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 446,
@@ -13253,7 +13698,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 447,
@@ -13278,7 +13724,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 448,
@@ -13303,7 +13750,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 449,
@@ -13328,7 +13776,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 450,
@@ -13353,7 +13802,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 451,
@@ -13378,7 +13828,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 452,
@@ -13428,7 +13879,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S1"
   },
   {
     "id": 453,
@@ -13453,7 +13905,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 454,
@@ -13478,7 +13931,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 455,
@@ -13503,7 +13957,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 456,
@@ -13528,7 +13983,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 457,
@@ -13553,7 +14009,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 458,
@@ -13578,7 +14035,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 459,
@@ -13603,7 +14061,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 460,
@@ -13628,7 +14087,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 461,
@@ -13653,7 +14113,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 462,
@@ -13678,7 +14139,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 463,
@@ -13703,7 +14165,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 464,
@@ -13728,7 +14191,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 465,
@@ -13753,7 +14217,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 466,
@@ -13778,7 +14243,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 467,
@@ -13803,7 +14269,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 468,
@@ -13828,7 +14295,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 469,
@@ -13853,7 +14321,8 @@
     "alt_power_total": 130,
     "alt_condition_zh": "对方换场时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 470,
@@ -13878,7 +14347,8 @@
     "alt_power_total": 160,
     "alt_condition_zh": "对方换场时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S1"
   },
   {
     "id": 471,
@@ -13903,7 +14373,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 472,
@@ -13928,7 +14399,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 473,
@@ -13953,7 +14425,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 474,
@@ -13978,7 +14451,8 @@
     "alt_power_total": 120,
     "alt_condition_zh": "对混血精灵",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 475,
@@ -14003,7 +14477,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 476,
@@ -14028,7 +14503,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 477,
@@ -14078,7 +14554,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S2"
   },
   {
     "id": 478,
@@ -14103,7 +14580,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 479,
@@ -14153,7 +14631,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S2"
   },
   {
     "id": 480,
@@ -14178,7 +14657,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 481,
@@ -14203,7 +14683,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 482,
@@ -14228,7 +14709,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 483,
@@ -14253,7 +14735,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 484,
@@ -14278,7 +14761,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 485,
@@ -14303,7 +14787,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 486,
@@ -14328,7 +14813,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 487,
@@ -14353,7 +14839,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 488,
@@ -14378,7 +14865,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 489,
@@ -14403,7 +14891,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 490,
@@ -14428,7 +14917,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 491,
@@ -14478,7 +14968,8 @@
         "usage": "defense_only",
         "affect": "self"
       }
-    ]
+    ],
+    "season": "S2"
   },
   {
     "id": 492,
@@ -14503,7 +14994,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 493,
@@ -14528,7 +15020,8 @@
     "alt_power_total": 170,
     "alt_condition_zh": "应对成功时",
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 494,
@@ -14553,7 +15046,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 495,
@@ -14578,7 +15072,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 496,
@@ -14603,7 +15098,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 497,
@@ -14628,7 +15124,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 498,
@@ -14653,7 +15150,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 499,
@@ -14678,7 +15176,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 500,
@@ -14703,7 +15202,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 501,
@@ -14728,7 +15228,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 502,
@@ -14753,7 +15254,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 503,
@@ -14778,7 +15280,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 504,
@@ -14803,7 +15306,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 505,
@@ -14828,7 +15332,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 506,
@@ -14853,7 +15358,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 507,
@@ -14878,7 +15384,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 508,
@@ -14903,7 +15410,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 509,
@@ -14928,7 +15436,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 510,
@@ -14953,7 +15462,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 511,
@@ -14978,7 +15488,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 512,
@@ -15003,7 +15514,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 513,
@@ -15028,7 +15540,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 514,
@@ -15053,7 +15566,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 515,
@@ -15078,7 +15592,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 516,
@@ -15103,7 +15618,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 517,
@@ -15128,7 +15644,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 518,
@@ -15153,7 +15670,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 519,
@@ -15178,7 +15696,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 520,
@@ -15203,7 +15722,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 521,
@@ -15228,7 +15748,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 522,
@@ -15253,7 +15774,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 523,
@@ -15278,7 +15800,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 524,
@@ -15303,7 +15826,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 525,
@@ -15328,7 +15852,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 526,
@@ -15353,7 +15878,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 527,
@@ -15378,7 +15904,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 528,
@@ -15403,7 +15930,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 529,
@@ -15428,7 +15956,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 530,
@@ -15453,7 +15982,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 531,
@@ -15478,7 +16008,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 532,
@@ -15503,7 +16034,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 533,
@@ -15528,7 +16060,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 534,
@@ -15553,7 +16086,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 535,
@@ -15578,7 +16112,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 536,
@@ -15603,7 +16138,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S2"
   },
   {
     "id": 537,
@@ -15628,7 +16164,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 538,
@@ -15653,7 +16190,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 539,
@@ -15678,7 +16216,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 540,
@@ -15703,7 +16242,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 541,
@@ -15728,7 +16268,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 542,
@@ -15753,7 +16294,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 543,
@@ -15778,7 +16320,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 544,
@@ -15803,7 +16346,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 545,
@@ -15828,7 +16372,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 546,
@@ -15853,7 +16398,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 547,
@@ -15878,7 +16424,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 548,
@@ -15903,7 +16450,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 549,
@@ -15928,7 +16476,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 550,
@@ -15953,7 +16502,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 551,
@@ -15978,7 +16528,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 552,
@@ -16003,7 +16554,8 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
   },
   {
     "id": 553,
@@ -16028,6 +16580,893 @@
     "alt_power_total": null,
     "alt_condition_zh": null,
     "power_formula": null,
-    "statuses": []
+    "statuses": [],
+    "season": "S3"
+  },
+  {
+    "id": 5931,
+    "move_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      }
+    },
+    "localized": {
+      "zh": {
+        "name": "量子涨落",
+        "description": "造成物伤，若敌方没有星陨印记，则敌方获得3层星陨印记。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 3,
+    "power": 75,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5932,
+    "move_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      }
+    },
+    "localized": {
+      "zh": {
+        "name": "月蚀",
+        "description": "造成物伤，若敌方生命低于50%，本次技能能耗-3。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 5,
+    "power": 130,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5933,
+    "move_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      }
+    },
+    "localized": {
+      "zh": {
+        "name": "重组",
+        "description": "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 1,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5934,
+    "move_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      }
+    },
+    "localized": {
+      "zh": {
+        "name": "擦影",
+        "description": "造成物伤，若上回合双方有精灵使用火系技能，偷取敌方3能量。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 3,
+    "power": 65,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5935,
+    "move_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      }
+    },
+    "localized": {
+      "zh": {
+        "name": "离魂术",
+        "description": "偷取敌方2能量，脱离。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 3,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5936,
+    "move_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "闪光弹",
+        "description": "造成物伤，自己脱离。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 2,
+    "power": 40,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5938,
+    "move_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "回收",
+        "description": "造成物伤，若敌方本回合更换精灵，敌方失去4能量。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 3,
+    "power": 80,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5940,
+    "move_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "小型打劫",
+        "description": "敌方队伍中所有精灵失去1能量。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 2,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5941,
+    "move_type": {
+      "id": 17,
+      "name": "Mechanical",
+      "localized": {
+        "zh": "机械"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Water",
+        "Fire"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Poison",
+        "Ice",
+        "Bug",
+        "Dragon",
+        "Flying",
+        "Grass",
+        "Cute",
+        "Normal",
+        "Mechanical"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "广播",
+        "description": "对敌方精灵造成魔法伤害。"
+      }
+    },
+    "move_category": "Magic Attack",
+    "energy_cost": 5,
+    "power": 140,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5943,
+    "move_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "观测者效应",
+        "description": "自己脱离，更换入场的精灵以月陨星状态登场。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 3,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5944,
+    "move_type": {
+      "id": 16,
+      "name": "Dark",
+      "localized": {
+        "zh": "恶"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Bug",
+        "Cute",
+        "Light"
+      ],
+      "resistant_to": [
+        "Dark",
+        "Ghost"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "暴打",
+        "description": "对敌方精灵造成魔法伤害。"
+      }
+    },
+    "move_category": "Magic Attack",
+    "energy_cost": 3,
+    "power": 100,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5945,
+    "move_type": {
+      "id": 16,
+      "name": "Dark",
+      "localized": {
+        "zh": "恶"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Bug",
+        "Cute",
+        "Light"
+      ],
+      "resistant_to": [
+        "Dark",
+        "Ghost"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "掉包",
+        "description": "敌方的属性增益变为对应的属性减益。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 2,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5947,
+    "move_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "无风",
+        "description": "减伤50%，应对攻击：敌方和自己均脱离。"
+      }
+    },
+    "move_category": "Defense",
+    "energy_cost": 2,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5948,
+    "move_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "奇点",
+        "description": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。"
+      }
+    },
+    "move_category": "Magic Attack",
+    "energy_cost": 4,
+    "power": 60,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5949,
+    "move_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "引力偏转",
+        "description": "减伤80%，应对攻击：以魔法伤害触发敌方的星陨效果。"
+      }
+    },
+    "move_category": "Defense",
+    "energy_cost": 2,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5951,
+    "move_type": {
+      "id": 11,
+      "name": "Bug",
+      "localized": {
+        "zh": "虫"
+      },
+      "vulnerable_to": [
+        "Fire",
+        "Flying"
+      ],
+      "resistant_to": [
+        "Grass",
+        "Fighting"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "迁飞扩散",
+        "description": "造成物伤，若敌方本回合更换精灵，己方队伍随机获得3次随机奉献。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 3,
+    "power": 55,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5952,
+    "move_type": {
+      "id": 11,
+      "name": "Bug",
+      "localized": {
+        "zh": "虫"
+      },
+      "vulnerable_to": [
+        "Fire",
+        "Flying"
+      ],
+      "resistant_to": [
+        "Grass",
+        "Fighting"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "信息素",
+        "description": "己方队伍随机获得1次随机奉献；若上回合双方有精灵使用地系技能，额外3次。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 4,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5954,
+    "move_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "分光",
+        "description": "自己获得魔攻+20%，己方队伍中精灵每有1个不同的系别，额外获得魔攻+10%。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 1,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5955,
+    "move_type": {
+      "id": 4,
+      "name": "Water",
+      "localized": {
+        "zh": "水"
+      },
+      "vulnerable_to": [
+        "Electric",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Fire"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "汇流",
+        "description": "雨天的回合数延长4回合，应对防御：改为延长8回合。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 1,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5956,
+    "move_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "暖阳",
+        "description": "造成物伤，每使用1次其他火系技能，威力永久+40，使用本技能后重置。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 2,
+    "power": 70,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5957,
+    "move_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "星火",
+        "description": "敌方获得8层灼烧，若上回合双方有精灵使用光系技能，敌方额外获得12层灼烧。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 3,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5958,
+    "move_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "月影交错",
+        "description": "造成物伤，2连击，若上回合双方有精灵使用幻系技能，本技能获得迅捷。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 2,
+    "power": 25,
+    "base_combo": 2,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5959,
+    "move_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "惊鸿一瞥",
+        "description": "自己获得连击数+1，迅捷。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 2,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5960,
+    "move_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "仰望夜空",
+        "description": "自己获得魔攻和魔防+70%。"
+      }
+    },
+    "move_category": "Status",
+    "energy_cost": 2,
+    "power": null,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5961,
+    "move_type": {
+      "id": 17,
+      "name": "Mechanical",
+      "localized": {
+        "zh": "机械"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Water",
+        "Fire"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Poison",
+        "Ice",
+        "Bug",
+        "Dragon",
+        "Flying",
+        "Grass",
+        "Cute",
+        "Normal",
+        "Mechanical"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "拖拉机",
+        "description": "造成物伤，位于1号位时，先手+1。传动1。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 3,
+    "power": 85,
+    "base_combo": 1,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
+  },
+  {
+    "id": 5962,
+    "move_type": {
+      "id": 2,
+      "name": "Grass",
+      "localized": {
+        "zh": "草"
+      },
+      "vulnerable_to": [
+        "Flying",
+        "Fire",
+        "Ice",
+        "Poison",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Water",
+        "Light",
+        "Ground",
+        "Electric"
+      ]
+    },
+    "localized": {
+      "zh": {
+        "name": "麦芒",
+        "description": "造成物伤，若上回合双方有精灵使用萌系技能，自己回复7能量。"
+      }
+    },
+    "move_category": "Physical Attack",
+    "energy_cost": 5,
+    "power": 105,
+    "base_combo": null,
+    "counter_power_multiplier": null,
+    "alt_power_total": null,
+    "alt_condition_zh": null,
+    "power_formula": null,
+    "statuses": [],
+    "season": "S4"
   }
 ]

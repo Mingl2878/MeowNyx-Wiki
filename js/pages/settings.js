@@ -179,7 +179,8 @@ const SettingsPage = (function () {
     default_route: 'petdex',
     default_max_zoom: 100,
     hotkey_mods: 0,
-    hotkey_vk: 0
+    hotkey_vk: 0,
+    font_family: ''
   };
 
   var DEFAULT_SETTINGS = {
@@ -190,10 +191,35 @@ const SettingsPage = (function () {
     default_route: 'petdex',
     default_max_zoom: 100,
     hotkey_mods: 0,
-    hotkey_vk: 0
+    hotkey_vk: 0,
+    font_family: ''
   };
 
   let loaded = false;
+  function escapeHtml(value) {
+    const node = document.createElement('span');
+    node.textContent = value;
+    return node.innerHTML;
+  }
+  let fontFamilies = [];
+  let savedFontFamily = '';
+
+  async function applyFontPreview(fontFamily) {
+    const result = window.applyAppFont ? await window.applyAppFont(fontFamily || '') : { applied: true };
+    const preview = document.getElementById('set-font-preview');
+    if (preview && window.getAppFontStack) preview.style.fontFamily = window.getAppFontStack(fontFamily || '');
+    return result;
+  }
+
+  async function loadFontFamilies() {
+    try {
+      const res = await fetch('/api/fonts');
+      const data = await res.json();
+      fontFamilies = Array.isArray(data.fonts) ? data.fonts : [];
+    } catch (e) {
+      fontFamilies = [];
+    }
+  }
 
   // 未保存更改提示
   function markDirty() {
@@ -235,6 +261,9 @@ const SettingsPage = (function () {
       const res = await fetch('/api/settings');
       const data = await res.json();
       Object.assign(settings, data);
+      settings.font_family = settings.font_family || '';
+      savedFontFamily = settings.font_family;
+      applyFontPreview(settings.font_family);
       // 兼容旧版后端：无 monitor_count 字段时按单屏处理
       if (typeof settings.monitor_count !== 'number') settings.monitor_count = 1;
       if (typeof settings.default_monitor !== 'number') settings.default_monitor = 0;
@@ -266,7 +295,14 @@ const SettingsPage = (function () {
         : (data.hotkey_failed
           ? '<span style="color:var(--danger);">✓ 已保存，但全局快捷键注册失败：该组合键可能已被其他程序占用，请更换后重新保存</span>'
           : '<span style="color:var(--success);font-weight:600;">✓ 保存成功！部分设置重启后生效</span>');
-      if (data.ok) clearDirty();
+      if (data.ok) {
+        settings.font_family = settings.font_family || '';
+        savedFontFamily = settings.font_family;
+        clearDirty();
+      } else {
+        settings.font_family = savedFontFamily;
+        applyFontPreview(savedFontFamily);
+      }
     } catch (e) {
       if (r) r.innerHTML = '<span style="color:var(--danger);">请求失败: ' + e.message + '</span>';
     }
@@ -275,6 +311,23 @@ const SettingsPage = (function () {
   function buildHtml() {
     return '<div class="calc-root"><div class="scroll-container" style="padding:8px 24px 40px;">'
       + PAGE_STYLE
+
+      // 界面字体
+      + '<div class="settings-card">'
+      +   '<div class="settings-card-header">界面字体</div>'
+      +   '<div class="settings-card-body">'
+      +     '<div class="settings-row">'
+      +       '<div class="settings-label">当前字体</div>'
+      +       '<div class="settings-control" style="min-width:280px;">'
+      +         '<select id="set-font" style="width:100%;max-width:420px;padding:8px 10px;border:2px solid var(--border);border-radius:8px;color:var(--text-primary);background:var(--bg-secondary);">'
+      +           '<option value="">跟随 Windows 系统默认字体（推荐）</option>'
+      +           fontFamilies.map(function(font) { return '<option value="' + escapeHtml(font) + '"' + (settings.font_family === font ? ' selected' : '') + '>' + escapeHtml(font) + '</option>'; }).join('')
+      +         '</select>'
+      +         '<div id="set-font-preview" style="margin-top:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-primary);font-family:var(--app-font-family);">字体预览：小黑猫 Wiki · 洛克王国 · ABC abc · 0123456789 · !?（）</div>'
+      +       '</div>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>'
 
       // 关闭行为
       + '<div class="settings-card">'
@@ -405,6 +458,16 @@ const SettingsPage = (function () {
       var r = document.getElementById('settings-result');
       if (r && r.innerHTML) r.innerHTML = '';
     });
+
+    // 字体选择：立即预览，保存后持久化。
+    var fontSelect = document.getElementById('set-font');
+    if (fontSelect) {
+      fontSelect.addEventListener('change', async function() {
+        settings.font_family = fontSelect.value || '';
+        await applyFontPreview(settings.font_family);
+        markDirty();
+      });
+    }
 
     // 关闭行为
     var closePills = document.getElementById('set-close-pills');
@@ -617,6 +680,8 @@ const SettingsPage = (function () {
     if (resetBtn) {
       resetBtn.addEventListener('click', async function() {
         Object.assign(settings, DEFAULT_SETTINGS);
+        savedFontFamily = '';
+        applyFontPreview('');
         localStorage.setItem('xwiki-max-zoom', DEFAULT_SETTINGS.default_max_zoom / 100);
         await saveSettings();
         var container = document.querySelector('.calc-root .scroll-container');
@@ -630,18 +695,26 @@ const SettingsPage = (function () {
     }
   }
 
+  function onLeave() {
+    if (settings.font_family !== savedFontFamily) {
+      settings.font_family = savedFontFamily;
+      applyFontPreview(savedFontFamily);
+      clearDirty();
+    }
+  }
+
   function render(container) {
     if (loaded) {
       container.innerHTML = buildHtml();
       bindEvents();
     } else {
       container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">加载设置中...</div>';
-      loadSettings().then(function() {
+      Promise.all([loadSettings(), loadFontFamilies()]).then(function() {
         container.innerHTML = buildHtml();
         bindEvents();
       });
     }
   }
 
-  return { render: render };
+  return { render: render, onLeave: onLeave };
 })();
