@@ -35,6 +35,11 @@
       link.classList.toggle('active', link.dataset.route === route);
     });
 
+    // 页面离开钩子：设置页未保存的字体预览需要恢复已保存字体。
+    if (currentRoute === 'settings' && route !== 'settings' && typeof SettingsPage.onLeave === 'function') {
+      SettingsPage.onLeave();
+    }
+
     // 渲染页面
     const container = document.getElementById('page-container');
     container.innerHTML = '';

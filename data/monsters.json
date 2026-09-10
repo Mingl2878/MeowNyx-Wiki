@@ -61,7 +61,8 @@
           "name": "最好的伙伴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 122,
@@ -125,7 +126,9 @@
           "name": "裁决"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 1
   },
   {
     "base_hp": 132,
@@ -208,7 +211,9 @@
           "name": "滋养"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 1
   },
   {
     "base_hp": 120,
@@ -289,7 +294,9 @@
           "name": "点燃"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 1
   },
   {
     "base_hp": 120,
@@ -367,7 +374,9 @@
           "name": "净化"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 1
   },
   {
     "base_hp": 65,
@@ -441,7 +450,9 @@
           "name": "氧循环"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 8
   },
   {
     "base_hp": 86,
@@ -515,7 +526,9 @@
           "name": "氧循环"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 8
   },
   {
     "base_hp": 108,
@@ -589,7 +602,8 @@
           "name": "氧循环"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 108,
@@ -663,7 +677,9 @@
           "name": "深层氧循环"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 8
   },
   {
     "base_hp": 126,
@@ -737,7 +753,9 @@
           "name": "草木苏醒时"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 8
   },
   {
     "base_hp": 70,
@@ -807,7 +825,9 @@
           "name": "助燃"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 13
   },
   {
     "base_hp": 93,
@@ -877,7 +897,9 @@
           "name": "助燃"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 13
   },
   {
     "base_hp": 117,
@@ -947,7 +969,8 @@
           "name": "助燃"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 117,
@@ -1017,7 +1040,9 @@
           "name": "爆燃"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 13
   },
   {
     "base_hp": 75,
@@ -1081,7 +1106,9 @@
           "name": "浸润"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 17
   },
   {
     "base_hp": 100,
@@ -1145,7 +1172,9 @@
           "name": "浸润"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 17
   },
   {
     "base_hp": 125,
@@ -1209,7 +1238,8 @@
           "name": "浸润"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 125,
@@ -1273,7 +1303,9 @@
           "name": "浪潮"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 17
   },
   {
     "base_hp": 136,
@@ -1333,7 +1365,8 @@
           "name": "挺起胸脯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 136,
@@ -1393,7 +1426,8 @@
           "name": "挺起胸脯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 107,
@@ -1453,7 +1487,8 @@
           "name": "挺起胸脯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 130,
@@ -1513,7 +1548,8 @@
           "name": "挺起胸脯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 137,
@@ -1573,7 +1609,8 @@
           "name": "挺起胸脯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 108,
@@ -1633,7 +1670,8 @@
           "name": "挺起胸脯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 136,
@@ -1693,7 +1731,9 @@
           "name": "“国王”的威严"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 19
   },
   {
     "base_hp": 136,
@@ -1753,7 +1793,9 @@
           "name": "“国王”的威严"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 20
   },
   {
     "base_hp": 130,
@@ -1813,7 +1855,9 @@
           "name": "“国王”的威严"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 22
   },
   {
     "base_hp": 137,
@@ -1873,7 +1917,9 @@
           "name": "“国王”的威严"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 23
   },
   {
     "base_hp": 108,
@@ -1933,7 +1979,9 @@
           "name": "“国王”的威严"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 24
   },
   {
     "base_hp": 107,
@@ -1993,7 +2041,9 @@
           "name": "“国王”的威严"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 21
   },
   {
     "base_hp": 67,
@@ -2057,7 +2107,8 @@
           "name": "缩壳"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 88,
@@ -2121,7 +2172,8 @@
           "name": "缩壳"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -2185,7 +2237,8 @@
           "name": "缩壳"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 117,
@@ -2249,7 +2302,8 @@
           "name": "缩壳"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -2313,7 +2367,8 @@
           "name": "缩壳"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 146,
@@ -2377,7 +2432,8 @@
           "name": "缩壳"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -2447,7 +2503,9 @@
           "name": "碰瓷"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 39
   },
   {
     "base_hp": 89,
@@ -2517,7 +2575,9 @@
           "name": "碰瓷"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 39
   },
   {
     "base_hp": 112,
@@ -2603,7 +2663,8 @@
           "name": "碰瓷"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 54,
@@ -2669,7 +2730,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 56,
@@ -2735,7 +2797,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 59,
@@ -2801,7 +2864,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 54,
@@ -2867,7 +2931,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 72,
@@ -2933,7 +2998,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 75,
@@ -2999,7 +3065,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 79,
@@ -3065,7 +3132,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 72,
@@ -3131,7 +3199,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -3197,7 +3266,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -3263,7 +3333,9 @@
           "name": "破空"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 48
   },
   {
     "base_hp": 93,
@@ -3329,7 +3401,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 99,
@@ -3395,7 +3468,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -3461,7 +3535,8 @@
           "name": "顺风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -3527,7 +3602,9 @@
           "name": "破空"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 50
   },
   {
     "base_hp": 99,
@@ -3593,7 +3670,9 @@
           "name": "破空"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 51
   },
   {
     "base_hp": 90,
@@ -3659,7 +3738,9 @@
           "name": "破空"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 52
   },
   {
     "base_hp": 67,
@@ -3729,7 +3810,9 @@
           "name": "毒蘑菇"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 58
   },
   {
     "base_hp": 89,
@@ -3818,7 +3901,9 @@
           "name": "毒蘑菇"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 58
   },
   {
     "base_hp": 111,
@@ -3907,7 +3992,8 @@
           "name": "毒蘑菇"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 69,
@@ -3983,7 +4069,8 @@
           "name": "刺肤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 68,
@@ -4059,7 +4146,8 @@
           "name": "刺肤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 92,
@@ -4135,7 +4223,8 @@
           "name": "刺肤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 91,
@@ -4211,7 +4300,8 @@
           "name": "刺肤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 115,
@@ -4287,7 +4377,8 @@
           "name": "刺肤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 113,
@@ -4363,7 +4454,8 @@
           "name": "刺肤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 72,
@@ -4439,7 +4531,9 @@
           "name": "地脉"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 67
   },
   {
     "base_hp": 96,
@@ -4515,7 +4609,9 @@
           "name": "地脉"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 67
   },
   {
     "base_hp": 130,
@@ -4591,7 +4687,8 @@
           "name": "地脉"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 136,
@@ -4667,7 +4764,9 @@
           "name": "地脉馈赠"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 67
   },
   {
     "base_hp": 90,
@@ -4750,7 +4849,9 @@
           "name": "渴求"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 70
   },
   {
     "base_hp": 117,
@@ -4833,7 +4934,8 @@
           "name": "渴求"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 117,
@@ -4916,7 +5018,9 @@
           "name": "贪得无厌"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 70
   },
   {
     "base_hp": 32,
@@ -4995,7 +5099,9 @@
           "name": "化茧"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 74
   },
   {
     "base_hp": 42,
@@ -5074,7 +5180,9 @@
           "name": "化茧"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 74
   },
   {
     "base_hp": 53,
@@ -5153,7 +5261,8 @@
           "name": "化茧"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 43,
@@ -5232,7 +5341,8 @@
           "name": "化茧"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 49,
@@ -5311,7 +5421,8 @@
           "name": "化茧"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 55,
@@ -5390,7 +5501,8 @@
           "name": "化茧"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 111,
@@ -5479,7 +5591,8 @@
           "name": "小偷小摸"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 113,
@@ -5568,7 +5681,9 @@
           "name": "大捞一笔"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 78
   },
   {
     "base_hp": 73,
@@ -5642,7 +5757,9 @@
           "name": "保守派"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 82
   },
   {
     "base_hp": 97,
@@ -5716,7 +5833,9 @@
           "name": "保守派"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 82
   },
   {
     "base_hp": 121,
@@ -5790,7 +5909,8 @@
           "name": "保守派"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 79,
@@ -5874,7 +5994,9 @@
           "name": "偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 84
   },
   {
     "base_hp": 99,
@@ -5958,7 +6080,8 @@
           "name": "偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 94,
@@ -6042,7 +6165,8 @@
           "name": "偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 97,
@@ -6126,7 +6250,8 @@
           "name": "偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 97,
@@ -6210,7 +6335,8 @@
           "name": "偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 99,
@@ -6294,7 +6420,8 @@
           "name": "偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 95,
@@ -6378,7 +6505,8 @@
           "name": "偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -6462,7 +6590,9 @@
           "name": "完全偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 84
   },
   {
     "base_hp": 89,
@@ -6546,7 +6676,9 @@
           "name": "完全偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 85
   },
   {
     "base_hp": 92,
@@ -6630,7 +6762,9 @@
           "name": "完全偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 86
   },
   {
     "base_hp": 92,
@@ -6714,7 +6848,9 @@
           "name": "完全偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 87
   },
   {
     "base_hp": 94,
@@ -6798,7 +6934,9 @@
           "name": "完全偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 88
   },
   {
     "base_hp": 89,
@@ -6882,7 +7020,9 @@
           "name": "完全偏振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 89
   },
   {
     "base_hp": 67,
@@ -6956,7 +7096,9 @@
           "name": "养分重吸收"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 98
   },
   {
     "base_hp": 90,
@@ -7030,7 +7172,9 @@
           "name": "养分重吸收"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 98
   },
   {
     "base_hp": 112,
@@ -7104,7 +7248,8 @@
           "name": "养分重吸收"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -7178,7 +7323,9 @@
           "name": "养分内循环"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 98
   },
   {
     "base_hp": 44,
@@ -7252,7 +7399,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 47,
@@ -7343,7 +7491,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 44,
@@ -7437,7 +7586,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 46,
@@ -7528,7 +7678,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 59,
@@ -7602,7 +7753,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 62,
@@ -7693,7 +7845,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 58,
@@ -7787,7 +7940,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 62,
@@ -7878,7 +8032,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 74,
@@ -7952,7 +8107,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 78,
@@ -8043,7 +8199,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 73,
@@ -8137,7 +8294,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 77,
@@ -8228,7 +8386,8 @@
           "name": "诈死"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 68,
@@ -8298,7 +8457,9 @@
           "name": "专注力"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 113
   },
   {
     "base_hp": 85,
@@ -8368,7 +8529,8 @@
           "name": "专注力"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 85,
@@ -8438,7 +8600,9 @@
           "name": "全神贯注"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 113
   },
   {
     "base_hp": 69,
@@ -8498,7 +8662,9 @@
           "name": "囤积"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 117
   },
   {
     "base_hp": 92,
@@ -8558,7 +8724,9 @@
           "name": "囤积"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 117
   },
   {
     "base_hp": 114,
@@ -8618,7 +8786,8 @@
           "name": "囤积"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 110,
@@ -8690,7 +8859,9 @@
           "name": "复方汤剂"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 119
   },
   {
     "base_hp": 137,
@@ -8762,7 +8933,8 @@
           "name": "复方汤剂"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 55,
@@ -8832,7 +9004,9 @@
           "name": "惊吓"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 123
   },
   {
     "base_hp": 84,
@@ -8902,7 +9076,8 @@
           "name": "惊吓"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 74,
@@ -8972,7 +9147,8 @@
           "name": "惊吓"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 92,
@@ -9042,7 +9218,8 @@
           "name": "惊吓"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 105,
@@ -9112,7 +9289,8 @@
           "name": "惊吓"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -9182,7 +9360,8 @@
           "name": "做噩梦"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -9266,7 +9445,8 @@
           "name": "做噩梦"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 113,
@@ -9336,7 +9516,8 @@
           "name": "做噩梦"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -9420,7 +9601,8 @@
           "name": "做噩梦"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 70,
@@ -9503,7 +9685,8 @@
           "name": "稀兽花宝"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 95,
@@ -9563,7 +9746,9 @@
           "name": "壮胆"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 132
   },
   {
     "base_hp": 126,
@@ -9623,7 +9808,9 @@
           "name": "壮胆"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 132
   },
   {
     "base_hp": 158,
@@ -9683,7 +9870,8 @@
           "name": "壮胆"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 60,
@@ -9775,7 +9963,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 62,
@@ -9867,7 +10056,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 57,
@@ -9959,7 +10149,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 59,
@@ -10051,7 +10242,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 80,
@@ -10143,7 +10335,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 83,
@@ -10235,7 +10428,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 76,
@@ -10327,7 +10521,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 79,
@@ -10419,7 +10614,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 100,
@@ -10511,7 +10707,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 103,
@@ -10603,7 +10800,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 95,
@@ -10695,7 +10893,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 99,
@@ -10787,7 +10986,8 @@
           "name": "生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 100,
@@ -10879,7 +11079,9 @@
           "name": "高浓生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 141
   },
   {
     "base_hp": 103,
@@ -10971,7 +11173,9 @@
           "name": "高浓生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 142
   },
   {
     "base_hp": 95,
@@ -11063,7 +11267,9 @@
           "name": "高浓生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 143
   },
   {
     "base_hp": 99,
@@ -11155,7 +11361,9 @@
           "name": "高浓生物碱"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 144
   },
   {
     "base_hp": 47,
@@ -11219,7 +11427,9 @@
           "name": "快充"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 151
   },
   {
     "base_hp": 62,
@@ -11283,7 +11493,9 @@
           "name": "快充"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 151
   },
   {
     "base_hp": 78,
@@ -11347,7 +11559,8 @@
           "name": "快充"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -11436,7 +11649,9 @@
           "name": "勇敢"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 153
   },
   {
     "base_hp": 111,
@@ -11525,7 +11740,8 @@
           "name": "勇敢"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 94,
@@ -11599,7 +11815,9 @@
           "name": "腐植循环"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 155
   },
   {
     "base_hp": 117,
@@ -11673,7 +11891,8 @@
           "name": "腐植循环"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 94,
@@ -11733,7 +11952,9 @@
           "name": "慢热型"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 158
   },
   {
     "base_hp": 125,
@@ -11809,7 +12030,9 @@
           "name": "慢热型"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 158
   },
   {
     "base_hp": 156,
@@ -11885,7 +12108,8 @@
           "name": "慢热型"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 71,
@@ -11967,7 +12191,8 @@
           "name": "溶解扩散"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 70,
@@ -12049,7 +12274,8 @@
           "name": "溶解扩散"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 94,
@@ -12131,7 +12357,8 @@
           "name": "溶解扩散"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 94,
@@ -12213,7 +12440,8 @@
           "name": "溶解扩散"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 118,
@@ -12295,7 +12523,8 @@
           "name": "溶解扩散"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 117,
@@ -12377,7 +12606,8 @@
           "name": "溶解扩散"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 118,
@@ -12459,7 +12689,9 @@
           "name": "溶解腐蚀"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 163
   },
   {
     "base_hp": 117,
@@ -12541,7 +12773,9 @@
           "name": "溶解腐蚀"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 163
   },
   {
     "base_hp": 120,
@@ -12607,7 +12841,8 @@
           "name": "无忧无虑"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 60,
@@ -12671,7 +12906,8 @@
           "name": "电流刺激"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 64,
@@ -12749,7 +12985,8 @@
           "name": "电流刺激"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 75,
@@ -12813,7 +13050,8 @@
           "name": "电流刺激"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 80,
@@ -12891,7 +13129,8 @@
           "name": "电流刺激"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 87,
@@ -12970,7 +13209,9 @@
           "name": "虫群鼓舞"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 174
   },
   {
     "base_hp": 116,
@@ -13049,7 +13290,9 @@
           "name": "虫群鼓舞"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 174
   },
   {
     "base_hp": 145,
@@ -13128,7 +13371,8 @@
           "name": "虫群鼓舞"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 145,
@@ -13207,7 +13451,9 @@
           "name": "虫群突袭"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 174
   },
   {
     "base_hp": 60,
@@ -13275,7 +13521,9 @@
           "name": "嫁祸"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 178
   },
   {
     "base_hp": 80,
@@ -13343,7 +13591,9 @@
           "name": "嫁祸"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 178
   },
   {
     "base_hp": 100,
@@ -13411,7 +13661,8 @@
           "name": "嫁祸"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 75,
@@ -13491,7 +13742,8 @@
           "name": "洁癖"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 100,
@@ -13571,7 +13823,8 @@
           "name": "洁癖"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 125,
@@ -13651,7 +13904,8 @@
           "name": "洁癖"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 132,
@@ -13733,7 +13987,8 @@
           "name": "孤傲"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 128,
@@ -13813,7 +14068,8 @@
           "name": "快锤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 87,
@@ -13901,7 +14157,9 @@
           "name": "木桶戏法"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 185
   },
   {
     "base_hp": 109,
@@ -13989,7 +14247,8 @@
           "name": "木桶戏法"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -14065,7 +14324,8 @@
           "name": "不移"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 58,
@@ -14143,7 +14403,9 @@
           "name": "咔咔冲刺"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 189
   },
   {
     "base_hp": 78,
@@ -14221,7 +14483,9 @@
           "name": "咔咔冲刺"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 189
   },
   {
     "base_hp": 97,
@@ -14299,7 +14563,8 @@
           "name": "咔咔冲刺"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 73,
@@ -14382,7 +14647,9 @@
           "name": "花精灵"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 192
   },
   {
     "base_hp": 97,
@@ -14465,7 +14732,9 @@
           "name": "花精灵"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 192
   },
   {
     "base_hp": 132,
@@ -14548,7 +14817,8 @@
           "name": "花精灵"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 52,
@@ -14629,7 +14899,9 @@
           "name": "自由飘"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 195
   },
   {
     "base_hp": 70,
@@ -14710,7 +14982,9 @@
           "name": "自由飘"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 195
   },
   {
     "base_hp": 87,
@@ -14791,7 +15065,8 @@
           "name": "自由飘"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 64,
@@ -14867,7 +15142,8 @@
           "name": "石头大餐"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 86,
@@ -14943,7 +15219,8 @@
           "name": "石头大餐"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 107,
@@ -15035,7 +15312,9 @@
           "name": "盛宴"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 197
   },
   {
     "base_hp": 107,
@@ -15127,7 +15406,8 @@
           "name": "石头大餐"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 54,
@@ -15206,7 +15486,9 @@
           "name": "水翼推进"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 202
   },
   {
     "base_hp": 72,
@@ -15285,7 +15567,9 @@
           "name": "水翼推进"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 202
   },
   {
     "base_hp": 90,
@@ -15364,7 +15648,8 @@
           "name": "水翼推进"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -15443,7 +15728,9 @@
           "name": "水翼飞升"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 202
   },
   {
     "base_hp": 76,
@@ -15519,7 +15806,9 @@
           "name": "石天平"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 205
   },
   {
     "base_hp": 95,
@@ -15612,7 +15901,8 @@
           "name": "石天平"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 64,
@@ -15702,7 +15992,9 @@
           "name": "观星"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 208
   },
   {
     "base_hp": 85,
@@ -15792,7 +16084,9 @@
           "name": "观星"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 208
   },
   {
     "base_hp": 106,
@@ -15882,7 +16176,8 @@
           "name": "观星"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 106,
@@ -15972,7 +16267,9 @@
           "name": "坠星"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 208
   },
   {
     "base_hp": 79,
@@ -16036,7 +16333,9 @@
           "name": "目空"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 211
   },
   {
     "base_hp": 99,
@@ -16100,7 +16399,8 @@
           "name": "目空"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 99,
@@ -16164,7 +16464,9 @@
           "name": "夺目"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 211
   },
   {
     "base_hp": 56,
@@ -16238,7 +16540,8 @@
           "name": "共鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 57,
@@ -16312,7 +16615,8 @@
           "name": "共鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 74,
@@ -16386,7 +16690,8 @@
           "name": "共鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 76,
@@ -16460,7 +16765,8 @@
           "name": "共鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -16534,7 +16840,8 @@
           "name": "共鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 95,
@@ -16608,7 +16915,8 @@
           "name": "共鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 105,
@@ -16682,7 +16990,9 @@
           "name": "齐鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 217
   },
   {
     "base_hp": 107,
@@ -16756,7 +17066,9 @@
           "name": "齐鸣"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 218
   },
   {
     "base_hp": 119,
@@ -16816,7 +17128,9 @@
           "name": "预警"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 222
   },
   {
     "base_hp": 149,
@@ -16876,7 +17190,8 @@
           "name": "预警"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 149,
@@ -16936,7 +17251,9 @@
           "name": "先知"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 222
   },
   {
     "base_hp": 78,
@@ -17024,7 +17341,9 @@
           "name": "下黑手"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 225
   },
   {
     "base_hp": 97,
@@ -17112,7 +17431,8 @@
           "name": "下黑手"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 51,
@@ -17204,7 +17524,9 @@
           "name": "毒牙"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 228
   },
   {
     "base_hp": 68,
@@ -17296,7 +17618,9 @@
           "name": "毒牙"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 228
   },
   {
     "base_hp": 85,
@@ -17388,7 +17712,8 @@
           "name": "毒牙"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 74,
@@ -17452,7 +17777,9 @@
           "name": "吸积盘"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 231
   },
   {
     "base_hp": 99,
@@ -17516,7 +17843,9 @@
           "name": "吸积盘"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 231
   },
   {
     "base_hp": 124,
@@ -17580,7 +17909,8 @@
           "name": "吸积盘"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 115,
@@ -17648,7 +17978,8 @@
           "name": "悲悯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 115,
@@ -17716,7 +18047,9 @@
           "name": "悼亡"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 232
   },
   {
     "base_hp": 75,
@@ -17800,7 +18133,9 @@
           "name": "超负荷"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 235
   },
   {
     "base_hp": 94,
@@ -17884,7 +18219,8 @@
           "name": "超负荷"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 97,
@@ -17954,7 +18290,9 @@
           "name": "结晶水"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 238
   },
   {
     "base_hp": 130,
@@ -18024,7 +18362,9 @@
           "name": "结晶水"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 238
   },
   {
     "base_hp": 162,
@@ -18094,7 +18434,8 @@
           "name": "结晶水"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 98,
@@ -18184,7 +18525,9 @@
           "name": "冻土"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 240
   },
   {
     "base_hp": 123,
@@ -18274,7 +18617,8 @@
           "name": "冻土"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 56,
@@ -18344,7 +18688,9 @@
           "name": "冰封"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 243
   },
   {
     "base_hp": 75,
@@ -18414,7 +18760,9 @@
           "name": "冰封"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 243
   },
   {
     "base_hp": 94,
@@ -18484,7 +18832,8 @@
           "name": "冰封"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 78,
@@ -18569,7 +18918,9 @@
           "name": "捉迷藏"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 246
   },
   {
     "base_hp": 104,
@@ -18654,7 +19005,9 @@
           "name": "捉迷藏"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 246
   },
   {
     "base_hp": 130,
@@ -18739,7 +19092,8 @@
           "name": "捉迷藏"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 130,
@@ -18824,7 +19178,9 @@
           "name": "抓到你了"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 246
   },
   {
     "base_hp": 82,
@@ -18906,7 +19262,8 @@
           "name": "机械变式"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 103,
@@ -18988,7 +19345,8 @@
           "name": "机械变式"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 69,
@@ -19075,7 +19433,9 @@
           "name": "灵魂灼伤"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 252
   },
   {
     "base_hp": 92,
@@ -19162,7 +19522,9 @@
           "name": "灵魂灼伤"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 252
   },
   {
     "base_hp": 115,
@@ -19249,7 +19611,8 @@
           "name": "灵魂灼伤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 79,
@@ -19315,7 +19678,9 @@
           "name": "飓风"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 255
   },
   {
     "base_hp": 105,
@@ -19381,7 +19746,9 @@
           "name": "飓风"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 255
   },
   {
     "base_hp": 132,
@@ -19447,7 +19814,8 @@
           "name": "飓风"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 63,
@@ -19537,7 +19905,9 @@
           "name": "野性感官"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 258
   },
   {
     "base_hp": 84,
@@ -19627,7 +19997,9 @@
           "name": "野性感官"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 258
   },
   {
     "base_hp": 105,
@@ -19717,7 +20089,8 @@
           "name": "野性感官"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 82,
@@ -19803,7 +20176,9 @@
           "name": "圣火骑士"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 261
   },
   {
     "base_hp": 110,
@@ -19889,7 +20264,9 @@
           "name": "圣火骑士"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 261
   },
   {
     "base_hp": 137,
@@ -19975,7 +20352,8 @@
           "name": "圣火骑士"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 63,
@@ -20055,7 +20433,9 @@
           "name": "思维之盾"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 264
   },
   {
     "base_hp": 84,
@@ -20135,7 +20515,9 @@
           "name": "思维之盾"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 264
   },
   {
     "base_hp": 83,
@@ -20215,7 +20597,8 @@
           "name": "思维之盾"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 113,
@@ -20275,7 +20658,8 @@
           "name": "衡量"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 74,
@@ -20343,7 +20727,9 @@
           "name": "威慑"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 267
   },
   {
     "base_hp": 92,
@@ -20411,7 +20797,8 @@
           "name": "威慑"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 64,
@@ -20477,7 +20864,8 @@
           "name": "乘风连击"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 65,
@@ -20543,7 +20931,8 @@
           "name": "乘风连击"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 85,
@@ -20609,7 +20998,8 @@
           "name": "乘风连击"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 87,
@@ -20675,7 +21065,8 @@
           "name": "乘风连击"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 107,
@@ -20741,7 +21132,8 @@
           "name": "乘风连击"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 109,
@@ -20807,7 +21199,8 @@
           "name": "乘风连击"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 55,
@@ -20871,7 +21264,9 @@
           "name": "毒腺"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 276
   },
   {
     "base_hp": 74,
@@ -20953,7 +21348,9 @@
           "name": "毒腺"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 276
   },
   {
     "base_hp": 92,
@@ -21035,7 +21432,8 @@
           "name": "毒腺"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -21125,7 +21523,8 @@
           "name": "消波块"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 64,
@@ -21215,7 +21614,8 @@
           "name": "消波块"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -21305,7 +21705,8 @@
           "name": "消波块"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 85,
@@ -21395,7 +21796,8 @@
           "name": "消波块"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -21485,7 +21887,8 @@
           "name": "消波块"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 107,
@@ -21575,7 +21978,8 @@
           "name": "消波块"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -21670,7 +22074,9 @@
           "name": "多人宿舍"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 285
   },
   {
     "base_hp": 119,
@@ -21765,7 +22171,9 @@
           "name": "多人宿舍"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 285
   },
   {
     "base_hp": 149,
@@ -21860,7 +22268,8 @@
           "name": "多人宿舍"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 87,
@@ -21926,7 +22335,9 @@
           "name": "逐魂鸟"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 287
   },
   {
     "base_hp": 109,
@@ -21992,7 +22403,8 @@
           "name": "逐魂鸟"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 92,
@@ -22066,7 +22478,9 @@
           "name": "得寸进尺"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 289
   },
   {
     "base_hp": 116,
@@ -22156,7 +22570,8 @@
           "name": "得寸进尺"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 72,
@@ -22238,7 +22653,9 @@
           "name": "身经百练"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 291
   },
   {
     "base_hp": 90,
@@ -22320,7 +22737,8 @@
           "name": "身经百练"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -22384,7 +22802,9 @@
           "name": "泛音列"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 293
   },
   {
     "base_hp": 113,
@@ -22448,7 +22868,8 @@
           "name": "泛音列"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 68,
@@ -22527,7 +22948,9 @@
           "name": "守护者"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 296
   },
   {
     "base_hp": 91,
@@ -22606,7 +23029,9 @@
           "name": "守护者"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 296
   },
   {
     "base_hp": 114,
@@ -22685,7 +23110,8 @@
           "name": "守护者"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 72,
@@ -22773,7 +23199,8 @@
           "name": "腾挪"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 66,
@@ -22861,7 +23288,8 @@
           "name": "腾挪"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -22949,7 +23377,8 @@
           "name": "腾挪"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 83,
@@ -23037,7 +23466,8 @@
           "name": "腾挪"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -23125,7 +23555,9 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 299
   },
   {
     "base_hp": 83,
@@ -23213,7 +23645,9 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 300
   },
   {
     "base_hp": 89,
@@ -23301,7 +23735,8 @@
           "name": "保卫"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -23389,7 +23824,8 @@
           "name": "保卫"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -23477,7 +23913,8 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -23565,7 +24002,8 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 126,
@@ -23653,7 +24091,8 @@
           "name": "好象坏象"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 126,
@@ -23741,7 +24180,8 @@
           "name": "好象坏象"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 126,
@@ -23829,7 +24269,9 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 307
   },
   {
     "base_hp": 126,
@@ -23917,7 +24359,9 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 308
   },
   {
     "base_hp": 93,
@@ -24005,7 +24449,8 @@
           "name": "渗透"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -24093,7 +24538,8 @@
           "name": "渗透"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -24181,7 +24627,9 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 311
   },
   {
     "base_hp": 93,
@@ -24269,7 +24717,9 @@
           "name": "御驾亲征"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 312
   },
   {
     "base_hp": 82,
@@ -24345,7 +24795,9 @@
           "name": "奔波命"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 316
   },
   {
     "base_hp": 103,
@@ -24421,7 +24873,8 @@
           "name": "奔波命"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 52,
@@ -24510,7 +24963,9 @@
           "name": "营养液泡"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 319
   },
   {
     "base_hp": 69,
@@ -24599,7 +25054,9 @@
           "name": "营养液泡"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 319
   },
   {
     "base_hp": 86,
@@ -24688,7 +25145,8 @@
           "name": "营养液泡"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 48,
@@ -24754,7 +25212,9 @@
           "name": "鼓气"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 322
   },
   {
     "base_hp": 64,
@@ -24820,7 +25280,9 @@
           "name": "鼓气"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 322
   },
   {
     "base_hp": 81,
@@ -24886,7 +25348,8 @@
           "name": "鼓气"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 81,
@@ -24952,7 +25415,9 @@
           "name": "三鼓作气"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 322
   },
   {
     "base_hp": 232,
@@ -25047,7 +25512,9 @@
           "name": "铃兰晚钟"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 325
   },
   {
     "base_hp": 290,
@@ -25142,7 +25609,8 @@
           "name": "铃兰晚钟"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -25214,7 +25682,9 @@
           "name": "嫉妒"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 327
   },
   {
     "base_hp": 112,
@@ -25286,7 +25756,8 @@
           "name": "嫉妒"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -25358,7 +25829,9 @@
           "name": "游弋"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 327
   },
   {
     "base_hp": 67,
@@ -25422,7 +25895,9 @@
           "name": "噼啪！"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 331
   },
   {
     "base_hp": 83,
@@ -25486,7 +25961,8 @@
           "name": "噼啪噼啪！"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 83,
@@ -25550,7 +26026,8 @@
           "name": "噼啪！"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 64,
@@ -25614,7 +26091,9 @@
           "name": "防过载保护"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 334
   },
   {
     "base_hp": 85,
@@ -25678,7 +26157,9 @@
           "name": "防过载保护"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 334
   },
   {
     "base_hp": 106,
@@ -25742,7 +26223,8 @@
           "name": "防过载保护"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 111,
@@ -25838,7 +26320,9 @@
           "name": "虚假宝箱"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 336
   },
   {
     "base_hp": 138,
@@ -25934,7 +26418,8 @@
           "name": "虚假宝箱"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 85,
@@ -26018,7 +26503,9 @@
           "name": "拨浪鼓"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 338
   },
   {
     "base_hp": 106,
@@ -26102,7 +26589,8 @@
           "name": "拨浪鼓"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 80,
@@ -26166,7 +26654,9 @@
           "name": "振奋虫心"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 340
   },
   {
     "base_hp": 100,
@@ -26246,7 +26736,8 @@
           "name": "振奋虫心"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 63,
@@ -26316,7 +26807,9 @@
           "name": "蒸汽膨胀"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 343
   },
   {
     "base_hp": 84,
@@ -26386,7 +26879,9 @@
           "name": "蒸汽膨胀"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 343
   },
   {
     "base_hp": 105,
@@ -26456,7 +26951,8 @@
           "name": "蒸汽膨胀"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 118,
@@ -26520,7 +27016,8 @@
           "name": "吟游之弦"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 78,
@@ -26601,7 +27098,8 @@
           "name": "珊瑚骨"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 91,
@@ -26682,7 +27180,8 @@
           "name": "珊瑚骨"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 97,
@@ -26763,7 +27262,8 @@
           "name": "珊瑚骨"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 90,
@@ -26844,7 +27344,8 @@
           "name": "珊瑚骨"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 64,
@@ -26946,7 +27447,9 @@
           "name": "定向精炼"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 351
   },
   {
     "base_hp": 85,
@@ -27048,7 +27551,9 @@
           "name": "定向精炼"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 351
   },
   {
     "base_hp": 106,
@@ -27150,7 +27655,8 @@
           "name": "定向精炼"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 66,
@@ -27237,7 +27743,9 @@
           "name": "暴食"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 353
   },
   {
     "base_hp": 83,
@@ -27324,7 +27832,8 @@
           "name": "暴食"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 55,
@@ -27388,7 +27897,9 @@
           "name": "蓄电池"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 356
   },
   {
     "base_hp": 73,
@@ -27452,7 +27963,9 @@
           "name": "蓄电池"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 356
   },
   {
     "base_hp": 92,
@@ -27516,7 +28029,8 @@
           "name": "蓄电池"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 92,
@@ -27580,7 +28094,9 @@
           "name": "超级电池"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 356
   },
   {
     "base_hp": 73,
@@ -27662,7 +28178,9 @@
           "name": "向心力"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 359
   },
   {
     "base_hp": 92,
@@ -27744,7 +28262,8 @@
           "name": "向心力"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 58,
@@ -27810,7 +28329,9 @@
           "name": "起飞加速"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 363
   },
   {
     "base_hp": 77,
@@ -27876,7 +28397,9 @@
           "name": "起飞加速"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 363
   },
   {
     "base_hp": 96,
@@ -27942,7 +28465,8 @@
           "name": "相争"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 96,
@@ -28008,7 +28532,8 @@
           "name": "起飞加速"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 72,
@@ -28078,7 +28603,9 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 368
   },
   {
     "base_hp": 96,
@@ -28148,7 +28675,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 88,
@@ -28218,7 +28746,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 91,
@@ -28288,7 +28817,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 119,
@@ -28358,7 +28888,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 107,
@@ -28428,7 +28959,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 113,
@@ -28498,7 +29030,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 114,
@@ -28568,7 +29101,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 113,
@@ -28638,7 +29172,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 121,
@@ -28708,7 +29243,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 110,
@@ -28778,7 +29314,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 108,
@@ -28848,7 +29385,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 110,
@@ -28918,7 +29456,8 @@
           "name": "加个雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 100,
@@ -29005,7 +29544,8 @@
           "name": "耐活王"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 100,
@@ -29092,7 +29632,8 @@
           "name": "耐活王"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 125,
@@ -29179,7 +29720,8 @@
           "name": "耐活王"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 125,
@@ -29266,7 +29808,8 @@
           "name": "耐活王"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 53,
@@ -29348,7 +29891,9 @@
           "name": "洄游"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 383
   },
   {
     "base_hp": 71,
@@ -29430,7 +29975,9 @@
           "name": "洄游"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 383
   },
   {
     "base_hp": 89,
@@ -29512,7 +30059,8 @@
           "name": "洄游"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 68,
@@ -29590,7 +30138,9 @@
           "name": "生物电"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 385
   },
   {
     "base_hp": 85,
@@ -29668,7 +30218,8 @@
           "name": "生物电"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 108,
@@ -29750,7 +30301,9 @@
           "name": "扩散侵蚀"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 387
   },
   {
     "base_hp": 134,
@@ -29832,7 +30385,8 @@
           "name": "扩散侵蚀"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 44,
@@ -29904,7 +30458,9 @@
           "name": "蚀刻"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 390
   },
   {
     "base_hp": 59,
@@ -29976,7 +30532,9 @@
           "name": "蚀刻"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 390
   },
   {
     "base_hp": 73,
@@ -30048,7 +30606,8 @@
           "name": "蚀刻"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 100,
@@ -30118,7 +30677,9 @@
           "name": "散热"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 393
   },
   {
     "base_hp": 133,
@@ -30188,7 +30749,9 @@
           "name": "散热"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 393
   },
   {
     "base_hp": 167,
@@ -30258,7 +30821,8 @@
           "name": "散热"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 44,
@@ -30328,7 +30892,9 @@
           "name": "冰钻"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 396
   },
   {
     "base_hp": 58,
@@ -30398,7 +30964,9 @@
           "name": "冰钻"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 396
   },
   {
     "base_hp": 73,
@@ -30468,7 +31036,8 @@
           "name": "冰钻"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -30553,7 +31122,9 @@
           "name": "仁心"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 399
   },
   {
     "base_hp": 90,
@@ -30638,7 +31209,9 @@
           "name": "仁心"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 399
   },
   {
     "base_hp": 137,
@@ -30723,7 +31296,8 @@
           "name": "仁心"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 80,
@@ -30808,7 +31382,8 @@
           "name": "恶魔的晚宴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 96,
@@ -30893,7 +31468,8 @@
           "name": "恶魔的晚宴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 107,
@@ -30978,7 +31554,8 @@
           "name": "恶魔的晚宴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 128,
@@ -31063,7 +31640,8 @@
           "name": "恶魔的晚宴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 134,
@@ -31148,7 +31726,8 @@
           "name": "恶魔的晚宴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 160,
@@ -31233,7 +31812,8 @@
           "name": "恶魔的晚宴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 88,
@@ -31330,7 +31910,9 @@
           "name": "翼轴"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 407
   },
   {
     "base_hp": 110,
@@ -31427,7 +32009,8 @@
           "name": "翼轴"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 62,
@@ -31509,7 +32092,9 @@
           "name": "盲拧"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 410
   },
   {
     "base_hp": 82,
@@ -31591,7 +32176,9 @@
           "name": "盲拧"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 410
   },
   {
     "base_hp": 103,
@@ -31673,7 +32260,8 @@
           "name": "盲拧"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -31743,7 +32331,8 @@
           "name": "斗技"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -31813,7 +32402,8 @@
           "name": "斗技"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -31899,7 +32489,8 @@
           "name": "指挥家"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 116,
@@ -31985,7 +32576,8 @@
           "name": "斗技"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 81,
@@ -32075,7 +32667,9 @@
           "name": "哨兵"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 416
   },
   {
     "base_hp": 101,
@@ -32165,7 +32759,8 @@
           "name": "哨兵"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 78,
@@ -32244,7 +32839,8 @@
           "name": "连续负荷"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 137,
@@ -32308,7 +32904,8 @@
           "name": "倾轧"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 65,
@@ -32382,7 +32979,9 @@
           "name": "生长"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 421
   },
   {
     "base_hp": 86,
@@ -32456,7 +33055,9 @@
           "name": "生长"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 421
   },
   {
     "base_hp": 108,
@@ -32530,7 +33131,8 @@
           "name": "生长"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 66,
@@ -32606,7 +33208,8 @@
           "name": "警惕"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -32682,7 +33285,8 @@
           "name": "警惕"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 88,
@@ -32758,7 +33362,8 @@
           "name": "警惕"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -32834,7 +33439,8 @@
           "name": "警惕"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 110,
@@ -32910,7 +33516,8 @@
           "name": "警惕"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 112,
@@ -32986,7 +33593,8 @@
           "name": "警惕"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 103,
@@ -33056,7 +33664,8 @@
           "name": "涂鸦"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 129,
@@ -33142,7 +33751,8 @@
           "name": "涂鸦"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 78,
@@ -33227,7 +33837,8 @@
           "name": "绝对秩序"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 98,
@@ -33291,7 +33902,9 @@
           "name": "坚韧铠甲"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 432
   },
   {
     "base_hp": 132,
@@ -33355,7 +33968,8 @@
           "name": "坚韧铠甲"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 139,
@@ -33437,7 +34051,8 @@
           "name": "正位宝剑"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 174,
@@ -33519,7 +34134,8 @@
           "name": "正位宝剑"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 187,
@@ -33601,7 +34217,8 @@
           "name": "宝剑王牌"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 99,
@@ -33692,7 +34309,8 @@
           "name": "无差别过滤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 124,
@@ -33783,7 +34401,9 @@
           "name": "强制过滤"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 436
   },
   {
     "base_hp": 124,
@@ -33874,7 +34494,8 @@
           "name": "无差别过滤"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 96,
@@ -33963,7 +34584,9 @@
           "name": "不朽"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 440
   },
   {
     "base_hp": 120,
@@ -34052,7 +34675,8 @@
           "name": "不朽"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -34140,7 +34764,9 @@
           "name": "侵蚀"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 442
   },
   {
     "base_hp": 84,
@@ -34228,7 +34854,8 @@
           "name": "侵蚀"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 78,
@@ -34296,7 +34923,9 @@
           "name": "付给恶魔的赎价"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 445
   },
   {
     "base_hp": 104,
@@ -34364,7 +34993,9 @@
           "name": "付给恶魔的赎价"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 445
   },
   {
     "base_hp": 130,
@@ -34432,7 +35063,8 @@
           "name": "付给恶魔的赎价"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 85,
@@ -34516,7 +35148,8 @@
           "name": "扫拖一体"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 106,
@@ -34600,7 +35233,8 @@
           "name": "扫拖一体"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 109,
@@ -34684,7 +35318,8 @@
           "name": "特殊清洁场景"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 61,
@@ -34744,7 +35379,8 @@
           "name": "灰色肖像"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 81,
@@ -34804,7 +35440,8 @@
           "name": "灰色肖像"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 101,
@@ -34878,7 +35515,8 @@
           "name": "灰色肖像"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 126,
@@ -34954,7 +35592,8 @@
           "name": "变形活画"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -35014,7 +35653,8 @@
           "name": "图书守卫者"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -35074,7 +35714,8 @@
           "name": "图书守卫者"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 111,
@@ -35148,7 +35789,8 @@
           "name": "图书守卫者"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 109,
@@ -35224,7 +35866,8 @@
           "name": "构装契约者"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 58,
@@ -35302,7 +35945,9 @@
           "name": "绒粉星光"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 459
   },
   {
     "base_hp": 77,
@@ -35380,7 +36025,9 @@
           "name": "绒粉星光"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 459
   },
   {
     "base_hp": 96,
@@ -35458,7 +36105,8 @@
           "name": "绒粉星光"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 63,
@@ -35522,7 +36170,9 @@
           "name": "月光审判"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 462
   },
   {
     "base_hp": 83,
@@ -35586,7 +36236,9 @@
           "name": "月光审判"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 462
   },
   {
     "base_hp": 104,
@@ -35650,7 +36302,8 @@
           "name": "月光审判"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 81,
@@ -35714,7 +36367,8 @@
           "name": "茶多酚"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 101,
@@ -35797,7 +36451,8 @@
           "name": "茶多酚"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 133,
@@ -35878,7 +36533,8 @@
           "name": "吉利丁片"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 128,
@@ -35959,7 +36615,8 @@
           "name": "美拉德反应"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 49,
@@ -36023,7 +36680,9 @@
           "name": "契约的形状"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 469
   },
   {
     "base_hp": 65,
@@ -36087,7 +36746,9 @@
           "name": "契约的形状"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 469
   },
   {
     "base_hp": 81,
@@ -36151,7 +36812,8 @@
           "name": "契约的形状"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 102,
@@ -36229,7 +36891,9 @@
           "name": "对流"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 471
   },
   {
     "base_hp": 128,
@@ -36307,7 +36971,8 @@
           "name": "对流"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 126,
@@ -36391,7 +37056,8 @@
           "name": "月牙雪糕"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 74,
@@ -36473,7 +37139,9 @@
           "name": "血型吸引"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 474
   },
   {
     "base_hp": 93,
@@ -36555,7 +37223,8 @@
           "name": "血型吸引"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 108,
@@ -36644,7 +37313,9 @@
           "name": "煤渣草"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 476
   },
   {
     "base_hp": 135,
@@ -36733,7 +37404,8 @@
           "name": "煤渣草"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 70,
@@ -36803,7 +37475,8 @@
           "name": "搜刮"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 94,
@@ -36873,7 +37546,8 @@
           "name": "搜刮"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 117,
@@ -36943,7 +37617,8 @@
           "name": "搜刮"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 117,
@@ -37013,7 +37688,8 @@
           "name": "扫荡"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -37091,7 +37767,9 @@
           "name": "星地善良"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 482
   },
   {
     "base_hp": 116,
@@ -37169,7 +37847,8 @@
           "name": "星地善良"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 79,
@@ -37268,7 +37947,9 @@
           "name": "贪心算法"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 485
   },
   {
     "base_hp": 105,
@@ -37367,7 +38048,9 @@
           "name": "贪心算法"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 485
   },
   {
     "base_hp": 132,
@@ -37466,7 +38149,8 @@
           "name": "贪心算法"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 80,
@@ -37530,7 +38214,8 @@
           "name": "双向光速"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 100,
@@ -37594,7 +38279,8 @@
           "name": "双向光速"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -37675,7 +38361,8 @@
           "name": "陨落"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 91,
@@ -37739,7 +38426,9 @@
           "name": "张弛有度"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 490
   },
   {
     "base_hp": 114,
@@ -37803,7 +38492,8 @@
           "name": "张弛有度"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -37873,7 +38563,9 @@
           "name": "天通地明"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 492
   },
   {
     "base_hp": 83,
@@ -37943,7 +38635,8 @@
           "name": "天通地明"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 48,
@@ -38017,7 +38710,9 @@
           "name": "系统发育"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 495
   },
   {
     "base_hp": 63,
@@ -38091,7 +38786,9 @@
           "name": "系统发育"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 495
   },
   {
     "base_hp": 102,
@@ -38165,7 +38862,8 @@
           "name": "系统发育"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 49,
@@ -38229,7 +38927,9 @@
           "name": "守望星"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 498
   },
   {
     "base_hp": 65,
@@ -38308,7 +39008,9 @@
           "name": "守望星"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 498
   },
   {
     "base_hp": 81,
@@ -38387,7 +39089,8 @@
           "name": "守望星"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 62,
@@ -38469,7 +39172,9 @@
           "name": "狂欢开始"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 501
   },
   {
     "base_hp": 83,
@@ -38551,7 +39256,9 @@
           "name": "狂欢开始"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 501
   },
   {
     "base_hp": 104,
@@ -38633,7 +39340,8 @@
           "name": "狂欢开始"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 71,
@@ -38699,7 +39407,9 @@
           "name": "展翅"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 504
   },
   {
     "base_hp": 94,
@@ -38765,7 +39475,9 @@
           "name": "展翅"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 504
   },
   {
     "base_hp": 118,
@@ -38831,7 +39543,8 @@
           "name": "展翅"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 101,
@@ -38901,7 +39614,9 @@
           "name": "大雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 506
   },
   {
     "base_hp": 126,
@@ -38971,7 +39686,8 @@
           "name": "大雪球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -39059,7 +39775,9 @@
           "name": "大火球"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 508
   },
   {
     "base_hp": 112,
@@ -39147,7 +39865,8 @@
           "name": "大火球"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -39230,7 +39949,9 @@
           "name": "换碟"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 510
   },
   {
     "base_hp": 116,
@@ -39313,7 +40034,8 @@
           "name": "换碟"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -39392,7 +40114,9 @@
           "name": "拉拉队长"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 512
   },
   {
     "base_hp": 116,
@@ -39471,7 +40195,8 @@
           "name": "拉拉队长"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 116,
@@ -39550,7 +40275,8 @@
           "name": "拉拉队长"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 66,
@@ -39618,7 +40344,9 @@
           "name": "戏耍"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 516
   },
   {
     "base_hp": 88,
@@ -39686,7 +40414,9 @@
           "name": "戏耍"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 516
   },
   {
     "base_hp": 111,
@@ -39754,7 +40484,8 @@
           "name": "戏耍"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 61,
@@ -39842,7 +40573,9 @@
           "name": "焰色反应"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 518
   },
   {
     "base_hp": 95,
@@ -39930,7 +40663,8 @@
           "name": "焰色反应"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 103,
@@ -40000,7 +40734,9 @@
           "name": "魔术帽"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 520
   },
   {
     "base_hp": 128,
@@ -40070,7 +40806,8 @@
           "name": "魔术帽"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 83,
@@ -40148,7 +40885,9 @@
           "name": "安可"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 522
   },
   {
     "base_hp": 104,
@@ -40226,7 +40965,8 @@
           "name": "安可"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 104,
@@ -40308,7 +41048,9 @@
           "name": "合拍"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 524
   },
   {
     "base_hp": 130,
@@ -40390,7 +41132,8 @@
           "name": "合拍"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 77,
@@ -40454,7 +41197,9 @@
           "name": "盲从"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 526
   },
   {
     "base_hp": 97,
@@ -40518,7 +41263,8 @@
           "name": "盲从"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 132,
@@ -40586,7 +41332,8 @@
           "name": "留学生"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 56,
@@ -40671,7 +41418,9 @@
           "name": "不死鸟"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 530
   },
   {
     "base_hp": 75,
@@ -40756,7 +41505,9 @@
           "name": "不死鸟"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 530
   },
   {
     "base_hp": 78,
@@ -40841,7 +41592,8 @@
           "name": "不死鸟"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 117,
@@ -40937,7 +41689,9 @@
           "name": "上锁"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 532
   },
   {
     "base_hp": 146,
@@ -41033,7 +41787,8 @@
           "name": "上锁"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 65,
@@ -41121,7 +41876,9 @@
           "name": "流沙统治者"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 535
   },
   {
     "base_hp": 86,
@@ -41209,7 +41966,9 @@
           "name": "流沙统治者"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 535
   },
   {
     "base_hp": 108,
@@ -41297,7 +42056,8 @@
           "name": "流沙统治者"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 87,
@@ -41371,7 +42131,9 @@
           "name": "盘根木"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 538
   },
   {
     "base_hp": 115,
@@ -41445,7 +42207,9 @@
           "name": "盘根木"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 538
   },
   {
     "base_hp": 144,
@@ -41519,7 +42283,8 @@
           "name": "盘根木"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 54,
@@ -41583,7 +42348,9 @@
           "name": "电子音乐"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 541
   },
   {
     "base_hp": 72,
@@ -41647,7 +42414,9 @@
           "name": "电子音乐"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 541
   },
   {
     "base_hp": 90,
@@ -41711,7 +42480,8 @@
           "name": "电子音乐"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 62,
@@ -41781,7 +42551,9 @@
           "name": "冰雪魂魄"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 544
   },
   {
     "base_hp": 83,
@@ -41851,7 +42623,9 @@
           "name": "冰雪魂魄"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 544
   },
   {
     "base_hp": 104,
@@ -41921,7 +42695,8 @@
           "name": "冰雪魂魄"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 45,
@@ -41991,7 +42766,9 @@
           "name": "淬炼火"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 547
   },
   {
     "base_hp": 60,
@@ -42061,7 +42838,9 @@
           "name": "淬炼火"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 547
   },
   {
     "base_hp": 75,
@@ -42131,7 +42910,8 @@
           "name": "淬炼火"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 113,
@@ -42191,7 +42971,9 @@
           "name": "友谊之果"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 549
   },
   {
     "base_hp": 122,
@@ -42251,7 +43033,8 @@
           "name": "友谊之果"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 72,
@@ -42338,7 +43121,9 @@
           "name": "莫比乌斯"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 551
   },
   {
     "base_hp": 100,
@@ -42425,7 +43210,8 @@
           "name": "莫比乌斯"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 67,
@@ -42507,7 +43293,9 @@
           "name": "瞳中倒影"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 554
   },
   {
     "base_hp": 89,
@@ -42589,7 +43377,9 @@
           "name": "瞳中倒影"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 554
   },
   {
     "base_hp": 111,
@@ -42671,7 +43461,8 @@
           "name": "瞳中倒影"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 76,
@@ -42737,7 +43528,9 @@
           "name": "异类"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 557
   },
   {
     "base_hp": 101,
@@ -42803,7 +43596,9 @@
           "name": "异类"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 557
   },
   {
     "base_hp": 132,
@@ -42885,7 +43680,8 @@
           "name": "异类"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 68,
@@ -42967,7 +43763,9 @@
           "name": "滴眼液"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 560
   },
   {
     "base_hp": 91,
@@ -43049,7 +43847,9 @@
           "name": "滴眼液"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 560
   },
   {
     "base_hp": 134,
@@ -43131,7 +43931,8 @@
           "name": "滴眼液"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 104,
@@ -43211,7 +44012,8 @@
           "name": "与星星同行"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 94,
@@ -43277,7 +44079,9 @@
           "name": "迎宾"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 563
   },
   {
     "base_hp": 117,
@@ -43343,7 +44147,8 @@
           "name": "迎宾"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 68,
@@ -43439,7 +44244,9 @@
           "name": "整点报时"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 565
   },
   {
     "base_hp": 85,
@@ -43535,7 +44342,8 @@
           "name": "整点报时"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 39,
@@ -43610,7 +44418,8 @@
           "name": "有求必应"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 52,
@@ -43685,7 +44494,9 @@
           "name": "有求必应"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 568
   },
   {
     "base_hp": 103,
@@ -43760,7 +44571,8 @@
           "name": "有求必应"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 84,
@@ -43837,7 +44649,8 @@
           "name": "一意孤行"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 102,
@@ -43919,7 +44732,9 @@
           "name": "守护之心"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 571
   },
   {
     "base_hp": 128,
@@ -44001,7 +44816,8 @@
           "name": "守护之心"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 91,
@@ -44088,7 +44904,9 @@
           "name": "和弦共振"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 573
   },
   {
     "base_hp": 114,
@@ -44175,7 +44993,8 @@
           "name": "和弦共振"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 57,
@@ -44241,7 +45060,9 @@
           "name": "猫精灵的礼物"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 576
   },
   {
     "base_hp": 76,
@@ -44325,7 +45146,9 @@
           "name": "猫精灵的礼物"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 576
   },
   {
     "base_hp": 95,
@@ -44409,7 +45232,8 @@
           "name": "猫精灵的礼物"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 86,
@@ -44500,7 +45324,9 @@
           "name": "爆裂玉米"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 578
   },
   {
     "base_hp": 115,
@@ -44591,7 +45417,8 @@
           "name": "爆裂玉米"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 68,
@@ -44655,7 +45482,9 @@
           "name": "王子的诺言"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 581
   },
   {
     "base_hp": 91,
@@ -44719,7 +45548,9 @@
           "name": "王子的诺言"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 581
   },
   {
     "base_hp": 113,
@@ -44799,7 +45630,8 @@
           "name": "王子的诺言"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 82,
@@ -44867,7 +45699,9 @@
           "name": "诅咒"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 583
   },
   {
     "base_hp": 117,
@@ -44935,7 +45769,8 @@
           "name": "诅咒"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 89,
@@ -45019,7 +45854,9 @@
           "name": "光度换算"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 585
   },
   {
     "base_hp": 121,
@@ -45103,7 +45940,8 @@
           "name": "光度换算"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 92,
@@ -45192,7 +46030,9 @@
           "name": "长久保存制法"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 587
   },
   {
     "base_hp": 128,
@@ -45281,7 +46121,8 @@
           "name": "长久保存制法"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 93,
@@ -45363,7 +46204,9 @@
           "name": "守望者"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 589
   },
   {
     "base_hp": 128,
@@ -45445,7 +46288,8 @@
           "name": "守望者"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 91,
@@ -45529,7 +46373,9 @@
           "name": "扎手"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 591
   },
   {
     "base_hp": 114,
@@ -45613,7 +46459,8 @@
           "name": "扎手"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 116,
@@ -45702,7 +46549,8 @@
           "name": "安眠"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
   },
   {
     "base_hp": 77,
@@ -45762,7 +46610,9 @@
           "name": "博物"
         }
       }
-    }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 594
   },
   {
     "base_hp": 96,
@@ -45822,6 +46672,1937 @@
           "name": "博物"
         }
       }
-    }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 115,
+    "base_mag_atk": 51,
+    "base_mag_def": 98,
+    "base_phy_atk": 128,
+    "base_phy_def": 128,
+    "base_spd": 130,
+    "default_legacy_type": {
+      "id": 15,
+      "localized": {
+        "zh": "幽"
+      },
+      "name": "Ghost",
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ],
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ]
+    },
+    "dex_number": 445,
+    "evolution_chain_name": "诅咒狼灵",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 617,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 595,
+    "image": "银月狼王.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "银月狼王"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 15,
+      "localized": {
+        "zh": "幽"
+      },
+      "name": "Ghost",
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ],
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 18,
+      "localized": {
+        "zh": "幻"
+      },
+      "name": "Illusion",
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ],
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "铭记于月亮",
+          "description": "获得自己击败的精灵的特性，每次攻击后自己失去5%生命。"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 83,
+    "base_mag_atk": 40,
+    "base_mag_def": 96,
+    "base_phy_atk": 115,
+    "base_phy_def": 123,
+    "base_spd": 125,
+    "default_legacy_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "dex_number": 465,
+    "evolution_chain_name": "布灵",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 614,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 596,
+    "image": "布灵布灵.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "布灵布灵"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "旧玩具",
+          "description": "己方精灵每使用过1个不同系别的技能，自己入场时获得双攻+10%"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 123,
+    "base_mag_atk": 117,
+    "base_mag_def": 131,
+    "base_phy_atk": 46,
+    "base_phy_def": 99,
+    "base_spd": 95,
+    "default_legacy_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "dex_number": 462,
+    "evolution_chain_name": "幽铃",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 613,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 597,
+    "image": "摇铃魔偶.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "摇铃魔偶"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": null,
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "盗魂铃",
+          "description": "初始能量为0，首次入场前敌方每聚能1次，回复5能量（可突破上限），在场时自己回复的能量-4"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 97,
+    "base_mag_atk": 110,
+    "base_mag_def": 115,
+    "base_phy_atk": 116,
+    "base_phy_def": 124,
+    "base_spd": 120,
+    "default_legacy_type": {
+      "id": 16,
+      "name": "Dark",
+      "localized": {
+        "zh": "恶"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Bug",
+        "Cute",
+        "Light"
+      ],
+      "resistant_to": [
+        "Dark",
+        "Ghost"
+      ]
+    },
+    "dex_number": 460,
+    "evolution_chain_name": "小浣蛋",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 612,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 598,
+    "image": "黑手浣熊.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "黑手浣熊"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 16,
+      "name": "Dark",
+      "localized": {
+        "zh": "恶"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Bug",
+        "Cute",
+        "Light"
+      ],
+      "resistant_to": [
+        "Dark",
+        "Ghost"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": null,
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "翻垃圾桶",
+          "description": "入场时自己未携带的技能位置会变为敌方最近使用过的技能，且能耗-2"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 98,
+    "base_mag_atk": 97,
+    "base_mag_def": 84,
+    "base_phy_atk": 98,
+    "base_phy_def": 116,
+    "base_spd": 120,
+    "default_legacy_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "dex_number": 458,
+    "evolution_chain_name": "量风碗",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 611,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 599,
+    "image": "测风蝉.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "测风蝉"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 17,
+      "name": "Mechanical",
+      "localized": {
+        "zh": "机械"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Water",
+        "Fire"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Poison",
+        "Ice",
+        "Bug",
+        "Dragon",
+        "Flying",
+        "Grass",
+        "Cute",
+        "Normal",
+        "Mechanical"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "风速仪",
+          "description": "携带的技能每累计传动8，自己获得1层风起印记"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 127,
+    "base_mag_atk": 107,
+    "base_mag_def": 116,
+    "base_phy_atk": 47,
+    "base_phy_def": 72,
+    "base_spd": 50,
+    "default_legacy_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "dex_number": 456,
+    "evolution_chain_name": "斑鱼",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 610,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 600,
+    "image": "玳塔.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "玳塔"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": null,
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "乌龟塔理论",
+          "description": "每受到1次攻击伤害，敌方获得3层星陨印记"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 86,
+    "base_mag_atk": 111,
+    "base_mag_def": 100,
+    "base_phy_atk": 102,
+    "base_phy_def": 68,
+    "base_spd": 100,
+    "default_legacy_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "dex_number": 454,
+    "evolution_chain_name": "",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 601,
+    "image": "未完虫.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "未完虫"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": {
+      "id": 11,
+      "name": "Bug",
+      "localized": {
+        "zh": "虫"
+      },
+      "vulnerable_to": [
+        "Fire",
+        "Flying"
+      ],
+      "resistant_to": [
+        "Grass",
+        "Fighting"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "正模标本",
+          "description": "自己队伍中的其他精灵，在力竭1回合后会变为未完虫"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 112,
+    "base_mag_atk": 123,
+    "base_mag_def": 124,
+    "base_phy_atk": 53,
+    "base_phy_def": 87,
+    "base_spd": 100,
+    "default_legacy_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "dex_number": 453,
+    "evolution_chain_name": "章脑丸",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 609,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 602,
+    "image": "智辉章脑.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "智辉章脑"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": {
+      "id": 4,
+      "name": "Water",
+      "localized": {
+        "zh": "水"
+      },
+      "vulnerable_to": [
+        "Electric",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Fire"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "基因编辑",
+          "description": "自己携带技能的基础能耗，变为上回合双方使用的技能能耗之和"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 79,
+    "base_mag_atk": 29,
+    "base_mag_def": 120,
+    "base_phy_atk": 116,
+    "base_phy_def": 120,
+    "base_spd": 105,
+    "default_legacy_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "dex_number": 451,
+    "evolution_chain_name": "热团团",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 608,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 603,
+    "image": "圣凯布米龙.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "圣凯布米龙"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 11,
+      "name": "Bug",
+      "localized": {
+        "zh": "虫"
+      },
+      "vulnerable_to": [
+        "Fire",
+        "Flying"
+      ],
+      "resistant_to": [
+        "Grass",
+        "Fighting"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "热成像",
+          "description": "若上回合双方有精灵使用火系技能，本回合自己携带的虫系技能威力+100%"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 83,
+    "base_mag_atk": 100,
+    "base_mag_def": 113,
+    "base_phy_atk": 99,
+    "base_phy_def": 104,
+    "base_spd": 115,
+    "default_legacy_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "dex_number": 448,
+    "evolution_chain_name": "新月鸷",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 606,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 604,
+    "image": "月使鸷纳.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "月使鸷纳"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": {
+      "id": 7,
+      "name": "Ice",
+      "localized": {
+        "zh": "冰"
+      },
+      "vulnerable_to": [
+        "Mechanical",
+        "Ground",
+        "Fire",
+        "Fighting"
+      ],
+      "resistant_to": [
+        "Water",
+        "Light",
+        "Ice"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "冷光源",
+          "description": "若上回合双方有精灵使用翼系技能，本回合自己携带的冰系技能威力+100%"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 116,
+    "base_mag_atk": 120,
+    "base_mag_def": 71,
+    "base_phy_atk": 97,
+    "base_phy_def": 116,
+    "base_spd": 85,
+    "default_legacy_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "dex_number": 463,
+    "evolution_chain_name": "",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 605,
+    "image": "星星眼.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "星星眼"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": null,
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "宇宙之眼",
+          "description": "敌方每有1层星陨印记，自己获得物防+10%。"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 66,
+    "base_mag_atk": 80,
+    "base_mag_def": 90,
+    "base_phy_atk": 79,
+    "base_phy_def": 83,
+    "base_spd": 92,
+    "default_legacy_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "dex_number": 447,
+    "evolution_chain_name": "新月鸷",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": 615,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 606,
+    "image": "月辉鸠.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "月辉鸠"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": {
+      "id": 7,
+      "name": "Ice",
+      "localized": {
+        "zh": "冰"
+      },
+      "vulnerable_to": [
+        "Mechanical",
+        "Ground",
+        "Fire",
+        "Fighting"
+      ],
+      "resistant_to": [
+        "Water",
+        "Light",
+        "Ice"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "冷光源",
+          "description": "若上回合双方有精灵使用翼系技能，本回合自己携带的冰系技能威力+100%"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 604
+  },
+  {
+    "base_hp": 48,
+    "base_mag_atk": 18,
+    "base_mag_def": 72,
+    "base_phy_atk": 69,
+    "base_phy_def": 72,
+    "base_spd": 63,
+    "default_legacy_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "dex_number": 449,
+    "evolution_chain_name": "热团团",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 607,
+    "image": "热团团.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "热团团"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 11,
+      "name": "Bug",
+      "localized": {
+        "zh": "虫"
+      },
+      "vulnerable_to": [
+        "Fire",
+        "Flying"
+      ],
+      "resistant_to": [
+        "Grass",
+        "Fighting"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "热成像",
+          "description": "若上回合双方有精灵使用火系技能，本回合自己携带的虫系技能威力+100%"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 63,
+    "base_mag_atk": 23,
+    "base_mag_def": 96,
+    "base_phy_atk": 92,
+    "base_phy_def": 96,
+    "base_spd": 84,
+    "default_legacy_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "dex_number": 450,
+    "evolution_chain_name": "热团团",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": 607,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 608,
+    "image": "焰米龙.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "焰米龙"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 3,
+      "name": "Fire",
+      "localized": {
+        "zh": "火"
+      },
+      "vulnerable_to": [
+        "Ground",
+        "Water"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Cute",
+        "Bug",
+        "Grass",
+        "Ice"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 11,
+      "name": "Bug",
+      "localized": {
+        "zh": "虫"
+      },
+      "vulnerable_to": [
+        "Fire",
+        "Flying"
+      ],
+      "resistant_to": [
+        "Grass",
+        "Fighting"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "热成像",
+          "description": "若上回合双方有精灵使用火系技能，本回合自己携带的虫系技能威力+100%"
+        }
+      }
+    },
+    "learnset_mode": "own"
+  },
+  {
+    "base_hp": 89,
+    "base_mag_atk": 99,
+    "base_mag_def": 99,
+    "base_phy_atk": 42,
+    "base_phy_def": 69,
+    "base_spd": 80,
+    "default_legacy_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "dex_number": 452,
+    "evolution_chain_name": "章脑丸",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 609,
+    "image": "章脑丸.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "章脑丸"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": {
+      "id": 4,
+      "name": "Water",
+      "localized": {
+        "zh": "水"
+      },
+      "vulnerable_to": [
+        "Electric",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Mechanical",
+        "Fire"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "基因编辑",
+          "description": "自己携带技能的基础能耗，变为上回合双方使用的技能能耗之和"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 602
+  },
+  {
+    "base_hp": 101,
+    "base_mag_atk": 85,
+    "base_mag_def": 93,
+    "base_phy_atk": 37,
+    "base_phy_def": 58,
+    "base_spd": 40,
+    "default_legacy_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "dex_number": 455,
+    "evolution_chain_name": "斑鱼",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 610,
+    "image": "斑鱼.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "斑鱼"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": null,
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "乌龟塔理论",
+          "description": "每受到1次攻击伤害，敌方获得3层星陨印记"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 600
+  },
+  {
+    "base_hp": 78,
+    "base_mag_atk": 77,
+    "base_mag_def": 67,
+    "base_phy_atk": 79,
+    "base_phy_def": 93,
+    "base_spd": 96,
+    "default_legacy_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "dex_number": 457,
+    "evolution_chain_name": "量风碗",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 611,
+    "image": "量风碗.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "量风碗"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 17,
+      "name": "Mechanical",
+      "localized": {
+        "zh": "机械"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Water",
+        "Fire"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Poison",
+        "Ice",
+        "Bug",
+        "Dragon",
+        "Flying",
+        "Grass",
+        "Cute",
+        "Normal",
+        "Mechanical"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "风速仪",
+          "description": "携带的技能每累计传动8，自己获得1层风起印记"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 599
+  },
+  {
+    "base_hp": 78,
+    "base_mag_atk": 88,
+    "base_mag_def": 92,
+    "base_phy_atk": 93,
+    "base_phy_def": 99,
+    "base_spd": 96,
+    "default_legacy_type": {
+      "id": 16,
+      "name": "Dark",
+      "localized": {
+        "zh": "恶"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Bug",
+        "Cute",
+        "Light"
+      ],
+      "resistant_to": [
+        "Dark",
+        "Ghost"
+      ]
+    },
+    "dex_number": 459,
+    "evolution_chain_name": "小浣蛋",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 612,
+    "image": "小浣蛋.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "小浣蛋"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 16,
+      "name": "Dark",
+      "localized": {
+        "zh": "恶"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Bug",
+        "Cute",
+        "Light"
+      ],
+      "resistant_to": [
+        "Dark",
+        "Ghost"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": null,
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "翻垃圾桶",
+          "description": "入场时自己未携带的技能位置会变为敌方最近使用过的技能，且能耗-2"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 598
+  },
+  {
+    "base_hp": 99,
+    "base_mag_atk": 93,
+    "base_mag_def": 105,
+    "base_phy_atk": 37,
+    "base_phy_def": 80,
+    "base_spd": 76,
+    "default_legacy_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "dex_number": 461,
+    "evolution_chain_name": "幽铃",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 613,
+    "image": "幽铃.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "幽铃"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "sub_type": null,
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "盗魂铃",
+          "description": "初始能量为0，首次入场前敌方每聚能1次，回复5能量（可突破上限），在场时自己回复的能量-4"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 597
+  },
+  {
+    "base_hp": 66,
+    "base_mag_atk": 32,
+    "base_mag_def": 77,
+    "base_phy_atk": 92,
+    "base_phy_def": 98,
+    "base_spd": 100,
+    "default_legacy_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "dex_number": 464,
+    "evolution_chain_name": "布灵",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 614,
+    "image": "布灵.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "布灵"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "sub_type": {
+      "id": 5,
+      "name": "Light",
+      "localized": {
+        "zh": "光"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Grass"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Dark"
+      ]
+    },
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "旧玩具",
+          "description": "己方精灵每使用过1个不同系别的技能，自己入场时获得双攻+10%"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 596
+  },
+  {
+    "base_hp": 50,
+    "base_mag_atk": 60,
+    "base_mag_def": 68,
+    "base_phy_atk": 59,
+    "base_phy_def": 62,
+    "base_spd": 69,
+    "default_legacy_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "dex_number": 446,
+    "evolution_chain_name": "新月鸷",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 615,
+    "image": "新月鸷.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "新月鸷"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 13,
+      "name": "Flying",
+      "localized": {
+        "zh": "翼"
+      },
+      "vulnerable_to": [
+        "Ice",
+        "Electric"
+      ],
+      "resistant_to": [
+        "Bug",
+        "Fighting",
+        "Grass"
+      ]
+    },
+    "sub_type": {
+      "id": 7,
+      "name": "Ice",
+      "localized": {
+        "zh": "冰"
+      },
+      "vulnerable_to": [
+        "Mechanical",
+        "Ground",
+        "Fire",
+        "Fighting"
+      ],
+      "resistant_to": [
+        "Water",
+        "Light",
+        "Ice"
+      ]
+    },
+    "preferred_attack_style": "Magic",
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "冷光源",
+          "description": "若上回合双方有精灵使用翼系技能，本回合自己携带的冰系技能威力+100%"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 604
+  },
+  {
+    "base_hp": 69,
+    "base_mag_atk": 31,
+    "base_mag_def": 59,
+    "base_phy_atk": 77,
+    "base_phy_def": 77,
+    "base_spd": 78,
+    "default_legacy_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "dex_number": 443,
+    "evolution_chain_name": "诅咒狼灵",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 616,
+    "image": "诅咒狼灵.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "诅咒狼灵"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "sub_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "铭记于月亮",
+          "description": "获得自己击败的精灵的特性，每次攻击后自己失去5%生命。"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 595
+  },
+  {
+    "base_hp": 92,
+    "base_mag_atk": 41,
+    "base_mag_def": 78,
+    "base_phy_atk": 103,
+    "base_phy_def": 102,
+    "base_spd": 104,
+    "default_legacy_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "dex_number": 444,
+    "evolution_chain_name": "诅咒狼灵",
+    "evolution_stage": "基础形态",
+    "evolves_from_id": 616,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 617,
+    "image": "新月狼灵.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "新月狼灵"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 15,
+      "name": "Ghost",
+      "localized": {
+        "zh": "幽"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Light",
+        "Dark"
+      ],
+      "resistant_to": [
+        "Poison",
+        "Bug",
+        "Fighting",
+        "Normal"
+      ]
+    },
+    "sub_type": {
+      "id": 18,
+      "name": "Illusion",
+      "localized": {
+        "zh": "幻"
+      },
+      "vulnerable_to": [
+        "Ghost",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Fighting"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "铭记于月亮",
+          "description": "获得自己击败的精灵的特性，每次攻击后自己失去5%生命。"
+        }
+      }
+    },
+    "learnset_mode": "inherit",
+    "learnset_inherits_from_id": 595
+  },
+  {
+    "base_hp": 105,
+    "base_mag_atk": 50,
+    "base_mag_def": 98,
+    "base_phy_atk": 132,
+    "base_phy_def": 120,
+    "base_spd": 95,
+    "default_legacy_type": {
+      "id": 17,
+      "name": "Mechanical",
+      "localized": {
+        "zh": "机械"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Water",
+        "Fire"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Poison",
+        "Ice",
+        "Bug",
+        "Dragon",
+        "Flying",
+        "Grass",
+        "Cute",
+        "Normal",
+        "Mechanical"
+      ]
+    },
+    "dex_number": 466,
+    "evolution_chain_name": "",
+    "evolution_stage": "高级形态",
+    "evolves_from_id": null,
+    "form": "default",
+    "form_category": "无多形态",
+    "id": 618,
+    "image": "果实立方人.png",
+    "is_leader_form": false,
+    "leader_potential": false,
+    "localized": {
+      "zh": {
+        "name": "果实立方人"
+      }
+    },
+    "main_form_name": "",
+    "main_type": {
+      "id": 17,
+      "name": "Mechanical",
+      "localized": {
+        "zh": "机械"
+      },
+      "vulnerable_to": [
+        "Fighting",
+        "Water",
+        "Fire"
+      ],
+      "resistant_to": [
+        "Illusion",
+        "Poison",
+        "Ice",
+        "Bug",
+        "Dragon",
+        "Flying",
+        "Grass",
+        "Cute",
+        "Normal",
+        "Mechanical"
+      ]
+    },
+    "sub_type": {
+      "id": 2,
+      "name": "Grass",
+      "localized": {
+        "zh": "草"
+      },
+      "vulnerable_to": [
+        "Flying",
+        "Fire",
+        "Ice",
+        "Poison",
+        "Bug"
+      ],
+      "resistant_to": [
+        "Water",
+        "Light",
+        "Ground",
+        "Electric"
+      ]
+    },
+    "preferred_attack_style": "Physical",
+    "trait": {
+      "localized": {
+        "zh": {
+          "name": "秋收",
+          "description": "处于草系环境中时，机械系技能威力+50%。"
+        }
+      }
+    },
+    "learnset_mode": "own"
   }
 ]

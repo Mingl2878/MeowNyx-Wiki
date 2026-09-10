@@ -9,6 +9,8 @@ const RKData = (function () {
   let wikiData = {};    // wiki monster name -> { image, skills }
   let typeMap = {};      // name -> type object
   let typeZhMap = {};    // zh name -> type object
+  let monsterById = new Map();
+  let childIdsByParentId = new Map();
   let loaded = false;
 
   /** 属性中文名映射（与 types.json 的 localized.zh 一致） */
@@ -186,6 +188,16 @@ const RKData = (function () {
       monsters.forEach(m => { if (m.image) m.image = m.image + '?' + _imgVer; });
       Object.values(wikiData).forEach(wd => { if (wd && wd.image) wd.image = wd.image + '?' + _imgVer; });
 
+      // 构建精灵 ID / 进化子节点索引，供学习面来源解析使用。
+      monsterById = new Map(monsters.map(m => [m.id, m]));
+      childIdsByParentId = new Map();
+      monsters.forEach(m => {
+        if (m.evolves_from_id == null) return;
+        const children = childIdsByParentId.get(m.evolves_from_id) || [];
+        children.push(m.id);
+        childIdsByParentId.set(m.evolves_from_id, children);
+      });
+
       // 构建属性映射
       types.forEach(t => {
         typeMap[t.name] = t;
@@ -303,6 +315,79 @@ const RKData = (function () {
     return null;
   }
 
+  /**
+   * 解析精灵实际使用的学习面来源。
+   * 高级形态与地区形态保留独立技能；首领及可唯一确定高级来源的非最终形态继承。
+   */
+  function getExactWikiData(monster) {
+    if (!monster) return null;
+    return wikiData[getMonsterDisplayName(monster)] || null;
+  }
+
+  function findReachableHighForms(monster) {
+    const result = [];
+    const queue = [...(childIdsByParentId.get(monster.id) || [])];
+    const seen = new Set([monster.id]);
+    while (queue.length) {
+      const id = queue.shift();
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const child = monsterById.get(id);
+      if (!child) continue;
+      if (child.evolution_stage === '高级形态' && !child.is_leader_form) result.push(child);
+      queue.push(...(childIdsByParentId.get(id) || []));
+    }
+    return result;
+  }
+
+  function resolveSkillSource(monsterOrId) {
+    const monster = typeof monsterOrId === 'object' ? monsterOrId : monsterById.get(monsterOrId);
+    if (!monster) return { monster: null, sourceMonster: null, wiki: null, reason: 'missing-monster' };
+    // 精确键优先；历史冬季形态缺少精确键时保留既有基础名回退兼容性。
+    const ownWiki = getExactWikiData(monster) || getWikiData(getMonsterDisplayName(monster));
+    const explicitId = monster.learnset_mode === 'inherit' ? monster.learnset_inherits_from_id : null;
+    if (explicitId != null) {
+      const sourceMonster = monsterById.get(explicitId);
+      const sourceWiki = getExactWikiData(sourceMonster) || getWikiData(getMonsterDisplayName(sourceMonster));
+      return { monster, sourceMonster, wiki: sourceWiki, reason: sourceMonster ? 'explicit-inherit' : 'invalid-explicit-source' };
+    }
+
+    // 地区主/变体与非首领高级形态使用自身精确技能面。
+    if (!monster.is_leader_form && (monster.form_category === '主形态' || monster.form_category === '变体形态' || monster.evolution_stage === '高级形态')) {
+      return { monster, sourceMonster: monster, wiki: ownWiki, reason: 'own-form-or-high' };
+    }
+
+    // 首领沿上游链寻找第一个高级形态。
+    if (monster.is_leader_form || monster.evolution_stage === '首领形态') {
+      const seen = new Set([monster.id]);
+      let current = monster;
+      while (current && current.evolves_from_id != null) {
+        current = monsterById.get(current.evolves_from_id);
+        if (!current || seen.has(current.id)) break;
+        seen.add(current.id);
+        if (current.evolution_stage === '高级形态' && !current.is_leader_form) {
+          return { monster, sourceMonster: current, wiki: getExactWikiData(current) || getWikiData(getMonsterDisplayName(current)), reason: 'leader-parent-high' };
+        }
+      }
+      return { monster, sourceMonster: monster, wiki: ownWiki, reason: 'leader-own-fallback' };
+    }
+
+    const candidates = findReachableHighForms(monster);
+    if (candidates.length === 1) {
+      const sourceMonster = candidates[0];
+      return { monster, sourceMonster, wiki: getExactWikiData(sourceMonster) || getWikiData(getMonsterDisplayName(sourceMonster)), reason: 'unique-high-descendant' };
+    }
+    if (candidates.length > 1) {
+      const main = candidates.find(candidate => candidate.form_category === '主形态');
+      if (main) return { monster, sourceMonster: main, wiki: getExactWikiData(main) || getWikiData(getMonsterDisplayName(main)), reason: 'branch-main-form' };
+    }
+    return { monster, sourceMonster: monster, wiki: ownWiki, reason: candidates.length ? 'branch-own-fallback' : 'own-no-high-descendant' };
+  }
+
+  function getResolvedWikiData(monsterOrId) {
+    return resolveSkillSource(monsterOrId).wiki;
+  }
+
   /** 技能类型 → 图标文件名 */
   const SKILL_TYPE_ICON_MAP = {
     '物攻': 'physical-attack',
@@ -415,7 +500,7 @@ const RKData = (function () {
     getMonsterName, getMonsterDisplayName, getMonsterDisplayNameHtml, getMoveName, getMoveDesc,
     getTypeZh, getTypeShortZh, getTypeEn, getTypeZhFull, getTypeObjZh,
     getTypeIcon, typeBadgeHtml,
-    getWikiData,
+    getWikiData, getExactWikiData, resolveSkillSource, getResolvedWikiData,
     buildSkillCardHtml,
     getTraitInfo, traitIconHtml, buildTraitDetailHtml,
     TYPE_ZH, TYPE_SHORT_ZH, ZH_TO_EN, ALL_TYPES, TYPE_ZH_FULL, PILL_ORDER,

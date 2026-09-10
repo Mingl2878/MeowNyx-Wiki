@@ -462,8 +462,7 @@ const UpdateDataPage = (function () {
   const SKILL_SOURCE_LABEL = { '默认': '基础技能', '血脉': '血脉技能', '技能石': '技能石', '传说': '传说技能' };
 
   function getMonsterSkillNamesWithSource(m) {
-    const name = RKData.getMonsterDisplayName(m);
-    const wd = RKData.getWikiData(name);
+    const wd = RKData.getResolvedWikiData(m);
     if (wd && wd.skills) return wd.skills.map(s => ({ name: s.name, source: s.source || '默认' }));
     return [];
   }
@@ -507,7 +506,7 @@ const UpdateDataPage = (function () {
     // 从 wiki 数据中查找技能来源
     const allMonsters = RKData.getMonsters();
     for (const m of allMonsters) {
-      const wd = RKData.getWikiData(RKData.getMonsterDisplayName(m));
+      const wd = RKData.getResolvedWikiData(m);
       if (wd && wd.skills) {
         const skill = wd.skills.find(s => s.name === name);
         if (skill) return skill.source || '默认';
@@ -517,8 +516,7 @@ const UpdateDataPage = (function () {
   }
 
   function getMonsterSkillNames(m) {
-    const name = RKData.getMonsterDisplayName(m);
-    const wd = RKData.getWikiData(name);
+    const wd = RKData.getResolvedWikiData(m);
     if (wd && wd.skills) return wd.skills.map(s => ({ name: s.name, source: s.source || '默认' }));
     return [];
   }

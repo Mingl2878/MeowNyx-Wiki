@@ -8,6 +8,7 @@ const MovesPage = (function () {
   let activeElem = new Set();   // 属性改为多选并集
   let activeEnergy = new Set(); // 能耗改为多选并集
   let activePower = new Set();  // 威力改为多选并集
+  let activeSeasons = new Set();
   let activeSortKey = '';
   let activeSortState = 0; // 0=default, 1=desc, 2=asc
   let multiSkillSelected = []; // 交集筛选：额外选中的技能名
@@ -126,6 +127,11 @@ const MovesPage = (function () {
             ${[40,60,80,100,120,'140+'].map(p => `<span class="type-pill" data-filter-power="${p}" style="width:auto;padding:6px 8px;"><img src="assets/icons/move-sub/conditional-attack.png" class="type-pill-icon move-filter-icon-sm" alt="威力">${p}</span>`).join('')}
           </div>
         </div>
+        <div class="filter-section">
+          <div class="type-pills type-pills-nowrap" id="move-season-pills" style="width:auto;">
+            ${['S1', 'S2', 'S3', 'S4'].map(season => `<span class="type-pill" data-filter-season="${season}" style="padding:6px 12px;">${season}</span>`).join('')}
+          </div>
+        </div>
 
       </div>
       <div class="move-scroll-wrapper hide-scrollbar">
@@ -164,6 +170,10 @@ const MovesPage = (function () {
       const el = filterContainer.querySelector(`[data-filter-power="${val}"]`);
       if (el) el.classList.add('active');
     });
+    activeSeasons.forEach(season => {
+      const el = filterContainer.querySelector(`[data-filter-season="${season}"]`);
+      if (el) el.classList.add('active');
+    });
     if (activeSortKey && activeSortState > 0) {
       const el = filterContainer.querySelector(`[data-sort-key="${activeSortKey}"]`);
       if (el) el.classList.add('active');
@@ -191,9 +201,21 @@ const MovesPage = (function () {
     input.setAttribute('autocomplete', 'off');
     input.style.cssText = 'width:100%;';
     input.value = currentFilter.keyword || '';
-    input.addEventListener('input', () => {
-      currentFilter.keyword = input.value;
+    let isComposing = false;
+    const applySearch = () => {
+      const keyword = input.value;
+      if (currentFilter.keyword === keyword) return;
+      currentFilter.keyword = keyword;
       renderList();
+    };
+    input.addEventListener('compositionstart', () => { isComposing = true; });
+    input.addEventListener('compositionend', () => {
+      isComposing = false;
+      applySearch();
+    });
+    input.addEventListener('input', event => {
+      if (isComposing || event.isComposing) return;
+      applySearch();
     });
     wrapper.appendChild(input);
 
@@ -225,7 +247,7 @@ const MovesPage = (function () {
         renderList();
         return;
       }
-      const btn = e.target.closest('.type-pill[data-filter-type], .type-pill[data-filter-elem], .type-pill[data-filter-energy], .type-pill[data-filter-power]');
+      const btn = e.target.closest('.type-pill[data-filter-type], .type-pill[data-filter-elem], .type-pill[data-filter-energy], .type-pill[data-filter-power], .type-pill[data-filter-season]');
       if (!btn) return;
 
       if (btn.dataset.filterType) {
@@ -242,6 +264,12 @@ const MovesPage = (function () {
         const val = btn.dataset.filterElem;
         if (activeElem.has(val)) { activeElem.delete(val); btn.classList.remove('active'); }
         else { activeElem.add(val); btn.classList.add('active'); }
+      }
+      if (btn.dataset.filterSeason) {
+        const season = btn.dataset.filterSeason;
+        if (activeSeasons.has(season)) activeSeasons.delete(season);
+        else activeSeasons.add(season);
+        btn.classList.toggle('active', activeSeasons.has(season));
       }
       if (btn.dataset.filterEnergy) {
         const val = btn.dataset.filterEnergy;
@@ -317,18 +345,18 @@ const MovesPage = (function () {
     const bloodlineLearn = []; // 血脉
     const skillStone = []; // 技能石
 
+    const resolvedSourceIds = new Set();
     allMonsters.forEach(m => {
-      if (m.is_leader_form) return; // 排除首领形态
-      const mName = RKData.getMonsterName(m);
-      const mDisplayName = RKData.getMonsterDisplayName(m);
-      // 变体形态优先用完整显示名查 wiki，查不到再退回用名字查
-      const form = m.form || '';
-      const hasForm = form && form !== 'default' && form !== 'Original';
-      const wiki = hasForm ? (RKData.getWikiData(mDisplayName) || RKData.getWikiData(mName)) : RKData.getWikiData(mName);
+      if (m.is_leader_form) return; // 首领技能由对应高级形态代表
+      const resolved = RKData.resolveSkillSource(m);
+      const sourceMonster = resolved.sourceMonster || m;
+      if (resolvedSourceIds.has(sourceMonster.id)) return;
+      const wiki = resolved.wiki;
       if (wiki && wiki.skills) {
-        wiki.skills.forEach(sk => {
-          if (sk.name === name) {
-            const monsterInfo = { monster: m, source: sk.source };
+        const matched = wiki.skills.filter(sk => sk.name === name);
+        if (matched.length) resolvedSourceIds.add(sourceMonster.id);
+        matched.forEach(sk => {
+            const monsterInfo = { monster: sourceMonster, source: sk.source };
             if (sk.source === '技能石') {
               skillStone.push(monsterInfo);
             } else if (sk.source === '血脉') {
@@ -338,7 +366,6 @@ const MovesPage = (function () {
             } else {
               selfLearn.push(monsterInfo);
             }
-          }
         });
       }
     });
@@ -567,11 +594,7 @@ const MovesPage = (function () {
 
     allMonsters.forEach(m => {
       if (m.is_leader_form) return;
-      const mName = RKData.getMonsterName(m);
-      const mDisplayName = RKData.getMonsterDisplayName(m);
-      const form = m.form || '';
-      const hasForm = form && form !== 'default' && form !== 'Original';
-      const wiki = hasForm ? (RKData.getWikiData(mDisplayName) || RKData.getWikiData(mName)) : RKData.getWikiData(mName);
+      const wiki = RKData.getResolvedWikiData(m);
       if (wiki && wiki.skills) {
         const skillSet = new Set(wiki.skills.map(s => s.name));
         if (allSkillNames.every(sn => skillSet.has(sn))) {
@@ -637,6 +660,10 @@ const MovesPage = (function () {
           return mv.power >= min && mv.power <= max;
         });
       });
+    }
+    // 赛季筛选：多选并集；未选任何赛季时显示全部。
+    if (activeSeasons.size > 0) {
+      list = list.filter(mv => activeSeasons.has(mv.season || 'S1'));
     }
     // 能耗筛选（多选并集）
     if (activeEnergy.size > 0) {

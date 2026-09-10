@@ -1,8 +1,8 @@
-﻿package main
+package main
 
 import (
-	"compress/gzip"
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -77,11 +77,11 @@ var (
 type winRect struct{ left, top, right, bottom int32 }
 
 type monitorInfoExW struct {
-	cbSize     uint32
-	rcMonitor  winRect
-	rcWork     winRect
-	dwFlags    uint32
-	szDevice   [32]uint16
+	cbSize    uint32
+	rcMonitor winRect
+	rcWork    winRect
+	dwFlags   uint32
+	szDevice  [32]uint16
 }
 
 var (
@@ -470,7 +470,6 @@ func runWikiUpdate(exeDir string) (string, error) {
 // ---- JSON 响应 ----
 func writeJSON(w http.ResponseWriter, status int, data []byte) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.WriteHeader(status)
 	w.Write(data)
@@ -488,7 +487,6 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
 	if r.Method == http.MethodOptions {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET,POST")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
 		w.WriteHeader(http.StatusNoContent)
@@ -634,6 +632,29 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// ---- 用户设置 ----
+	if path == "/api/fonts" {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, []byte(`{"error":"Method not allowed"}`))
+			return
+		}
+		out, _ := json.Marshal(map[string]any{"fonts": installedFontFamilies()})
+		writeJSON(w, 200, out)
+		return
+	}
+	if path == "/api/font-file" {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, []byte(`{"error":"Method not allowed"}`))
+			return
+		}
+		fontPath, ok := selectedUserFontFile(q.Get("family"))
+		if !ok {
+			writeJSON(w, http.StatusNotFound, []byte(`{"error":"本机用户字体文件不可用"}`))
+			return
+		}
+		w.Header().Set("Cache-Control", "no-store")
+		http.ServeFile(w, r, fontPath)
+		return
+	}
 	if path == "/api/settings" && r.Method == http.MethodGet {
 		handleGetSettings(w, r)
 		return
@@ -804,15 +825,16 @@ func getMovesFilePath() string    { return getDataFilePath("moves.json") }
 
 // ---- 用户设置 ----
 type UserSettings struct {
-	CloseBehavior  string `json:"close_behavior"`  // "close" | "minimize"
-	WindowWidth    int    `json:"window_width"`
-	WindowHeight   int    `json:"window_height"`
-	WindowMaximized bool  `json:"window_maximized"`
-	DefaultRoute   string `json:"default_route"`
-	DefaultMaxZoom int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（50~200）
-	HotkeyMods     int    `json:"hotkey_mods"`     // 热键修饰键位掩码（1=ALT 2=CTRL 4=SHIFT 8=WIN）
-	HotkeyVK       int    `json:"hotkey_vk"`       // 热键虚拟键码（0=未绑定）
-	DefaultMonitor int    `json:"default_monitor"` // 默认打开的显示器（0=主显示器，多显示器时可用）
+	CloseBehavior   string `json:"close_behavior"` // "close" | "minimize"
+	WindowWidth     int    `json:"window_width"`
+	WindowHeight    int    `json:"window_height"`
+	WindowMaximized bool   `json:"window_maximized"`
+	DefaultRoute    string `json:"default_route"`
+	DefaultMaxZoom  int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（50~200）
+	HotkeyMods      int    `json:"hotkey_mods"`      // 热键修饰键位掩码（1=ALT 2=CTRL 4=SHIFT 8=WIN）
+	HotkeyVK        int    `json:"hotkey_vk"`        // 热键虚拟键码（0=未绑定）
+	DefaultMonitor  int    `json:"default_monitor"`  // 默认打开的显示器（0=主显示器，多显示器时可用）
+	FontFamily      string `json:"font_family"`      // "" = 跟随 Windows 系统字体
 }
 
 func getSettingsFilePath() string {
@@ -821,13 +843,13 @@ func getSettingsFilePath() string {
 
 func loadSettings() UserSettings {
 	s := UserSettings{
-		CloseBehavior:  "close",
-		WindowWidth:    1280,
-		WindowHeight:   800,
+		CloseBehavior:   "close",
+		WindowWidth:     1280,
+		WindowHeight:    800,
 		WindowMaximized: false,
-		DefaultRoute:   "petdex",
-		DefaultMaxZoom: 100,
-		DefaultMonitor: 0,
+		DefaultRoute:    "petdex",
+		DefaultMaxZoom:  100,
+		DefaultMonitor:  0,
 	}
 	path := getSettingsFilePath()
 	var data []byte
@@ -854,11 +876,26 @@ func loadSettings() UserSettings {
 	// 容错：去掉 UTF-8 BOM（记事本等编辑器保存的文件可能带 BOM，否则 Unmarshal 失败静默回退默认值）
 	data = bytes.TrimPrefix(data, []byte{0xEF, 0xBB, 0xBF})
 	json.Unmarshal(data, &s)
-	if s.WindowWidth <= 0 { s.WindowWidth = 1280 }
-	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
-	if s.CloseBehavior == "" { s.CloseBehavior = "close" }
-	if s.DefaultRoute == "" { s.DefaultRoute = "petdex" }
-	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
+	if font, ok := canonicalInstalledFont(s.FontFamily); ok {
+		s.FontFamily = font
+	} else {
+		s.FontFamily = ""
+	}
+	if s.WindowWidth <= 0 {
+		s.WindowWidth = 1280
+	}
+	if s.WindowHeight <= 0 {
+		s.WindowHeight = 800
+	}
+	if s.CloseBehavior == "" {
+		s.CloseBehavior = "close"
+	}
+	if s.DefaultRoute == "" {
+		s.DefaultRoute = "petdex"
+	}
+	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 {
+		s.DefaultMaxZoom = 100
+	}
 	return s
 }
 
@@ -882,19 +919,42 @@ func handleGetSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, 64*1024)
 	var s UserSettings
 	if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
 		writeJSON(w, 400, []byte(`{"ok":false,"error":"无效的请求"}`))
 		return
 	}
-	if s.CloseBehavior == "" { s.CloseBehavior = "close" }
-	if s.WindowWidth <= 0 { s.WindowWidth = 1280 }
-	if s.WindowHeight <= 0 { s.WindowHeight = 800 }
-	if s.DefaultRoute == "" { s.DefaultRoute = "petdex" }
-	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 { s.DefaultMaxZoom = 100 }
-	if s.HotkeyMods < 0 || s.HotkeyMods > 15 { s.HotkeyMods = 0 }
-	if s.HotkeyVK < 0 || s.HotkeyVK > 255 { s.HotkeyVK = 0 }
-	if s.DefaultMonitor < 0 || s.DefaultMonitor >= monitorCount() { s.DefaultMonitor = 0 }
+	if s.CloseBehavior == "" {
+		s.CloseBehavior = "close"
+	}
+	if s.WindowWidth <= 0 {
+		s.WindowWidth = 1280
+	}
+	if s.WindowHeight <= 0 {
+		s.WindowHeight = 800
+	}
+	if s.DefaultRoute == "" {
+		s.DefaultRoute = "petdex"
+	}
+	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 {
+		s.DefaultMaxZoom = 100
+	}
+	if s.HotkeyMods < 0 || s.HotkeyMods > 15 {
+		s.HotkeyMods = 0
+	}
+	if s.HotkeyVK < 0 || s.HotkeyVK > 255 {
+		s.HotkeyVK = 0
+	}
+	if s.DefaultMonitor < 0 || s.DefaultMonitor >= monitorCount() {
+		s.DefaultMonitor = 0
+	}
+	font, ok := canonicalInstalledFont(s.FontFamily)
+	if !ok {
+		writeJSON(w, 400, []byte(`{"ok":false,"error":"字体不可用"}`))
+		return
+	}
+	s.FontFamily = font
 	// 同步到消息钩子（关闭行为实时生效），并通知窗口线程重载热键
 	gCloseMu.Lock()
 	gCloseBehavior = s.CloseBehavior
@@ -936,9 +996,9 @@ func handleEditMonster(w http.ResponseWriter, r *http.Request) {
 		MainType       string `json:"main_type"`
 		SubType        string `json:"sub_type"`
 		EvolutionStage string `json:"evolution_stage"`
-		FormCategory  string `json:"form_category"`   // 无多形态 / 主形态 / 变体形态
-		MainFormName  string `json:"main_form_name"`   // 变体形态时指定的主形态名
-		EvolvesFromID *int   `json:"evolves_from_id"`  // 进化上游精灵ID, nil=无
+		FormCategory   string `json:"form_category"`   // 无多形态 / 主形态 / 变体形态
+		MainFormName   string `json:"main_form_name"`  // 变体形态时指定的主形态名
+		EvolvesFromID  *int   `json:"evolves_from_id"` // 进化上游精灵ID, nil=无
 		TraitName      string `json:"trait_name"`
 		TraitDesc      string `json:"trait_desc"`
 		SkillList      []struct {
@@ -970,8 +1030,12 @@ func handleEditMonster(w http.ResponseWriter, r *http.Request) {
 	foundIdx := -1
 	for i, m := range monsters {
 		id, ok := m["id"].(float64)
-		if !ok { continue }
-		if int(id) != req.ID { continue }
+		if !ok {
+			continue
+		}
+		if int(id) != req.ID {
+			continue
+		}
 		foundIdx = i
 
 		monsters[i]["base_hp"] = req.BaseHP
@@ -1045,23 +1109,23 @@ func handleEditMonster(w http.ResponseWriter, r *http.Request) {
 
 func handleAddMonster(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Name              string   `json:"name"`
-		EvolutionChain    string   `json:"evolution_chain_name"`
-		BaseHP            int      `json:"base_hp"`
-		BasePhyAtk        int      `json:"base_phy_atk"`
-		BaseMagAtk        int      `json:"base_mag_atk"`
-		BasePhyDef        int      `json:"base_phy_def"`
-		BaseMagDef        int      `json:"base_mag_def"`
-		BaseSpd           int      `json:"base_spd"`
-		MainType          string   `json:"main_type"`
-		SubType           string   `json:"sub_type"`
-		EvolutionStage    string   `json:"evolution_stage"`
-		FormCategory      string   `json:"form_category"`
-		MainFormName      string   `json:"main_form_name"`
-		EvolvesFromID     *int     `json:"evolves_from_id"`
-		TraitName         string   `json:"trait_name"`
-		TraitDesc         string   `json:"trait_desc"`
-		SkillList         []struct {
+		Name           string `json:"name"`
+		EvolutionChain string `json:"evolution_chain_name"`
+		BaseHP         int    `json:"base_hp"`
+		BasePhyAtk     int    `json:"base_phy_atk"`
+		BaseMagAtk     int    `json:"base_mag_atk"`
+		BasePhyDef     int    `json:"base_phy_def"`
+		BaseMagDef     int    `json:"base_mag_def"`
+		BaseSpd        int    `json:"base_spd"`
+		MainType       string `json:"main_type"`
+		SubType        string `json:"sub_type"`
+		EvolutionStage string `json:"evolution_stage"`
+		FormCategory   string `json:"form_category"`
+		MainFormName   string `json:"main_form_name"`
+		EvolvesFromID  *int   `json:"evolves_from_id"`
+		TraitName      string `json:"trait_name"`
+		TraitDesc      string `json:"trait_desc"`
+		SkillList      []struct {
 			Name   string `json:"name"`
 			Source string `json:"source"`
 		} `json:"skillList"`
@@ -1100,26 +1164,26 @@ func handleAddMonster(w http.ResponseWriter, r *http.Request) {
 	newID := maxID + 1
 
 	newMonster := map[string]interface{}{
-		"id":               newID,
-		"form":             "default",
-		"main_type":        map[string]interface{}{"name": req.MainType},
-		"sub_type":         nil,
-		"leader_potential": false,
-		"is_leader_form":   false,
+		"id":                     newID,
+		"form":                   "default",
+		"main_type":              map[string]interface{}{"name": req.MainType},
+		"sub_type":               nil,
+		"leader_potential":       false,
+		"is_leader_form":         false,
 		"preferred_attack_style": "Physical",
 		"localized": map[string]interface{}{
 			"zh": map[string]interface{}{
 				"name": req.Name,
 			},
 		},
-		"base_hp":     req.BaseHP,
-		"base_phy_atk": req.BasePhyAtk,
-		"base_mag_atk": req.BaseMagAtk,
-		"base_phy_def": req.BasePhyDef,
-		"base_mag_def": req.BaseMagDef,
-		"base_spd":    req.BaseSpd,
+		"base_hp":         req.BaseHP,
+		"base_phy_atk":    req.BasePhyAtk,
+		"base_mag_atk":    req.BaseMagAtk,
+		"base_phy_def":    req.BasePhyDef,
+		"base_mag_def":    req.BaseMagDef,
+		"base_spd":        req.BaseSpd,
 		"evolves_from_id": req.EvolvesFromID,
-		"dex_number":  0,
+		"dex_number":      0,
 		"trait": map[string]interface{}{
 			"localized": map[string]interface{}{
 				"zh": map[string]interface{}{
@@ -1128,10 +1192,10 @@ func handleAddMonster(w http.ResponseWriter, r *http.Request) {
 				},
 			},
 		},
-		"image":               "",
-		"evolution_stage":     req.EvolutionStage,
-		"form_category":       req.FormCategory,
-		"main_form_name":      req.MainFormName,
+		"image":                "",
+		"evolution_stage":      req.EvolutionStage,
+		"form_category":        req.FormCategory,
+		"main_form_name":       req.MainFormName,
 		"evolution_chain_name": req.EvolutionChain,
 	}
 
@@ -1210,10 +1274,12 @@ func handleAddMove(w http.ResponseWriter, r *http.Request) {
 		"条件攻击": "Conditional Attack", "能量": "Energy",
 	}
 	catEn := catMap[req.Category]
-	if catEn == "" { catEn = "Status" }
+	if catEn == "" {
+		catEn = "Status"
+	}
 
 	newMove := map[string]interface{}{
-		"id":     maxID + 1,
+		"id":        maxID + 1,
 		"move_type": map[string]interface{}{"name": req.Type},
 		"localized": map[string]interface{}{
 			"zh": map[string]interface{}{
@@ -1221,10 +1287,10 @@ func handleAddMove(w http.ResponseWriter, r *http.Request) {
 				"description": req.Description,
 			},
 		},
-		"move_category":  catEn,
-		"energy_cost":    req.Energy,
-		"power":          req.Power,
-		"base_combo":     req.Combo,
+		"move_category": catEn,
+		"energy_cost":   req.Energy,
+		"power":         req.Power,
+		"base_combo":    req.Combo,
 	}
 
 	moves = append(moves, newMove)
@@ -1239,9 +1305,9 @@ func handleAddMove(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateWikiSkills(monster map[string]interface{}, skillList []struct {
-		Name   string `json:"name"`
-		Source string `json:"source"`
-	}) {
+	Name   string `json:"name"`
+	Source string `json:"source"`
+}) {
 	// 获取精灵显示名
 	name := ""
 	if loc, ok := monster["localized"].(map[string]interface{}); ok {
@@ -1254,14 +1320,20 @@ func updateWikiSkills(monster map[string]interface{}, skillList []struct {
 	if form, ok := monster["form"].(string); ok && form != "" && form != "default" {
 		name = name + "（" + form + "）"
 	}
-	if name == "" { return }
+	if name == "" {
+		return
+	}
 
 	wikiPath := getDataFilePath("wiki_monster_data.json")
 	data, err := os.ReadFile(wikiPath)
-	if err != nil { return }
+	if err != nil {
+		return
+	}
 
 	var wiki map[string]interface{}
-	if err := json.Unmarshal(data, &wiki); err != nil { return }
+	if err := json.Unmarshal(data, &wiki); err != nil {
+		return
+	}
 
 	// 从 moves.json 构建技能名 → (类型, 属性, 描述) 映射
 	moveTypeMap := map[string]string{
@@ -1277,32 +1349,46 @@ func updateWikiSkills(monster map[string]interface{}, skillList []struct {
 				name := ""
 				if loc, ok := mv["localized"].(map[string]interface{}); ok {
 					if zh, ok := loc["zh"].(map[string]interface{}); ok {
-						if n, ok := zh["name"].(string); ok { name = n }
+						if n, ok := zh["name"].(string); ok {
+							name = n
+						}
 					}
 				}
-				if name == "" { continue }
+				if name == "" {
+					continue
+				}
 				catEn, _ := mv["move_category"].(string)
 				catZh := moveTypeMap[catEn]
-				if catZh == "" { catZh = "自定义" }
+				if catZh == "" {
+					catZh = "自定义"
+				}
 				elem := "普通"
 				if mt, ok := mv["move_type"].(map[string]interface{}); ok {
 					if loc, ok := mt["localized"].(map[string]interface{}); ok {
-						if zh, ok := loc["zh"].(string); ok && zh != "" { elem = zh }
+						if zh, ok := loc["zh"].(string); ok && zh != "" {
+							elem = zh
+						}
 						if zhMap, ok := loc["zh"].(map[string]interface{}); ok {
-							if v, ok := zhMap["zh"].(string); ok && v != "" { elem = v }
+							if v, ok := zhMap["zh"].(string); ok && v != "" {
+								elem = v
+							}
 						}
 					}
 				}
 				// 也从 move_type.localized.zh 获取
 				if mt, ok := mv["move_type"].(map[string]interface{}); ok {
 					if loc, ok := mt["localized"].(map[string]interface{}); ok {
-						if zh, ok := loc["zh"].(string); ok && zh != "" { elem = zh }
+						if zh, ok := loc["zh"].(string); ok && zh != "" {
+							elem = zh
+						}
 					}
 				}
 				desc := ""
 				if loc, ok := mv["localized"].(map[string]interface{}); ok {
 					if zh, ok := loc["zh"].(map[string]interface{}); ok {
-						if d, ok := zh["description"].(string); ok { desc = d }
+						if d, ok := zh["description"].(string); ok {
+							desc = d
+						}
 					}
 				}
 				skillInfoMap[name] = struct{ cat, elem, desc string }{catZh, elem, desc}
@@ -1318,11 +1404,11 @@ func updateWikiSkills(monster map[string]interface{}, skillList []struct {
 			info = struct{ cat, elem, desc string }{"自定义", "普通", ""}
 		}
 		skills = append(skills, map[string]interface{}{
-			"name":   s.Name,
-			"source": s.Source,
-			"type":   info.cat,
+			"name":    s.Name,
+			"source":  s.Source,
+			"type":    info.cat,
 			"element": info.elem,
-			"desc":   info.desc,
+			"desc":    info.desc,
 		})
 	}
 
@@ -1438,7 +1524,7 @@ func serveFileWithMIME(w http.ResponseWriter, r *http.Request, relPath string) {
 
 // ---- 找可用端口 ----
 func findFreePort(preferred int) int {
-	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", preferred))
+	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", preferred))
 	if err == nil {
 		ln.Close()
 		return preferred
@@ -1468,14 +1554,14 @@ func main() {
 	loadCache()
 
 	port := findFreePort(PORT)
-	pageURL := fmt.Sprintf("http://localhost:%d/", port)
+	pageURL := fmt.Sprintf("http://127.0.0.1:%d/", port)
 
 	// 启动 HTTP 服务器（后台 goroutine）
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/", handleAPI)
 	mux.HandleFunc("/", handleStatic)
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
 		log.Fatalf("端口监听失败: %v", err)
 	}
@@ -1496,12 +1582,16 @@ func main() {
 
 	// 创建 WebView2 窗口
 	wWidth, wHeight := uint(1280), uint(800)
-	if settings.WindowWidth > 0 { wWidth = uint(settings.WindowWidth) }
-	if settings.WindowHeight > 0 { wHeight = uint(settings.WindowHeight) }
+	if settings.WindowWidth > 0 {
+		wWidth = uint(settings.WindowWidth)
+	}
+	if settings.WindowHeight > 0 {
+		wHeight = uint(settings.WindowHeight)
+	}
 
 	wv := webview.NewWithOptions(webview.WebViewOptions{
-		Debug: false,
-		Window: nil,
+		Debug:    false,
+		Window:   nil,
 		DataPath: filepath.Join(getUserDataDir(), "webview2"), // localStorage 等浏览器数据存用户目录
 		WindowOptions: webview.WindowOptions{
 			Title:  "小黑猫 Wiki",
@@ -1542,5 +1632,3 @@ func main() {
 	wv.Navigate(pageURL)
 	wv.Run()
 }
-
-

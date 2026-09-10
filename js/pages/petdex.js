@@ -7,6 +7,7 @@ const PetDexPage = (function () {
     keyword: '',
     activeTypes: new Set(),    // 选中的属性集合，多选交集筛选
     activeForms: new Set(['high']),  // 多选: 'high' | 'leader'
+    activeSeasons: new Set(),
     sortKey: 'dex_number',
     sortAsc: true,
     selectedRow: null,
@@ -22,6 +23,7 @@ const PetDexPage = (function () {
 
   function render(container) {
     container.innerHTML = `
+      <div class="petdex-page-layout">
       <!-- 筛选面板 -->
       <div class="filter-panel">
         <div id="petdex-search-slot" style="text-align:center;margin-bottom:16px;"></div>
@@ -38,6 +40,16 @@ const PetDexPage = (function () {
             <button class="form-btn" data-form="leader">首领形态</button>
           </div>
         </div>
+        <!-- 赛季筛选 -->
+        <div class="filter-section" style="display:flex;align-items:center;justify-content:center;gap:12px;">
+          <span class="filter-section-label" style="margin-bottom:0;white-space:nowrap;">赛季</span>
+          <div class="form-buttons" id="season-buttons">
+            <button class="form-btn" data-season="S1">S1</button>
+            <button class="form-btn" data-season="S2">S2</button>
+            <button class="form-btn" data-season="S3">S3</button>
+            <button class="form-btn" data-season="S4">S4</button>
+          </div>
+        </div>
       </div>
       <!-- 数据表格 -->
       <div class="scroll-wrapper-container">
@@ -46,7 +58,7 @@ const PetDexPage = (function () {
           <thead>
             <tr>
               <th data-sort="dex_number">编号</th>
-              <th data-sort="name">精灵</th>
+              <th>精灵</th>
               <th>属性</th>
               <th>特性</th>
               <th data-sort="base_hp">生命</th>
@@ -61,6 +73,7 @@ const PetDexPage = (function () {
           </thead>
           <tbody id="pet-tbody"></tbody>
         </table>
+      </div>
       </div>
       </div>
     `;
@@ -78,9 +91,21 @@ const PetDexPage = (function () {
     searchInput.style.cssText = 'width:100%;';
     searchWrap.appendChild(searchInput);
     searchInput.value = state.keyword || '';
-    searchInput.addEventListener('input', () => {
-      state.keyword = searchInput.value;
+    let isComposing = false;
+    const applySearch = () => {
+      const keyword = searchInput.value;
+      if (state.keyword === keyword) return;
+      state.keyword = keyword;
       renderTable();
+    };
+    searchInput.addEventListener('compositionstart', () => { isComposing = true; });
+    searchInput.addEventListener('compositionend', () => {
+      isComposing = false;
+      applySearch();
+    });
+    searchInput.addEventListener('input', event => {
+      if (isComposing || event.isComposing) return;
+      applySearch();
     });
     document.getElementById('petdex-search-slot').appendChild(searchWrap);
     bindEvents();
@@ -91,6 +116,7 @@ const PetDexPage = (function () {
     else document.querySelector('.form-btn[data-form="leader"]')?.classList.remove('active');
     if (allExpanded) document.querySelector('.form-btn[data-form="regional"]')?.classList.add('active');
     else document.querySelector('.form-btn[data-form="regional"]')?.classList.remove('active');
+    document.querySelectorAll('#season-buttons .form-btn').forEach(btn => btn.classList.toggle('active', state.activeSeasons.has(btn.dataset.season)));
     renderTable();
   }
 
@@ -146,6 +172,16 @@ const PetDexPage = (function () {
       renderTable();
     });
 
+    document.getElementById('season-buttons').addEventListener('click', e => {
+      const btn = e.target.closest('.form-btn[data-season]');
+      if (!btn) return;
+      const season = btn.dataset.season;
+      if (state.activeSeasons.has(season)) state.activeSeasons.delete(season);
+      else state.activeSeasons.add(season);
+      btn.classList.toggle('active', state.activeSeasons.has(season));
+      renderTable();
+    });
+
     // 排序：左键降序，右键升序，再次点击同一方向恢复默认
     document.querySelectorAll('#pet-table th[data-sort]').forEach(th => {
       th.addEventListener('click', e => {
@@ -183,17 +219,20 @@ const PetDexPage = (function () {
   }
 
   function updateSortHeaders() {
-    const isDefault = state.sortKey === 'dex_number' && state.sortAsc;
+    const isDexNumberSort = state.sortKey === 'dex_number';
     document.querySelectorAll('#pet-table th[data-sort]').forEach(th => {
       th.classList.remove('sort-asc', 'sort-desc');
-      if (th.dataset.sort === state.sortKey) {
-        th.classList.add(state.sortAsc ? 'sort-asc' : 'sort-desc');
-      }
-      // 编号列表头：默认显示"编号"，排序状态显示"(#)"
-      if (th.dataset.sort === 'dex_number') {
-        th.textContent = isDefault ? '编号' : '(#)';
-      }
+      if (th.dataset.sort === state.sortKey) th.classList.add(state.sortAsc ? 'sort-asc' : 'sort-desc');
+      if (th.dataset.sort === 'dex_number') th.textContent = isDexNumberSort ? '编号' : '#';
     });
+  }
+
+  function getSeason(m) {
+    const dex = m.dex_number || 0;
+    if ((dex >= 443 && dex <= 465) || dex === 466) return 'S4';
+    if (dex >= 376 && dex <= 442) return 'S3';
+    if (dex >= 348 && dex <= 375) return 'S2';
+    return 'S1';
   }
 
   /** 获取精灵的形态组键（主形态用 form，变体用 main_form_name） */
@@ -272,6 +311,11 @@ const PetDexPage = (function () {
       return false;
     });
 
+    // 赛季筛选：多选并集；未选任何赛季时显示全部。
+    if (state.activeSeasons.size > 0) {
+      list = list.filter(m => state.activeSeasons.has(getSeason(m)));
+    }
+
     // 属性筛选（交集：必须同时包含所有选中属性）
     if (state.activeTypes.size > 0) {
       list = list.filter(m => {
@@ -323,7 +367,7 @@ const PetDexPage = (function () {
 
     const list = getFilteredMonsters();
 
-    const isDefaultSort = state.sortKey === 'dex_number' && state.sortAsc;
+    const isDexNumberSort = state.sortKey === 'dex_number';
     tbody.innerHTML = list.map((m, idx) => {
       const name = RKData.getMonsterDisplayName(m);
       const nameHtml = RKData.getMonsterDisplayNameHtml(m);
@@ -331,7 +375,7 @@ const PetDexPage = (function () {
       const subType = m.sub_type ? m.sub_type.name : '';
       const total = RKData.getTotalStats(m);
       const effective = total - Math.min(m.base_phy_atk || 0, m.base_mag_atk || 0);
-      const dexNum = isDefaultSort
+      const dexNum = isDexNumberSort
         ? String(m.dex_number || m.id).padStart(3, '0')
         : String(idx + 1);
 
@@ -376,8 +420,8 @@ const PetDexPage = (function () {
       // 图片
       const imgUrl = m.image ? `assets/monster/images/${m.image}` : '';
       const iconHtml = imgUrl
-        ? `<img src="${imgUrl}" class="pet-icon-img" alt="${name}" loading="lazy">`
-        : `<div class="pet-icon-placeholder">${mainType ? RKData.getTypeShortZh(mainType) || '?' : '?'}</div>`;
+        ? `<img src="${imgUrl}" class="pet-icon-img" alt="" loading="lazy" onerror="this.removeAttribute('src'); this.style.visibility='hidden';">`
+        : '<div class="pet-icon-placeholder" aria-hidden="true"></div>';
 
       // 形态折叠箭头（仅主形态且有变体时显示）
       let formArrow = '';
@@ -513,12 +557,10 @@ const PetDexPage = (function () {
 
     const { name: traitName, desc: traitDesc } = RKData.getTraitInfo(m);
 
-    // 优先使用 wiki 图片，回退到本地 monster-images
-    // 先用显示名（含形态后缀）查找 wiki 数据，找不到则用基础名回退
+    // 图片保持当前精确名称/基础名回退；技能统一按进化学习面来源解析。
     let wikiData = RKData.getWikiData(name);
-    if (!wikiData && baseName && baseName !== name) {
-      wikiData = RKData.getWikiData(baseName);
-    }
+    if (!wikiData && baseName && baseName !== name) wikiData = RKData.getWikiData(baseName);
+    const skillWikiData = RKData.getResolvedWikiData(m);
     const imgUrl = (wikiData && wikiData.image) ? wikiData.image : (m.image ? `assets/monster/images/${m.image}` : '');
 
     const stats = [
@@ -562,7 +604,7 @@ const PetDexPage = (function () {
     const resist025Html = matchups.resist025.length ? matchups.resist025.map(t => typeIconHtml(t)).join('') : noHtml;
 
     // 技能列表
-    const skills = (wikiData && wikiData.skills) ? wikiData.skills : [];
+    const skills = (skillWikiData && skillWikiData.skills) ? skillWikiData.skills : [];
 
     // 构建 技能名→能耗/威力 映射
     const allMoves = RKData.getMoves();
@@ -607,7 +649,7 @@ const PetDexPage = (function () {
             ${mainType ? RKData.typeBadgeHtml(mainType) : ''}
             ${subType ? RKData.typeBadgeHtml(subType) : ''}
           </div>
-          ${imgUrl ? `<img src="${imgUrl}" class="detail-pet-img" alt="${name}" loading="lazy">` : ''}
+          ${imgUrl ? `<img src="${imgUrl}" class="detail-pet-img" alt="" loading="lazy" onerror="this.removeAttribute('src'); this.style.visibility='hidden';">` : ''}
         </div>
         <div class="detail-col-2">
           <div class="detail-stats-panel">
@@ -652,6 +694,7 @@ const PetDexPage = (function () {
         ${skillsHtml}
       </div>` : ''}
     `;
+    body.scrollTop = 0;
     modal.style.display = 'flex';
     // 动态调整 z-index，确保显示在技能弹窗之上
     const moveModal = document.getElementById('move-modal');

@@ -1114,8 +1114,7 @@ const TeamPage = (function () {
         // 切换血脉后，移除与新血脉不匹配的已装备血脉技能
         if (petSkills[petId]) {
           const m = RKData.getMonsterById(petId);
-          const name = m ? RKData.getMonsterName(m) : '';
-          const wikiData = RKData.getWikiData(name);
+          const wikiData = m ? RKData.getResolvedWikiData(m) : null;
           const allSkills = (wikiData && wikiData.skills) ? wikiData.skills : [];
           petSkills[petId] = petSkills[petId].filter(skillName => {
             const sd = allSkills.find(s => s.name === skillName);
@@ -1271,7 +1270,8 @@ const TeamPage = (function () {
     const name = RKData.getMonsterDisplayName(m);
     const mainType = m.main_type ? m.main_type.name : '';
     const subType = m.sub_type ? m.sub_type.name : '';
-    const wikiData = RKData.getWikiData(name);
+    const wikiData = RKData.getResolvedWikiData(m);
+    const imageWikiData = RKData.getWikiData(name);
     const skills = (wikiData && wikiData.skills) ? wikiData.skills : [];
 
     if (skills.length === 0) {
@@ -1279,7 +1279,7 @@ const TeamPage = (function () {
       return;
     }
 
-    const imgUrl = (wikiData && wikiData.image) ? wikiData.image : (m.image ? `assets/monster/images/${m.image}` : '');
+    const imgUrl = (imageWikiData && imageWikiData.image) ? imageWikiData.image : (m.image ? `assets/monster/images/${m.image}` : '');
     const total = RKData.getTotalStats(m);
     const effective = RKData.getEffectiveStats(m);
     const allMonsters = RKData.getMonsters();

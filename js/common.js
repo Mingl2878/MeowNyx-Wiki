@@ -28,19 +28,68 @@
       })
       .catch(() => {});
   }
-  // 首次使用时从设置文件读取默认缩放比例
-  if (localStorage.getItem('xwiki-max-zoom') == null) {
-    fetch('/api/settings')
-      .then(r => r.json())
-      .then(s => {
-        if (s && s.default_max_zoom && s.default_max_zoom !== 100) {
-          savedMaxZoom = Math.min(2, Math.max(0.5, s.default_max_zoom / 100));
-          localStorage.setItem('xwiki-max-zoom', savedMaxZoom);
-          if (windowMaximized) { zoom = savedMaxZoom; applyZoom(); }
-        }
-      })
-      .catch(() => {});
+  let activeFontFamily = '';
+  let fontLoadToken = 0;
+
+  function getNativeFontStack(fontFamily) {
+    if (!fontFamily) return 'system-ui, sans-serif';
+    const safeFamily = String(fontFamily).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return `"${safeFamily}", system-ui, sans-serif`;
   }
+
+  function getAppFontStack(fontFamily) {
+    if (!fontFamily) return 'system-ui, sans-serif';
+    return '"__xhm_selected_font", system-ui, sans-serif';
+  }
+
+  async function applyAppFont(fontFamily) {
+    const root = document.documentElement;
+    const token = ++fontLoadToken;
+    if (!fontFamily) {
+      activeFontFamily = '';
+      root.style.setProperty('--app-font-family', 'system-ui, sans-serif');
+      if (document.body) document.body.style.fontFamily = 'system-ui, sans-serif';
+      window.dispatchEvent(new CustomEvent('appfontchange', { detail: { fontFamily: '' } }));
+      return { applied: true, fallback: false };
+    }
+
+    try {
+      const url = '/api/font-file?family=' + encodeURIComponent(fontFamily) + '&v=' + Date.now();
+      const font = new FontFace('__xhm_selected_font', `url("${url}")`);
+      await font.load();
+      if (token !== fontLoadToken) return { applied: false, fallback: false };
+      document.fonts.add(font);
+      activeFontFamily = fontFamily;
+      const stack = getAppFontStack(fontFamily);
+      root.style.setProperty('--app-font-family', stack);
+      if (document.body) document.body.style.fontFamily = stack;
+      window.dispatchEvent(new CustomEvent('appfontchange', { detail: { fontFamily } }));
+      return { applied: true, fallback: false };
+    } catch (error) {
+      if (token !== fontLoadToken) return { applied: false, fallback: false };
+      activeFontFamily = '';
+      root.style.setProperty('--app-font-family', 'system-ui, sans-serif');
+      if (document.body) document.body.style.fontFamily = 'system-ui, sans-serif';
+      window.dispatchEvent(new CustomEvent('appfontchange', { detail: { fontFamily: '' } }));
+      return { applied: false, fallback: true, error };
+    }
+  }
+  window.getAppFontStack = getAppFontStack;
+  window.applyAppFont = applyAppFont;
+
+  // 首次加载时读取设置：恢复字体，并在首次使用时恢复最大化缩放比例。
+  fetch('/api/settings')
+    .then(r => r.json())
+    .then(s => {
+      if (!s) return;
+      applyAppFont(s.font_family || '');
+      if (localStorage.getItem('xwiki-max-zoom') == null && s.default_max_zoom && s.default_max_zoom !== 100) {
+        savedMaxZoom = Math.min(2, Math.max(0.5, s.default_max_zoom / 100));
+        localStorage.setItem('xwiki-max-zoom', savedMaxZoom);
+        if (windowMaximized) { zoom = savedMaxZoom; applyZoom(); }
+      }
+    })
+    .catch(() => {});
   // 窗口最大化/还原时会触发 resize
   window.addEventListener('resize', refreshWindowState);
   refreshWindowState();
@@ -126,26 +175,21 @@ const CommonUI = (function () {
       : scrollContainer;
     if (!container) return null;
 
-    // 查找或创建按钮
-    let btn = container.querySelector('.back-to-top-btn');
+    // 优先放到外层定位壳，避免作为滚动内容的一部分被裁切。
+    const host = container.closest('.scroll-wrapper-container') || container;
+    let btn = host.querySelector(':scope > .back-to-top-btn');
     if (!btn) {
       btn = document.createElement('button');
       btn.className = 'back-to-top-btn';
       btn.title = '回到顶部';
       btn.innerHTML = SVG_UP;
-      container.appendChild(btn);
+      host.appendChild(btn);
     }
 
-    // 滚动监听
     container.addEventListener('scroll', () => {
-      if (container.scrollTop > 200) {
-        btn.classList.add('show');
-      } else {
-        btn.classList.remove('show');
-      }
+      btn.classList.toggle('show', container.scrollTop > 200);
     });
 
-    // 点击回到顶部
     btn.addEventListener('click', () => {
       container.scrollTo({ top: 0, behavior: 'smooth' });
     });

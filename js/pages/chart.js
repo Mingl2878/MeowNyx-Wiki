@@ -13,6 +13,25 @@ const ChartPage = (function () {
   let chartAtkType = 'attack';
   let defenseChartInstance = null;
 
+  function getAppFontFamily() {
+    return getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+  }
+
+  function setChartFontFamily() {
+    if (typeof Chart !== 'undefined' && Chart.defaults && Chart.defaults.font) {
+      Chart.defaults.font.family = getAppFontFamily();
+    }
+  }
+
+  window.addEventListener('appfontchange', function() {
+    setChartFontFamily();
+    if (defenseChartInstance) renderChart();
+  });
+
+  function getCanvasLabelFont() {
+    return `bold 12px ${getAppFontFamily()}`;
+  }
+
   // 从 DamagePage 读取状态
   function dmgState() { return DamagePage.getState(); }
 
@@ -27,6 +46,7 @@ const ChartPage = (function () {
 
   // ============ 渲染页面 ============
   function render(container) {
+    setChartFontFamily();
     container.innerHTML = `<div class="calc-root"><div class="container">
       <div class="card result-card" style="border:none;box-shadow:none;"><div class="card-header">
         <h3><img src="assets/icons/ui/icon_curve.png" alt="伤害曲线" class="title-icon"> <span id="chartTitle">伤害-防御曲线</span></h3>
@@ -306,7 +326,7 @@ const ChartPage = (function () {
         visibleDs.forEach(({ ds, i }) => { let crossIdx = -1;
           for (let j = ds.data.length - 1; j >= 0; j--) { if (ds.data[j] >= 400) { crossIdx = j; break; } }
           if (crossIdx === -1) return; const meta = chart.getDatasetMeta(i); const pt = meta.data[crossIdx]; if (!pt) return;
-          const qual = qualifications[crossIdx]; c.save(); c.font = 'bold 12px sans-serif'; c.fillStyle = ds.borderColor;
+          const qual = qualifications[crossIdx]; c.save(); c.font = getCanvasLabelFont(); c.fillStyle = ds.borderColor;
           c.strokeStyle = 'white'; c.lineWidth = 3; c.textAlign = 'center'; const text = `资质${qual}`;
           c.strokeText(text, pt.x, pt.y - 12); c.fillText(text, pt.x, pt.y - 12);
           c.beginPath(); c.arc(pt.x, pt.y, 5, 0, Math.PI * 2); c.fillStyle = ds.borderColor; c.fill(); c.restore(); });
@@ -430,7 +450,7 @@ const ChartPage = (function () {
         visibleDs.forEach(({ ds, i }) => { let crossIdx = -1;
           for (let j = 0; j < ds.data.length; j++) { if (ds.data[j] >= killLine) { crossIdx = j; break; } }
           if (crossIdx === -1) return; const meta = chart.getDatasetMeta(i); const pt = meta.data[crossIdx]; if (!pt) return;
-          const qual = qualifications[crossIdx]; c.save(); c.font = 'bold 12px sans-serif'; c.fillStyle = ds.borderColor;
+          const qual = qualifications[crossIdx]; c.save(); c.font = getCanvasLabelFont(); c.fillStyle = ds.borderColor;
           c.strokeStyle = 'white'; c.lineWidth = 3; c.textAlign = 'center';
           const label = chartAxisSwapped ? `威力:${qual}` : `资质${qual}`;
           c.strokeText(label, pt.x, pt.y - 12); c.fillText(label, pt.x, pt.y - 12);
