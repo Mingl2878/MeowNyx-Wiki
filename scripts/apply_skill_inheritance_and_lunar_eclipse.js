@@ -11,8 +11,9 @@ const WRITE = process.argv.includes('--write');
 const CATEGORY_TO_TYPE = { 'Physical Attack': '物攻', 'Magic Attack': '魔攻', Status: '状态', Defense: '防御' };
 const LUNAR_ECLIPSE_DESC = '造成物伤，若敌方生命低于50%，本次技能能耗-3。';
 
-function readJSON(file) { return JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8')); }
-function writeJSON(file, value) { fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value, null, 2) + '\n', 'utf8'); }
+const { readWiki, writeWiki } = require('./lib/wiki-data.js');
+function readJSON(file) { return path.basename(file) === 'wiki_monster_data.json' ? readWiki(ROOT) : JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8')); }
+function writeJSON(file, value) { if (path.basename(file) === 'wiki_monster_data.json') return writeWiki(ROOT, value, { allowRemovedSkills: ['月蚀'] }); fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value, null, 2) + '\n', 'utf8'); }
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function nameOf(monster) { return monster.localized?.zh?.name || ''; }
 function displayName(monster) { return monster.form && monster.form !== 'default' && monster.form !== 'Original' ? `${nameOf(monster)}（${monster.form}）` : nameOf(monster); }

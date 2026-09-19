@@ -1,6 +1,7 @@
+import { readWiki, writeWiki } from './lib/wiki-data.js';
 const root = 'D:/echoagent/MeowNyx Wiki';
 const moves = await Bun.file(`${root}/data/moves.json`).json();
-const wiki = await Bun.file(`${root}/data/wiki_monster_data.json`).json();
+const wiki = readWiki(root);
 const skillName = '重组';
 const description = '下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。';
 const learners = ['粉耳星兔', '星云旅者', '银月狼王', '布灵布灵'];
@@ -30,5 +31,5 @@ for (const entry of Object.values(wiki)) {
 }
 
 await Bun.write(`${root}/data/moves.json`, `${JSON.stringify(moves, null, 2)}\n`);
-await Bun.write(`${root}/data/wiki_monster_data.json`, `${JSON.stringify(wiki, null, 2)}\n`);
+writeWiki(root, wiki, { allowRemovedSkills: [skillName] });
 console.log(`已更新 ${skillName} 效果，并保留 ${learners.length} 只有效学习精灵。`);

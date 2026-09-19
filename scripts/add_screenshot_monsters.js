@@ -1,7 +1,8 @@
+import { readWiki, writeWiki } from './lib/wiki-data.js';
 const root = 'D:/echoagent/MeowNyx Wiki';
 const monsters = await Bun.file(`${root}/data/monsters.json`).json();
 const moves = await Bun.file(`${root}/data/moves.json`).json();
-const wiki = await Bun.file(`${root}/data/wiki_monster_data.json`).json();
+const wiki = readWiki(root);
 const types = await Bun.file(`${root}/data/types.json`).json();
 
 const byType = new Map(types.map(type => [type.localized.zh, type]));
@@ -88,5 +89,5 @@ for (const [name, dex, elements, stats, traitName, traitDesc, groups] of data) {
   wiki[name] = { image: '', skills };
 }
 await Bun.write(`${root}/data/monsters.json`, `${JSON.stringify(monsters, null, 2)}\n`);
-await Bun.write(`${root}/data/wiki_monster_data.json`, `${JSON.stringify(wiki, null, 2)}\n`);
+writeWiki(root, wiki);
 console.log(`已新增 ${data.length} 只精灵，共 ${data.reduce((count, entry) => count + Object.values(entry[6]).join('|').split('|').length, 0)} 条技能关联。`);

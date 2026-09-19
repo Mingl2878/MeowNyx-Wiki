@@ -8,6 +8,13 @@ dist/
 *.tmp
 *.zip
 
+# Local tools, browser traces and personal runtime state (never publish)
+.playwright-cli/
+node_modules/
+user-config.json
+settings.json
+webview2/
+
 # IDE
 .vscode/
 .idea/

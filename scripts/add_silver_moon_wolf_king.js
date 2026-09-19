@@ -1,8 +1,8 @@
+import { readWiki, writeWiki } from './lib/wiki-data.js';
 const root = 'D:/echoagent/MeowNyx Wiki';
 
 const monsterFile = `${root}/data/monsters.json`;
 const movesFile = `${root}/data/moves.json`;
-const wikiFile = `${root}/data/wiki_monster_data.json`;
 
 const ghost = {
   id: 15,
@@ -61,7 +61,7 @@ const missingMoves = [
   { id: 5931, name: '量子涨落', element: '幻', type: 'Physical Attack', energy: 3, power: 75, combo: null, desc: '技能效果待补充。' },
   { id: 5932, name: '月蚀', element: '幻', type: 'Physical Attack', energy: 5, power: 130, combo: null, desc: '技能效果待补充。' },
   { id: 5933, name: '重组', element: '幻', type: 'Status', energy: 1, power: null, combo: null, desc: '技能效果待补充。' },
-  { id: 5934, name: '擦影', element: '幽', type: 'Physical Attack', energy: 3, power: 65, combo: null, desc: '技能效果待补充。' },
+  { id: 5934, name: '掠影', element: '幽', type: 'Physical Attack', energy: 3, power: 65, combo: null, desc: '技能效果待补充。' },
   { id: 5935, name: '离魂术', element: '幽', type: 'Status', energy: 3, power: null, combo: null, desc: '技能效果待补充。' }
 ].map(move => ({
   id: move.id,
@@ -122,7 +122,7 @@ const wikiSkills = [
   ['重组', '幻', '状态', '技能石'],
   ['诡刺', '幽', '物攻', '技能石'],
   ['惊吓盒子', '幽', '物攻', '技能石'],
-  ['擦影', '幽', '物攻', '技能石'],
+  ['掠影', '幽', '物攻', '技能石'],
   ['坟场搏击', '幽', '物攻', '技能石'],
   ['撞鬼', '幽', '物攻', '技能石'],
   ['离魂术', '幽', '状态', '技能石'],
@@ -152,12 +152,12 @@ const wikiSkillsWithDesc = wikiSkills.map(([name, element, type, source]) => ({
   source,
   desc: movesAfterUpdate.get(name)?.localized?.zh?.description || '技能效果待补充。'
 }));
-const wikiData = await Bun.file(wikiFile).json();
+const wikiData = readWiki(root);
 if (wikiData['银月狼王']) throw new Error('银月狼王已存在于 wiki_monster_data.json。');
 wikiData['银月狼王'] = {
   image: 'assets/monster/images/银月狼王.png',
   skills: wikiSkillsWithDesc
 };
-await Bun.write(wikiFile, `${JSON.stringify(wikiData, null, 2)}\n`);
+writeWiki(root, wikiData);
 
 console.log('已新增银月狼王，以及 5 个缺失技能基础条目。');

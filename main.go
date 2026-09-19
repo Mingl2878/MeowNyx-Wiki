@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"log"
@@ -67,10 +67,13 @@ const MONITORINFOF_PRIMARY = 1
 
 // ---- 主窗口句柄与消息钩子 ----
 var (
-	mainHwnd       uintptr
-	gOldWndProc    uintptr
-	gCloseMu       sync.RWMutex
-	gCloseBehavior = "close"
+	mainHwnd           uintptr
+	gOldWndProc        uintptr
+	gCloseMu           sync.RWMutex
+	gCloseBehavior     = "close"
+	gClosePending      bool
+	gCloseApproved     bool
+	gRequestCloseFlush func()
 )
 
 // ---- 多显示器检测与枚举 ----
@@ -203,20 +206,51 @@ func hotkeyThreadProc() {
 // wndProc 主窗口消息钩子：拦截 WM_CLOSE（最小化到任务栏）
 func wndProc(hwnd, msg, wParam, lParam uintptr) uintptr {
 	if msg == WM_CLOSE {
-		gCloseMu.RLock()
+		gCloseMu.Lock()
+		approved := gCloseApproved
+		gCloseApproved = false
 		cb := gCloseBehavior
-		gCloseMu.RUnlock()
-		if cb == "minimize" {
-			iconic, _, _ := procIsIconic.Call(hwnd)
-			if iconic == 0 {
-				// 未最小化：拦截关闭，改为最小化（再次从任务栏关闭时允许真正退出）
-				procShowWindow.Call(hwnd, SW_MINIMIZE)
+		gCloseMu.Unlock()
+		if !approved {
+			if cb == "minimize" {
+				iconic, _, _ := procIsIconic.Call(hwnd)
+				if iconic == 0 {
+					// Preserve minimize-on-close. Closing an already minimized
+					// window is a real exit and must flush first.
+					procShowWindow.Call(hwnd, SW_MINIMIZE)
+					return 0
+				}
+			}
+			gCloseMu.Lock()
+			flush := gRequestCloseFlush
+			pending := gClosePending
+			if flush != nil && !pending {
+				gClosePending = true
+			}
+			gCloseMu.Unlock()
+			if flush != nil {
+				if !pending {
+					flush()
+				}
 				return 0
 			}
 		}
 	}
 	r, _, _ := procCallWindowProc.Call(gOldWndProc, hwnd, msg, wParam, lParam)
 	return r
+}
+
+// Accept acknowledgements only for a native-initiated pending close. Keeping
+// this state transition separate also lets tests exercise it without a window.
+func finishCloseFlush(ok bool) bool {
+	gCloseMu.Lock()
+	defer gCloseMu.Unlock()
+	if !gClosePending {
+		return false
+	}
+	gClosePending = false
+	gCloseApproved = ok
+	return ok
 }
 
 // installWindowHook 安装主窗口消息钩子（须在窗口线程上调用）
@@ -251,7 +285,7 @@ func ensureSingleInstance() bool {
 
 func bringExistingWindowToFront() {
 	// 按窗口标题查找
-	titles := []string{"小黑猫 Wiki"}
+	titles := []string{applicationTitle(), "小黑猫 Wiki"}
 	for _, title := range titles {
 		titlePtr, _ := syscall.UTF16PtrFromString(title)
 		hwnd, _, _ := procFindWindow.Call(0, uintptr(unsafe.Pointer(titlePtr)))
@@ -470,7 +504,9 @@ func runWikiUpdate(exeDir string) (string, error) {
 // ---- JSON 响应 ----
 func writeJSON(w http.ResponseWriter, status int, data []byte) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
-	w.Header().Set("Cache-Control", "no-cache")
+	if w.Header().Get("Cache-Control") == "" {
+		w.Header().Set("Cache-Control", "no-cache")
+	}
 	w.WriteHeader(status)
 	w.Write(data)
 }
@@ -485,6 +521,27 @@ var (
 func handleAPI(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	q := r.URL.Query()
+
+	// Profile APIs do not inherit other API endpoints' permissive preflight.
+	if path == "/api/user-config" {
+		handleUserConfig(w, r)
+		return
+	}
+	if path == "/api/settings" {
+		if !guardUserConfigRequest(w, r) {
+			return
+		}
+		switch r.Method {
+		case http.MethodGet:
+			handleGetSettings(w, r)
+		case http.MethodPost:
+			handleSaveSettings(w, r)
+		default:
+			w.Header().Set("Allow", "GET, POST")
+			configError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+		}
+		return
+	}
 
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Methods", "GET,POST")
@@ -655,14 +712,6 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, fontPath)
 		return
 	}
-	if path == "/api/settings" && r.Method == http.MethodGet {
-		handleGetSettings(w, r)
-		return
-	}
-	if path == "/api/settings" && r.Method == http.MethodPost {
-		handleSaveSettings(w, r)
-		return
-	}
 	// ---- 窗口状态（前端用于决定是否允许 Ctrl+滚轮缩放） ----
 	if path == "/api/window/state" && r.Method == http.MethodGet {
 		if isWindowMaximized() {
@@ -697,7 +746,7 @@ func isWindowMaximized() bool {
 	user32 := syscall.NewLazyDLL("user32.dll")
 	findWindow := user32.NewProc("FindWindowW")
 	getPlacement := user32.NewProc("GetWindowPlacement")
-	title, _ := syscall.UTF16PtrFromString("小黑猫 Wiki")
+	title, _ := syscall.UTF16PtrFromString(applicationTitle())
 	hwnd, _, _ := findWindow.Call(0, uintptr(unsafe.Pointer(title)))
 	if hwnd == 0 {
 		return false
@@ -825,145 +874,84 @@ func getMovesFilePath() string    { return getDataFilePath("moves.json") }
 
 // ---- 用户设置 ----
 type UserSettings struct {
-	CloseBehavior   string `json:"close_behavior"` // "close" | "minimize"
-	WindowWidth     int    `json:"window_width"`
-	WindowHeight    int    `json:"window_height"`
-	WindowMaximized bool   `json:"window_maximized"`
-	DefaultRoute    string `json:"default_route"`
-	DefaultMaxZoom  int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（50~200）
-	HotkeyMods      int    `json:"hotkey_mods"`      // 热键修饰键位掩码（1=ALT 2=CTRL 4=SHIFT 8=WIN）
-	HotkeyVK        int    `json:"hotkey_vk"`        // 热键虚拟键码（0=未绑定）
-	DefaultMonitor  int    `json:"default_monitor"`  // 默认打开的显示器（0=主显示器，多显示器时可用）
-	FontFamily      string `json:"font_family"`      // "" = 跟随 Windows 系统字体
+	CloseBehavior           string `json:"close_behavior"` // "close" | "minimize"
+	WindowWidth             int    `json:"window_width"`
+	WindowHeight            int    `json:"window_height"`
+	WindowMaximized         bool   `json:"window_maximized"`
+	DefaultRoute            string `json:"default_route"`
+	DefaultMaxZoom          int    `json:"default_max_zoom"` // 最大化时界面缩放百分比（50~200）
+	HotkeyMods              int    `json:"hotkey_mods"`      // 热键修饰键位掩码（1=ALT 2=CTRL 4=SHIFT 8=WIN）
+	HotkeyVK                int    `json:"hotkey_vk"`        // 热键虚拟键码（0=未绑定）
+	DefaultMonitor          int    `json:"default_monitor"`  // 默认打开的显示器（0=主显示器，多显示器时可用）
+	FontFamily              string `json:"font_family"`      // "" = 跟随 Windows 系统字体
+	EffectiveIncludeSpeed   bool   `json:"effective_include_speed"`
+	EffectiveSpeedMode      string `json:"effective_speed_mode"`
+	EffectiveSpeedThreshold int    `json:"effective_speed_threshold"`
 }
 
-func getSettingsFilePath() string {
-	return filepath.Join(getUserDataDir(), "settings.json")
-}
-
+// Startup/hotkey compatibility wrapper only. HTTP reads must expose errors.
 func loadSettings() UserSettings {
-	s := UserSettings{
-		CloseBehavior:   "close",
-		WindowWidth:     1280,
-		WindowHeight:    800,
-		WindowMaximized: false,
-		DefaultRoute:    "petdex",
-		DefaultMaxZoom:  100,
-		DefaultMonitor:  0,
-	}
-	path := getSettingsFilePath()
-	var data []byte
-	if d, e := os.ReadFile(path); e == nil {
-		data = d
-	} else {
-		// 旧版兼容：从安装目录旧位置读取并迁移到用户目录
-		oldPaths := []string{
-			filepath.Join(getExeDir(), "settings.json"),
-			filepath.Join(getExeDir(), "Xwiki", "settings.json"),
-		}
-		for _, old := range oldPaths {
-			if d2, e2 := os.ReadFile(old); e2 == nil {
-				data = d2
-				os.MkdirAll(filepath.Dir(path), 0755)
-				os.WriteFile(path, d2, 0644)
-				break
-			}
-		}
-	}
-	if data == nil {
-		return s
-	}
-	// 容错：去掉 UTF-8 BOM（记事本等编辑器保存的文件可能带 BOM，否则 Unmarshal 失败静默回退默认值）
-	data = bytes.TrimPrefix(data, []byte{0xEF, 0xBB, 0xBF})
-	json.Unmarshal(data, &s)
-	if font, ok := canonicalInstalledFont(s.FontFamily); ok {
-		s.FontFamily = font
-	} else {
-		s.FontFamily = ""
-	}
-	if s.WindowWidth <= 0 {
-		s.WindowWidth = 1280
-	}
-	if s.WindowHeight <= 0 {
-		s.WindowHeight = 800
-	}
-	if s.CloseBehavior == "" {
-		s.CloseBehavior = "close"
-	}
-	if s.DefaultRoute == "" {
-		s.DefaultRoute = "petdex"
-	}
-	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 {
-		s.DefaultMaxZoom = 100
+	s, err := sharedUserConfig.settings()
+	if err != nil {
+		log.Printf("加载共享个人配置失败（未覆盖文件）: %v", err)
 	}
 	return s
 }
 
 func saveSettings(s UserSettings) error {
-	path := getSettingsFilePath()
-	// 确保目录存在（首次保存时 Xwiki 子目录可能不存在）
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+	raw, err := json.Marshal(s)
+	if err != nil {
 		return err
 	}
-	data, _ := json.MarshalIndent(s, "", "  ")
-	return os.WriteFile(path, data, 0644)
+	patch, err := parseObject(raw)
+	if err != nil {
+		return err
+	}
+	_, err = sharedUserConfig.updateSettings(patch)
+	return err
 }
 
 func handleGetSettings(w http.ResponseWriter, r *http.Request) {
-	s := loadSettings()
+	if !guardUserConfigRequest(w, r) {
+		return
+	}
+	s, err := sharedUserConfig.settings()
+	if err != nil {
+		configError(w, http.StatusInternalServerError, err)
+		return
+	}
 	out, _ := json.Marshal(struct {
 		UserSettings
-		MonitorCount int `json:"monitor_count"` // 系统显示器数量（多屏才显示相关选项）
+		MonitorCount int `json:"monitor_count"`
 	}{s, monitorCount()})
 	writeJSON(w, 200, out)
 }
 
 func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, 64*1024)
-	var s UserSettings
-	if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
-		writeJSON(w, 400, []byte(`{"ok":false,"error":"无效的请求"}`))
+	if !guardUserConfigRequest(w, r) {
 		return
 	}
-	if s.CloseBehavior == "" {
-		s.CloseBehavior = "close"
-	}
-	if s.WindowWidth <= 0 {
-		s.WindowWidth = 1280
-	}
-	if s.WindowHeight <= 0 {
-		s.WindowHeight = 800
-	}
-	if s.DefaultRoute == "" {
-		s.DefaultRoute = "petdex"
-	}
-	if s.DefaultMaxZoom < 50 || s.DefaultMaxZoom > 200 {
-		s.DefaultMaxZoom = 100
-	}
-	if s.HotkeyMods < 0 || s.HotkeyMods > 15 {
-		s.HotkeyMods = 0
-	}
-	if s.HotkeyVK < 0 || s.HotkeyVK > 255 {
-		s.HotkeyVK = 0
-	}
-	if s.DefaultMonitor < 0 || s.DefaultMonitor >= monitorCount() {
-		s.DefaultMonitor = 0
-	}
-	font, ok := canonicalInstalledFont(s.FontFamily)
-	if !ok {
-		writeJSON(w, 400, []byte(`{"ok":false,"error":"字体不可用"}`))
+	patch, err := readConfigRequest(w, r)
+	if err != nil {
+		configRequestError(w, err)
 		return
 	}
-	s.FontFamily = font
-	// 同步到消息钩子（关闭行为实时生效），并通知窗口线程重载热键
+	settingsHTTPMu.Lock()
+	defer settingsHTTPMu.Unlock()
+	s, err := sharedUserConfig.updateSettings(patch)
+	if err != nil {
+		var validation *settingsValidationError
+		if errors.As(err, &validation) {
+			configError(w, http.StatusBadRequest, err)
+		} else {
+			configError(w, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	// Live effects only AFTER a durable successful save.
 	gCloseMu.Lock()
 	gCloseBehavior = s.CloseBehavior
 	gCloseMu.Unlock()
-	// 先保存设置文件（热键线程重载时要读到最新设置）
-	if err := saveSettings(s); err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"保存失败"}`))
-		return
-	}
 	// 通知热键线程重载热键，并等待注册结果（最多500ms）
 	hotkeyOK := true
 	if hotkeyThreadID != 0 {
@@ -985,26 +973,30 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleEditMonster(w http.ResponseWriter, r *http.Request) {
+	handleEditMonsterFiles(w, r, getMonstersFilePath(), getDataFilePath("wiki_monster_data.json"), getMovesFilePath())
+}
+
+func handleEditMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wikiPath, movesPath string) {
+	dataEditMu.Lock()
+	defer dataEditMu.Unlock()
 	var req struct {
-		ID             int    `json:"id"`
-		BaseHP         int    `json:"base_hp"`
-		BasePhyAtk     int    `json:"base_phy_atk"`
-		BaseMagAtk     int    `json:"base_mag_atk"`
-		BasePhyDef     int    `json:"base_phy_def"`
-		BaseMagDef     int    `json:"base_mag_def"`
-		BaseSpd        int    `json:"base_spd"`
-		MainType       string `json:"main_type"`
-		SubType        string `json:"sub_type"`
-		EvolutionStage string `json:"evolution_stage"`
-		FormCategory   string `json:"form_category"`   // 无多形态 / 主形态 / 变体形态
-		MainFormName   string `json:"main_form_name"`  // 变体形态时指定的主形态名
-		EvolvesFromID  *int   `json:"evolves_from_id"` // 进化上游精灵ID, nil=无
-		TraitName      string `json:"trait_name"`
-		TraitDesc      string `json:"trait_desc"`
-		SkillList      []struct {
-			Name   string `json:"name"`
-			Source string `json:"source"`
-		} `json:"skillList"`
+		ID               int            `json:"id"`
+		BaseHP           int            `json:"base_hp"`
+		BasePhyAtk       int            `json:"base_phy_atk"`
+		BaseMagAtk       int            `json:"base_mag_atk"`
+		BasePhyDef       int            `json:"base_phy_def"`
+		BaseMagDef       int            `json:"base_mag_def"`
+		BaseSpd          int            `json:"base_spd"`
+		MainType         string         `json:"main_type"`
+		SubType          string         `json:"sub_type"`
+		EvolutionStage   string         `json:"evolution_stage"`
+		FormCategory     string         `json:"form_category"`   // 无多形态 / 主形态 / 变体形态
+		MainFormName     string         `json:"main_form_name"`  // 变体形态时指定的主形态名
+		EvolvesFromID    *int           `json:"evolves_from_id"` // 进化上游精灵ID, nil=无
+		TraitName        string         `json:"trait_name"`
+		TraitDesc        string         `json:"trait_desc"`
+		SkillList        []wikiSkillRef `json:"skillList"`
+		AllowEmptySkills bool           `json:"allowEmptySkills"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, 400, []byte(`{"ok":false,"error":"无效的请求"}`))
@@ -1012,17 +1004,29 @@ func handleEditMonster(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 读取 monsters.json
-	filePath := getMonstersFilePath()
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"无法读取数据文件"}`))
+		writeDataError(w, fmt.Errorf("read data: %w", err))
 		return
 	}
 
 	var monsters []map[string]interface{}
 	if err := json.Unmarshal(data, &monsters); err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"数据解析失败"}`))
+		writeDataError(w, fmt.Errorf("parse data: %w", err))
 		return
+	}
+	if monsters == nil {
+		writeDataError(w, fmt.Errorf("monsters must be an array, not null"))
+		return
+	}
+	seenIDs := map[int]bool{}
+	for _, monster := range monsters {
+		id, err := numericMonsterID(monster["id"])
+		if err != nil || seenIDs[id] {
+			writeDataError(w, fmt.Errorf("invalid or duplicate monster ID: %v", monster["id"]))
+			return
+		}
+		seenIDs[id] = true
 	}
 
 	// 查找并更新对应精灵
@@ -1092,43 +1096,46 @@ func handleEditMonster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 写回文件
-	out, _ := json.MarshalIndent(monsters, "", "  ")
-	if err := os.WriteFile(filePath, out, 0644); err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"文件写入失败"}`))
+	// Validate both files before replacing either one.
+	writes, err := prepareMonsterSave(monsters, monsters[foundIdx], req.SkillList, req.AllowEmptySkills, filePath, data, wikiPath, movesPath)
+	if err != nil {
+		writeDataError(w, err)
 		return
 	}
-
-	// 如果有技能列表变更，更新 wiki_monster_data.json
-	if req.SkillList != nil {
-		updateWikiSkills(monsters[foundIdx], req.SkillList)
+	if err := commitDataWrites(writes); err != nil {
+		writeDataError(w, err)
+		return
 	}
 
 	writeJSON(w, 200, []byte(`{"ok":true}`))
 }
 
 func handleAddMonster(w http.ResponseWriter, r *http.Request) {
+	handleAddMonsterFiles(w, r, getMonstersFilePath(), getDataFilePath("wiki_monster_data.json"), getMovesFilePath())
+}
+
+func handleAddMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wikiPath, movesPath string) {
+	dataEditMu.Lock()
+	defer dataEditMu.Unlock()
 	var req struct {
-		Name           string `json:"name"`
-		EvolutionChain string `json:"evolution_chain_name"`
-		BaseHP         int    `json:"base_hp"`
-		BasePhyAtk     int    `json:"base_phy_atk"`
-		BaseMagAtk     int    `json:"base_mag_atk"`
-		BasePhyDef     int    `json:"base_phy_def"`
-		BaseMagDef     int    `json:"base_mag_def"`
-		BaseSpd        int    `json:"base_spd"`
-		MainType       string `json:"main_type"`
-		SubType        string `json:"sub_type"`
-		EvolutionStage string `json:"evolution_stage"`
-		FormCategory   string `json:"form_category"`
-		MainFormName   string `json:"main_form_name"`
-		EvolvesFromID  *int   `json:"evolves_from_id"`
-		TraitName      string `json:"trait_name"`
-		TraitDesc      string `json:"trait_desc"`
-		SkillList      []struct {
-			Name   string `json:"name"`
-			Source string `json:"source"`
-		} `json:"skillList"`
+		Name             string         `json:"name"`
+		EvolutionChain   string         `json:"evolution_chain_name"`
+		BaseHP           int            `json:"base_hp"`
+		BasePhyAtk       int            `json:"base_phy_atk"`
+		BaseMagAtk       int            `json:"base_mag_atk"`
+		BasePhyDef       int            `json:"base_phy_def"`
+		BaseMagDef       int            `json:"base_mag_def"`
+		BaseSpd          int            `json:"base_spd"`
+		MainType         string         `json:"main_type"`
+		SubType          string         `json:"sub_type"`
+		EvolutionStage   string         `json:"evolution_stage"`
+		FormCategory     string         `json:"form_category"`
+		MainFormName     string         `json:"main_form_name"`
+		EvolvesFromID    *int           `json:"evolves_from_id"`
+		TraitName        string         `json:"trait_name"`
+		TraitDesc        string         `json:"trait_desc"`
+		SkillList        []wikiSkillRef `json:"skillList"`
+		AllowEmptySkills bool           `json:"allowEmptySkills"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, 400, []byte(`{"ok":false,"error":"无效的请求"}`))
@@ -1140,17 +1147,29 @@ func handleAddMonster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := getMonstersFilePath()
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"无法读取数据文件"}`))
+		writeDataError(w, fmt.Errorf("read data: %w", err))
 		return
 	}
 
 	var monsters []map[string]interface{}
 	if err := json.Unmarshal(data, &monsters); err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"数据解析失败"}`))
+		writeDataError(w, fmt.Errorf("parse data: %w", err))
 		return
+	}
+	if monsters == nil {
+		writeDataError(w, fmt.Errorf("monsters must be an array, not null"))
+		return
+	}
+	seenIDs := map[int]bool{}
+	for _, monster := range monsters {
+		id, err := numericMonsterID(monster["id"])
+		if err != nil || seenIDs[id] {
+			writeDataError(w, fmt.Errorf("invalid or duplicate monster ID: %v", monster["id"]))
+			return
+		}
+		seenIDs[id] = true
 	}
 
 	// 找最大 ID
@@ -1205,21 +1224,26 @@ func handleAddMonster(w http.ResponseWriter, r *http.Request) {
 
 	monsters = append(monsters, newMonster)
 
-	out, _ := json.MarshalIndent(monsters, "", "  ")
-	if err := os.WriteFile(filePath, out, 0644); err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"文件写入失败"}`))
+	writes, err := prepareMonsterSave(monsters, newMonster, req.SkillList, req.AllowEmptySkills, filePath, data, wikiPath, movesPath)
+	if err != nil {
+		writeDataError(w, err)
 		return
 	}
-
-	// 更新 wiki_monster_data.json 中的技能列表
-	if len(req.SkillList) > 0 {
-		updateWikiSkills(newMonster, req.SkillList)
+	if err := commitDataWrites(writes); err != nil {
+		writeDataError(w, err)
+		return
 	}
 
 	writeJSON(w, 200, []byte(`{"ok":true}`))
 }
 
 func handleAddMove(w http.ResponseWriter, r *http.Request) {
+	handleAddMoveFiles(w, r, getMovesFilePath())
+}
+
+func handleAddMoveFiles(w http.ResponseWriter, r *http.Request, filePath string) {
+	dataEditMu.Lock()
+	defer dataEditMu.Unlock()
 	var req struct {
 		Name        string `json:"name"`
 		Type        string `json:"type"`
@@ -1239,10 +1263,9 @@ func handleAddMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := getMovesFilePath()
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"无法读取数据文件"}`))
+		writeDataError(w, fmt.Errorf("read data: %w", err))
 		return
 	}
 
@@ -1251,12 +1274,30 @@ func handleAddMove(w http.ResponseWriter, r *http.Request) {
 		// 可能是对象格式
 		var movesMap map[string]interface{}
 		if err2 := json.Unmarshal(data, &movesMap); err2 != nil {
-			writeJSON(w, 500, []byte(`{"ok":false,"error":"数据解析失败"}`))
+			writeDataError(w, fmt.Errorf("parse data: %w", err))
+			return
+		}
+		if movesMap == nil {
+			writeDataError(w, fmt.Errorf("moves must be an array or object, not null"))
 			return
 		}
 		for _, v := range movesMap {
-			moves = append(moves, v.(map[string]interface{}))
+			move, ok := v.(map[string]interface{})
+			if !ok {
+				writeDataError(w, fmt.Errorf("invalid move entry"))
+				return
+			}
+			moves = append(moves, move)
 		}
+	}
+
+	if moves == nil {
+		// An empty object is accepted; JSON null is not a database.
+		if strings.TrimSpace(string(data)) == "null" {
+			writeDataError(w, fmt.Errorf("moves must not be null"))
+			return
+		}
+		moves = []map[string]interface{}{}
 	}
 
 	// 找最大 ID
@@ -1295,135 +1336,17 @@ func handleAddMove(w http.ResponseWriter, r *http.Request) {
 
 	moves = append(moves, newMove)
 
-	out, _ := json.MarshalIndent(moves, "", "  ")
-	if err := os.WriteFile(filePath, out, 0644); err != nil {
-		writeJSON(w, 500, []byte(`{"ok":false,"error":"文件写入失败"}`))
+	out, err := json.MarshalIndent(moves, "", "  ")
+	if err != nil {
+		writeDataError(w, fmt.Errorf("marshal moves: %w", err))
+		return
+	}
+	if err := commitDataWrites([]preparedDataWrite{{filePath, data, out}}); err != nil {
+		writeDataError(w, err)
 		return
 	}
 
 	writeJSON(w, 200, []byte(`{"ok":true}`))
-}
-
-func updateWikiSkills(monster map[string]interface{}, skillList []struct {
-	Name   string `json:"name"`
-	Source string `json:"source"`
-}) {
-	// 获取精灵显示名
-	name := ""
-	if loc, ok := monster["localized"].(map[string]interface{}); ok {
-		if zh, ok := loc["zh"].(map[string]interface{}); ok {
-			if n, ok := zh["name"].(string); ok {
-				name = n
-			}
-		}
-	}
-	if form, ok := monster["form"].(string); ok && form != "" && form != "default" {
-		name = name + "（" + form + "）"
-	}
-	if name == "" {
-		return
-	}
-
-	wikiPath := getDataFilePath("wiki_monster_data.json")
-	data, err := os.ReadFile(wikiPath)
-	if err != nil {
-		return
-	}
-
-	var wiki map[string]interface{}
-	if err := json.Unmarshal(data, &wiki); err != nil {
-		return
-	}
-
-	// 从 moves.json 构建技能名 → (类型, 属性, 描述) 映射
-	moveTypeMap := map[string]string{
-		"Physical Attack": "物攻", "Magic Attack": "魔攻",
-		"Status": "状态", "Defense": "防御",
-		"Conditional Attack": "条件攻击", "Energy": "能量",
-	}
-	skillInfoMap := map[string]struct{ cat, elem, desc string }{}
-	if movesData, err := os.ReadFile(getMovesFilePath()); err == nil {
-		var movesRaw []map[string]interface{}
-		if json.Unmarshal(movesData, &movesRaw) == nil {
-			for _, mv := range movesRaw {
-				name := ""
-				if loc, ok := mv["localized"].(map[string]interface{}); ok {
-					if zh, ok := loc["zh"].(map[string]interface{}); ok {
-						if n, ok := zh["name"].(string); ok {
-							name = n
-						}
-					}
-				}
-				if name == "" {
-					continue
-				}
-				catEn, _ := mv["move_category"].(string)
-				catZh := moveTypeMap[catEn]
-				if catZh == "" {
-					catZh = "自定义"
-				}
-				elem := "普通"
-				if mt, ok := mv["move_type"].(map[string]interface{}); ok {
-					if loc, ok := mt["localized"].(map[string]interface{}); ok {
-						if zh, ok := loc["zh"].(string); ok && zh != "" {
-							elem = zh
-						}
-						if zhMap, ok := loc["zh"].(map[string]interface{}); ok {
-							if v, ok := zhMap["zh"].(string); ok && v != "" {
-								elem = v
-							}
-						}
-					}
-				}
-				// 也从 move_type.localized.zh 获取
-				if mt, ok := mv["move_type"].(map[string]interface{}); ok {
-					if loc, ok := mt["localized"].(map[string]interface{}); ok {
-						if zh, ok := loc["zh"].(string); ok && zh != "" {
-							elem = zh
-						}
-					}
-				}
-				desc := ""
-				if loc, ok := mv["localized"].(map[string]interface{}); ok {
-					if zh, ok := loc["zh"].(map[string]interface{}); ok {
-						if d, ok := zh["description"].(string); ok {
-							desc = d
-						}
-					}
-				}
-				skillInfoMap[name] = struct{ cat, elem, desc string }{catZh, elem, desc}
-			}
-		}
-	}
-
-	// 构建新的技能列表
-	skills := make([]interface{}, 0, len(skillList))
-	for _, s := range skillList {
-		info, ok := skillInfoMap[s.Name]
-		if !ok {
-			info = struct{ cat, elem, desc string }{"自定义", "普通", ""}
-		}
-		skills = append(skills, map[string]interface{}{
-			"name":    s.Name,
-			"source":  s.Source,
-			"type":    info.cat,
-			"element": info.elem,
-			"desc":    info.desc,
-		})
-	}
-
-	if entry, ok := wiki[name].(map[string]interface{}); ok {
-		entry["skills"] = skills
-	} else {
-		// 创建新条目
-		wiki[name] = map[string]interface{}{
-			"image":  "",
-			"skills": skills,
-		}
-	}
-
-	out, _ := json.MarshalIndent(wiki, "", "  ")
-	os.WriteFile(wikiPath, out, 0644)
 }
 
 // ---- 静态文件 ----
@@ -1594,7 +1517,7 @@ func main() {
 		Window:   nil,
 		DataPath: filepath.Join(getUserDataDir(), "webview2"), // localStorage 等浏览器数据存用户目录
 		WindowOptions: webview.WindowOptions{
-			Title:  "小黑猫 Wiki",
+			Title:  applicationTitle(),
 			Width:  wWidth,
 			Height: wHeight,
 			Center: true,
@@ -1606,7 +1529,43 @@ func main() {
 	}
 	defer wv.Destroy()
 
-	wv.SetTitle("小黑猫 Wiki")
+	// Native close waits for pending writes. A missing frontend component blocks
+	// page startup, so that read-only loading-error window may still close.
+	if err := wv.Bind("__xhmCloseReady", func(ok bool) {
+		wv.Dispatch(func() {
+			if finishCloseFlush(ok) {
+				procPostMessage.Call(mainHwnd, WM_CLOSE, 0, 0)
+			}
+		})
+	}); err != nil {
+		log.Fatalf("无法绑定安全关闭回调: %v", err)
+	}
+	gCloseMu.Lock()
+	gRequestCloseFlush = func() {
+		wv.Eval(`(function () {
+            Promise.resolve().then(function () {
+                if (!window.UserConfig) {
+                    return window.__xhmCloseReady(true);
+                }
+                if (typeof window.UserConfig.flush !== 'function') {
+                    throw new Error('个人配置组件异常，无法安全关闭。请稍后重试。');
+                }
+                if (typeof window.UserConfig.requestClose === 'function') {
+                    // requestClose owns flush + __xhmCloseReady(bool).
+                    return window.UserConfig.requestClose();
+                }
+                return Promise.resolve(window.UserConfig.flush()).then(function (ok) {
+                    return window.__xhmCloseReady(ok === true);
+                });
+            }).catch(function (error) {
+                console.error('Close flush failed', error);
+                window.__xhmCloseReady(false);
+                window.alert('个人配置保存失败，窗口保持打开。请重试保存后再关闭。');
+            });
+        })();`)
+	}
+	gCloseMu.Unlock()
+	wv.SetTitle(applicationTitle())
 	// 窗口已创建、消息循环尚未启动：直接（同线程）安装消息钩子与热键
 	installWindowHook(uintptr(wv.Window()))
 	// 启动全局热键线程

@@ -9,26 +9,19 @@ const DamagePage = (function () {
   /* ============================================================
    * 1. 状态管理层
    * ============================================================ */
+  const SKILL_DEFAULTS = Object.freeze({
+    skillType: 'attack', skillAttr: '普', basePower: 100, basePowerExpression: '', fixedBonus: 0,
+    percentBonus: 0, buff: 0, comboCount: 1, debuffPercent: '0',
+    defenseMod: '0', starMeteor: 0, finalPowerManual: '', currentSkillName: ''
+  });
   const state = {
+    ...SKILL_DEFAULTS,
     atkPet: null, defPet: null,
     atkNature: {}, atkIV: { attack: true, magic_attack: true },
     defNature: {}, defIV: { hp: true },
-    skillType: 'attack',
-    skillAttr: '普',
-    basePower: 100, fixedBonus: 0, percentBonus: 0,
-    buff: 0, comboCount: 1,
-    debuffPercent: '0',    // 减伤百分比（纯数字，如 70 = 减伤70%）
-    defenseMod: '0',       // 防御修正（如 d70 = 防御+70%, d-70 = 防御-70%）
-    starMeteor: 0,         // 星陨印记层数
-    finalPowerManual: '',  // 手动输入的最终威力（空字符串=自动计算）
-    calcHistory: [],       // 计算历史记录
     favPets: [],           // 收藏的精灵
-    searchedPets: [],      // 搜索过的精灵ID列表（历史）
-    activeQuickTab: 'team' // 快捷模块当前标签: team/history/fav
+    searchedPets: []       // 搜索过的精灵ID列表（历史）
   };
-
-  /* 速度差威力技能：闪击 / 鸣沙陷阱 */
-  const SPEED_BASED_SKILLS = ['闪击', '鸣沙陷阱'];
 
   /* 安全表达式求值：支持 + - * / ( )，如 "30+40+50" → 120。
      非法字符或除零等异常时返回 fallback */
@@ -42,45 +35,55 @@ const DamagePage = (function () {
       return (typeof val === 'number' && isFinite(val)) ? val : fallback;
     } catch (e) { return fallback; }
   }
-  function calcSpeedBasedPower(diff) {
-    if (diff < 0) return 60;
-    if (diff < 15) return 100;
-    if (diff < 30) return 130;
-    if (diff < 45) return 140;
-    if (diff < 60) return 150;
-    if (diff < 75) return 160;
-    if (diff < 90) return 170;
-    if (diff < 105) return 180;
-    if (diff < 120) return 190;
-    if (diff < 135) return 194;
-    return 200;
+  // Display companion only: numerical basePower remains the single-release sum.
+  // Recompute from the actual input on each calculation; never reuse a stale expression.
+  function normalizePowerExpression(text, total) {
+    if (typeof text !== 'string' || text.length > 128 || !/^[0-9]+(?:[+][0-9]+)+$/.test(text)) return '';
+    const terms = text.split('+').map(Number), sum = terms.reduce((a,b) => a+b,0);
+    return terms.every(Number.isSafeInteger) && Number.isSafeInteger(sum) && sum === Number(total) ? text : '';
   }
-  function updateSpeedBasedPower() {
-    if (!SPEED_BASED_SKILLS.includes(state.currentSkillName)) return;
-    const atk = state.atkPet;
-    const def = state.defPet;
-    if (!atk || !def) return;
-    const atkSpd = getPetStat(atk, 'speed', state.atkNature.speed || 0, state.atkIV.speed || false);
-    const defSpd = getPetStat(def, 'speed', state.defNature.speed || 0, state.defIV.speed || false);
-    const diff = atkSpd - defSpd;
-    const power = calcSpeedBasedPower(diff);
+  function updateSpecialPower() {
+    const move = RKData.getMoves().find(m => RKData.getMoveName(m) === state.currentSkillName);
+    const stat = move?.power_formula === 'speed_diff' ? 'speed'
+      : move?.power_formula === 'phy_def_diff' ? 'defense' : null;
+    if (!stat || !state.atkPet || !state.defPet) return;
+    const attackValue = getPetStat(state.atkPet, stat, state.atkNature[stat] || 0, !!state.atkIV[stat]);
+    const defenseValue = getPetStat(state.defPet, stat, state.defNature[stat] || 0, !!state.defIV[stat]);
+    const power = BattleMath.differencePower(attackValue - defenseValue);
+    state.basePower = power;
+    state.basePowerExpression = '';
     const input = document.getElementById('basePower');
-    if (input) { input.value = power; state.basePower = power; }
+    if (input) input.value = power;
   }
 
-  const extState = {
-    specialPower: {},      // 特殊技能威力计算模块
-    specialStack: {},      // 特殊伤害叠加模块
-    favorites: [],         // 收藏精灵快捷输入模块
-    history: [],           // 历史记录显示模块
-    skillIcons: {},        // 技能图标模块
-    calcHistory: [],       // 计算历史记录
-    favPets: [],           // 收藏的精灵
-    searchedPets: [],      // 搜索过的精灵ID列表（历史）
-    activeQuickTab: 'team' // 快捷模块当前标签: team/history/fav
-  };
+  function setSkillType(type) {
+    state.skillType = type === 'magic_attack' ? 'magic_attack' : 'attack';
+    const attack = document.getElementById('skillTypeAttack');
+    const magic = document.getElementById('skillTypeMagic');
+    if (attack) attack.checked = state.skillType === 'attack';
+    if (magic) magic.checked = state.skillType === 'magic_attack';
+  }
 
   let initialized = false;  // 是否已初始化过（用于跨页面切换时保留数据）
+  let pageScrollTop = 0;
+  let copyOutsideClick = null;
+  let closeSkillPicker = null;
+  let skillNoticeTimer = null;
+
+  function showSkillNotice(text, detail) {
+    clearTimeout(skillNoticeTimer);
+    let notice = document.getElementById('skill-variant-notice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'skill-variant-notice';
+      notice.setAttribute('role', 'status');
+      notice.setAttribute('aria-live', 'polite');
+      document.getElementById('ext-skill-icons')?.appendChild(notice);
+    }
+    notice.textContent = text;
+    notice.title = detail || text;
+    skillNoticeTimer = setTimeout(() => notice.remove(), 5000);
+  }
 
   // 技能使用记忆：最近使用的技能名排在前面
   let skillUsageOrder = [];
@@ -114,7 +117,7 @@ const DamagePage = (function () {
   const CalcEngine = {
     /** 计算技能基础威力 */
     calcBasePower(basePower, fixedBonus, percentBonus) {
-      return Math.floor((basePower + fixedBonus) * (1 + percentBonus / 100));
+      return BattleMath.basePower(basePower, fixedBonus, percentBonus);
     },
 
     /** 判断本系加成 */
@@ -134,8 +137,7 @@ const DamagePage = (function () {
 
     /** buff 修正系数 */
     calcBuffMod(buffPercent) {
-      if (buffPercent >= 0) return 1 + buffPercent / 100;
-      return 1 / (1 + Math.abs(buffPercent) / 100);
+      return BattleMath.buffMultiplier(buffPercent);
     },
 
     /** 减伤百分比解析 → debuffMod（支持 + - * / 表达式） */
@@ -162,11 +164,9 @@ const DamagePage = (function () {
     /** 计算最终威力 */
     calcFinalPower(basePower, fixedBonus, percentBonus, atkPet, defPet, skillAttr, buffPercent, manual) {
       if (manual !== null && manual !== '') return Math.round(evalExpr(manual, 0));
-      const skillBasePower = this.calcBasePower(basePower, fixedBonus, percentBonus);
       const sameTypeBonus = this.isSameType(atkPet, skillAttr) ? 1.25 : 1.0;
       const typeEff = this.calcTypeEff(skillAttr, defPet);
-      const buffMod = this.calcBuffMod(buffPercent);
-      return Math.floor(skillBasePower * sameTypeBonus * typeEff * buffMod);
+      return BattleMath.finalPower(basePower, fixedBonus, percentBonus, sameTypeBonus, typeEff, buffPercent);
     },
 
     /** 主计算函数：返回完整结果 */
@@ -209,22 +209,18 @@ const DamagePage = (function () {
       const skillFinalPower = this.calcFinalPower(basePower, fixedBonus, percentBonus, atk, def, skillAttr, buffPercent, isManual ? state.finalPowerManual : null);
 
       // 普通伤害计算
-      const dmg1 = Math.ceil(skillFinalPower * atkStat);
-      const dmg2 = Math.ceil(dmg1 * (37 / 41));
-      const dmg3 = Math.ceil(dmg2 * debuffMod);
-      const singleHit = Math.ceil(dmg3 / defStat);
+      const singleHit = BattleMath.normalDamage(atkStat, skillFinalPower, defStat, debuffMod);
       let totalDamage = singleHit * comboCount;
 
-      // 星陨伤害独立于普通技能威力：不受本系、固定/百分比威力、37/41常数或连击影响。
+      // 非幻系攻击触发；追加伤害为幻系，使用相同37/41系数，但不叠本系/普通威力加成/连击。
       let starMeteorDamage = 0;
       let starMeteorBase = 0;
       const starMeteorLayers = state.starMeteor || 0;
-      if (starMeteorLayers > 0) {
+      const starMeteorTriggered = starMeteorLayers > 0 && RKData.getTypeEn(skillAttr) !== 'Illusion';
+      const starMeteorTypeEff = RKData.getTypeEff('Illusion', def.main_type?.name, def.sub_type?.name);
+      if (starMeteorTriggered) {
         starMeteorBase = this.calcStarMeteorBase(starMeteorLayers);
-        const starDmg1 = Math.ceil(starMeteorBase * atkStat);
-        const starDmg2 = Math.ceil(starDmg1 * buffMod);
-        const starDmg3 = Math.ceil(starDmg2 * typeEff * debuffMod);
-        starMeteorDamage = Math.ceil(starDmg3 / defStat);
+        starMeteorDamage = BattleMath.starMeteorDamage(starMeteorBase, atkStat, defStat, buffMod, starMeteorTypeEff, debuffMod);
         totalDamage += starMeteorDamage;
       }
 
@@ -240,15 +236,15 @@ const DamagePage = (function () {
         isSameType, sameTypeBonus, typeEff, buffMod,
         debuffMod, defenseMod, hasDefenseMod, hasDebuffMod,
         singleHit, totalDamage, comboCount,
-        starMeteorDamage, starMeteorLayers, starMeteorBase,
+        starMeteorDamage, starMeteorLayers, starMeteorBase, starMeteorTypeEff, starMeteorTriggered,
         defHP, remainingHP, damagePercent,
-        atkIVText: state.atkIV[atkStatKey] ? '√个体' : '×个体',
-        atkNatureText: state.atkNature[atkStatKey] === 1 ? '+性格' : state.atkNature[atkStatKey] === 2 ? '-性格' : '×性格',
-        defIVText: state.defIV[defStatKey] ? '√个体' : '×个体',
-        defNatureText: state.defNature[defStatKey] === 1 ? '+性格' : state.defNature[defStatKey] === 2 ? '-性格' : '×性格',
-        hpIVText: state.defIV.hp ? '√个体' : '×个体',
-        hpNatureText: state.defNature.hp === 1 ? '+性格' : state.defNature.hp === 2 ? '-性格' : '×性格',
-        basePower, fixedBonus, percentBonus, buffPercent,
+        atkIVText: state.atkIV[atkStatKey] ? '✓个体' : '×个体',
+        atkNatureText: state.atkNature[atkStatKey] === 1 ? '✓性格' : state.atkNature[atkStatKey] === 2 ? '负性格' : '×性格',
+        defIVText: state.defIV[defStatKey] ? '✓个体' : '×个体',
+        defNatureText: state.defNature[defStatKey] === 1 ? '✓性格' : state.defNature[defStatKey] === 2 ? '负性格' : '×性格',
+        hpIVText: state.defIV.hp ? '✓个体' : '×个体',
+        hpNatureText: state.defNature.hp === 1 ? '✓性格' : state.defNature.hp === 2 ? '负性格' : '×性格',
+        basePower, basePowerExpression: normalizePowerExpression(state.basePowerExpression, basePower), fixedBonus, percentBonus, buffPercent,
         isManual
       };
     },
@@ -266,9 +262,10 @@ const DamagePage = (function () {
         steps.push(`② ${r.defName}${defStatName} = <span class="highlight">${r.defStat}</span> (${r.defIVText}&${r.defNatureText})`);
       }
 
-      let powerText = r.skillBasePower.toString();
+      const displayedBase = r.basePowerExpression || r.basePower;
+      let powerText = r.basePowerExpression ? `${displayedBase} = ${r.skillBasePower}` : r.skillBasePower.toString();
       if (r.fixedBonus !== 0 || r.percentBonus !== 0) {
-        powerText = r.percentBonus !== 0 ? `(${r.basePower} + ${r.fixedBonus}) × ${(1 + r.percentBonus / 100).toFixed(2)} = ${r.skillBasePower}` : `${r.basePower} + ${r.fixedBonus} = ${r.skillBasePower}`;
+        powerText = r.percentBonus !== 0 ? `(${displayedBase} + ${r.fixedBonus}) × ${(1 + r.percentBonus / 100).toFixed(2)} = ${r.skillBasePower}` : `${displayedBase} + ${r.fixedBonus} = ${r.skillBasePower}`;
       }
       const step3 = `③ 技能基础威力 = ${powerText}，技能属性 = <span class="highlight">${r.skillAttrFull}</span>`;
 
@@ -297,12 +294,12 @@ const DamagePage = (function () {
       const normalDamage = r.totalDamage - r.starMeteorDamage;
       if (r.starMeteorDamage > 0) {
         steps.push(`⑤ 普通伤害 = ${dmgParts.join(' × ')} = <span class="danger-text">${normalDamage}</span>`);
-        let starParts = [`${r.starMeteorLayers}层星陨印记（基础威力${r.starMeteorBase}）`, `(${r.atkStat} ÷ ${r.defStat})`];
+        let starParts = [`${r.starMeteorLayers}层星陨印记（幻系，基础威力${r.starMeteorBase}）`, `(${r.atkStat} ÷ ${r.defStat})`, '0.9'];
         if (r.buffPercent !== 0) {
           if (r.buffPercent >= 0) starParts.push(`BUFF${r.buffMod.toFixed(2)}`);
           else starParts.push(`BUFF÷${(1 / r.buffMod).toFixed(2)}`);
         }
-        if (r.typeEff !== 1.0) starParts.push(`克制${r.typeEff}`);
+        if (r.starMeteorTypeEff !== 1.0) starParts.push(`幻系${r.starMeteorTypeEff < 1 ? '抵抗' : '克制'}${r.starMeteorTypeEff}`);
         if (r.hasDebuffMod) starParts.push(`减伤${r.debuffMod.toFixed(2)}`);
         steps.push(`　星陨追加伤害 = ${starParts.join(' × ')} = <span class="danger-text">${r.starMeteorDamage}</span>`);
         steps.push(`　最终伤害 = ${normalDamage} + ${r.starMeteorDamage} = <span class="danger-text">${r.totalDamage}</span>`);
@@ -325,7 +322,7 @@ const DamagePage = (function () {
 
   function buildAttackerCard() {
     return `
-      <div class="card attacker-card">
+      <div class="card attacker-card" data-stat-policy="free">
         <div class="card-header">
           <div class="header-left">
             <label>精灵:</label>
@@ -357,7 +354,7 @@ const DamagePage = (function () {
 
   function buildDefenderCard() {
     return `
-      <div class="card defender-card">
+      <div class="card defender-card" data-stat-policy="free">
         <div class="card-header">
           <div class="header-left">
             <h3><img id="swapIconDef" src="assets/icons/ui/icon_defender.png" alt="防守方" class="title-icon swap-icon" title="点击交换攻守方" style="cursor:pointer;"> 防守方</h3>
@@ -508,32 +505,6 @@ const DamagePage = (function () {
       </div>`;
   }
 
-  /* ===== 扩展模块占位 UI ===== */
-
-  function buildSpecialPowerModule() {
-    return `
-      <div class="card ext-module" id="ext-special-power">
-        <div class="card-header">
-          <h3><img src="assets/icons/ui/icon_skill.png" alt="特殊技能威力" class="title-icon"> 特殊技能威力计算</h3>
-        </div>
-        <div class="card-body">
-          <p class="ext-placeholder">该模块正在开发中，后续将支持特殊技能的威力计算。</p>
-        </div>
-      </div>`;
-  }
-
-  function buildSpecialStackModule() {
-    return `
-      <div class="card ext-module" id="ext-special-stack">
-        <div class="card-header">
-          <h3><img src="assets/icons/ui/icon_result.png" alt="特殊伤害叠加" class="title-icon"> 特殊伤害叠加</h3>
-        </div>
-        <div class="card-body">
-          <p class="ext-placeholder">该模块正在开发中，后续将支持多段伤害叠加计算。</p>
-        </div>
-      </div>`;
-  }
-
   function buildQuickAccessModule() {
     return `
       <div class="card ext-module" id="ext-quick-access">
@@ -599,13 +570,12 @@ const DamagePage = (function () {
     const validSkills = skills.filter(s => s);
     if (validSkills.length === 0) return [];
 
-    // 将技能名转换为 wiki 技能对象格式
-    return validSkills.map(skillName => {
-      const mv = RKData.getMoves().find(m => RKData.getMoveName(m) === skillName);
-      const type = mv ? (mv.move_category === 'Physical Attack' ? '物攻' : mv.move_category === 'Magic Attack' ? '魔攻' : '物攻') : '物攻';
-      const element = mv && mv.move_type ? (mv.move_type.localized?.zh || '普通') : '普通';
-      return { name: skillName, source: '过山车', type: type, element: element };
-    }).filter(s => s.type === '物攻' || s.type === '魔攻');
+    // 先按主技能表过滤；状态、防御、其他类别及未知技能都不进入攻击快捷卡片。
+    const byName = new Map(RKData.getMoves().map(move => [RKData.getMoveName(move), move]));
+    return validSkills.map(name => byName.get(name)).filter(RKData.isAttackMove).map(move => ({
+      name: RKData.getMoveName(move), source: '过山车', type: RKData.getMoveCategoryZh(move),
+      element: move.move_type?.localized?.zh || '普通'
+    }));
   }
 
   /* 技能图标模块：显示攻击方可携带的攻击技能，点击填入威力和属性 */
@@ -616,11 +586,9 @@ const DamagePage = (function () {
     if (!pet) { grid.innerHTML = '<p class="ext-placeholder">请先选择攻击方精灵</p>'; return; }
 
     const wiki = RKData.getResolvedWikiData(pet);
-    if (!wiki || !wiki.skills) { grid.innerHTML = '<p class="ext-placeholder">未找到技能数据</p>'; return; }
 
-    // 筛选物攻和魔攻技能
-    const attackSkills = wiki.skills.filter(s => s.type === '物攻' || s.type === '魔攻');
-    if (attackSkills.length === 0) { grid.innerHTML = '<p class="ext-placeholder">无攻击技能</p>'; return; }
+    // 空基础技能表不能隐藏过山车组；三组共用同一预设入口。
+    const attackSkills = (wiki?.skills || []).filter(s => s.type === '物攻' || s.type === '魔攻');
 
     // 传说攻击技能与普通攻击技能一并显示；仅血脉技能单独分组。
     const baseSkills = attackSkills.filter(s => s.source !== '血脉');
@@ -637,7 +605,7 @@ const DamagePage = (function () {
     });
 
     // 构建 moves name -> power 映射
-    const moveMap = {};
+    const moveMap = Object.create(null);
     RKData.getMoves().forEach(mv => {
       const name = RKData.getMoveName(mv);
       if (name) moveMap[name] = mv;
@@ -646,17 +614,19 @@ const DamagePage = (function () {
     // 生成单个技能图标的 HTML
     function buildSkillIconHtml(skill) {
       const mv = moveMap[skill.name];
-      const power = mv ? (mv.power || 0) : 0;
-      const combo = mv && mv.base_combo ? mv.base_combo : 1;
-      const iconSrc = `assets/monster/skill/${skill.name}.png`;
+      const variant = SkillVariants.forAttacker(mv, state.atkPet);
+      const power = variant.showUnknownPower ? '?' : (variant.left?.basePowerExpression ?? variant.left?.basePower ?? mv?.power ?? 0);
+      const escape = value => String(value).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+      const help = escape(SkillVariants.tooltip(mv, state.atkPet));
+      const iconSrc = `assets/monster/skill/${encodeURIComponent(skill.name)}.png`;
       const typeIcon = RKData.getTypeIcon(skill.element);
-      return `<div class="skill-icon-item" data-skill-name="${skill.name}" data-power="${power}" data-combo="${combo}" data-skill-type="${skill.type}" data-skill-element="${skill.element}" title="${skill.name} (${skill.type}/${skill.element}) 威力:${power}${combo > 1 ? ' ' + combo + '连击' : ''}">
+      return `<div class="skill-icon-item${skill.name === state.currentSkillName ? ' selected' : ''}" data-skill-name="${escape(skill.name)}" data-skill-type="${escape(skill.type)}" data-skill-element="${escape(skill.element)}" role="button" tabindex="0" aria-label="${help}" title="${help}">
         <div class="skill-icon-img-box">
-          <img src="${iconSrc}" alt="${skill.name}" loading="lazy" onerror="this.style.visibility='hidden'">
-          <span class="skill-icon-power">${power || '?'} </span>
-          <img src="${typeIcon}" class="skill-icon-type" alt="${skill.element}" loading="lazy">
+          <img src="${escape(iconSrc)}" alt="${escape(skill.name)}" loading="lazy" onerror="this.style.visibility='hidden'">
+          <span class="skill-icon-power">${power} </span>
+          <img src="${escape(typeIcon)}" class="skill-icon-type" alt="${escape(skill.element)}" loading="lazy">
         </div>
-        <span class="skill-icon-name">${skill.name}</span>
+        <span class="skill-icon-name">${escape(skill.name)}</span>
       </div>`;
     }
 
@@ -675,50 +645,31 @@ const DamagePage = (function () {
     if (bloodlineSkills.length > 0) {
       html += `<div class="skill-icon-group"><div class="skill-icon-group-title">血脉技能</div><div class="skill-icons-subgrid">${sortByUsage(bloodlineSkills).map(buildSkillIconHtml).join('')}</div></div>`;
     }
-    grid.innerHTML = html;
+    grid.innerHTML = html || '<p class="ext-placeholder">无攻击技能</p>';
 
-    // 点击技能图标 → 填入威力和属性
+    // Both buttons and all source groups share one atomic skill selection.
+    // Same-attribute presets preserve user inputs. Only an actual attribute
+    // change against the existing special defender refreshes its bound auto-bonus.
     grid.querySelectorAll('.skill-icon-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const power = parseInt(item.dataset.power) || 0;
-        const combo = parseInt(item.dataset.combo) || 1;
-        const skillType = item.dataset.skillType; // 物攻 / 魔攻
-        const element = item.dataset.skillElement; // 中文全称如 普通/草/火
-
-        // 设置基础威力
-        const basePowerInput = document.getElementById('basePower');
-        basePowerInput.value = power;
-        state.basePower = power;
-
-        // 设置连击数
-        const comboInput = document.getElementById('comboCount');
-        comboInput.value = combo;
-        state.comboCount = combo;
-        // 用户主动点选技能：保存为该攻击方精灵的技能设置记忆
-        saveSkillConfig(state.atkPet && state.atkPet.id);
-
-        // 设置技能类型（物攻/魔攻）
-        if (skillType === '物攻') {
-          document.getElementById('skillTypeAttack').checked = true;
-          state.skillType = 'attack';
-        } else {
-          document.getElementById('skillTypeMagic').checked = true;
-          state.skillType = 'magic_attack';
+      const select = side => {
+        const move = moveMap[item.dataset.skillName];
+        const element = SkillVariants.describe(move).element;
+        const short = RKData.getTypeShortZh(RKData.getTypeEn(element));
+        const previousAttribute = RKData.getTypeEn(state.skillAttr);
+        const result = SkillVariants.select(state, move, side, short);
+        if (!result.applied) {
+          showSkillNotice(item.dataset.skillName + '：未应用；请查看提示并手动设置。', result.notice);
+          return; // No value, highlight, usage order, snapshot, or profile writes.
         }
-
-        // 设置技能属性（中文全称 → 简称）
-        const en = RKData.getTypeEn(element);
-        const short = RKData.getTypeShortZh(en);
-        state.skillAttr = short;
+        Object.assign(state, result.state);
+        document.getElementById('basePower').value = state.basePowerExpression || state.basePower;
+        document.getElementById('comboCount').value = state.comboCount;
+        setSkillType(state.skillType);
         updateSkillAttrButton();
-
-        // 高亮选中的技能图标
-        grid.querySelectorAll('.skill-icon-item').forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
+        grid.querySelectorAll('.skill-icon-item').forEach(i => i.classList.toggle('selected', i.dataset.skillName === state.currentSkillName));
 
         // 更新使用记忆：将此技能移到最前
         const skillName = item.dataset.skillName;
-        state.currentSkillName = skillName;
         skillUsageOrder = skillUsageOrder.filter(n => n !== skillName);
         skillUsageOrder.unshift(skillName);
         saveSkillUsageOrder();
@@ -737,11 +688,26 @@ const DamagePage = (function () {
         });
 
         checkSameType();
-        checkJmfzBonus();
-        updateSpeedBasedPower();
+        if (state.defPet?.id === 501 && previousAttribute !== RKData.getTypeEn(state.skillAttr)) checkJmfzBonus();
+        updateSpecialPower();
         updateTypeEffectiveness();
         updateFinalPower();
         calculate();
+        saveSkillConfig(state.atkPet && state.atkPet.id);
+        // Successful selection is already reflected in inputs/highlight. Do not
+        // append explanatory power text beneath quick cards or keep an older warning.
+        clearTimeout(skillNoticeTimer);
+        document.getElementById('skill-variant-notice')?.remove();
+      };
+      item.addEventListener('click', () => select('left'));
+      item.addEventListener('contextmenu', event => {
+        event.preventDefault();
+        select('right');
+      });
+      item.addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        select(event.shiftKey ? 'right' : 'left');
       });
     });
   }
@@ -775,8 +741,6 @@ const DamagePage = (function () {
     initProcessToggle();
     loadFavPets();
     loadSearchedPets();
-    renderTeamAvatars('attacker');
-    renderTeamAvatars('defender');
     initSearchDropdown('attacker-search-slot', 'attacker');
     initSearchDropdown('defender-search-slot', 'defender');
     bindEvents();
@@ -787,54 +751,28 @@ const DamagePage = (function () {
     } else {
       restoreFromState();
     }
+    const scroller = document.querySelector('.calc-root.scroll-container');
+    if (scroller) scroller.scrollTop = pageScrollTop;
   }
 
   /* 从已有 state 恢复 UI（页面切换回来时不重置数据） */
   function restoreFromState() {
-    // 快照技能设置（下方 onAttackerSelected/onDefenderSelected 会触发
-    // checkJmfzBonus/updateSpeedBasedPower 等覆盖部分字段，最后用快照恢复）
-    const snap = {
-      basePower: state.basePower, fixedBonus: state.fixedBonus,
-      percentBonus: state.percentBonus, buff: state.buff,
-      comboCount: state.comboCount, debuffPercent: state.debuffPercent,
-      defenseMod: state.defenseMod, starMeteor: state.starMeteor,
-      finalPowerManual: state.finalPowerManual
-    };
-    // 恢复搜索框文本（传入精灵对象，确保头像同步显示）
-    if (state.atkPet) {
-      searchBoxes.attacker.setValue(getPetName(state.atkPet), state.atkPet);
-      onAttackerSelected();
-      syncModifierButtons('attacker');
+    // 切页只还原显示，不执行“换精灵”的重置、记忆加载或特性覆盖。
+    for (const side of ['attacker', 'defender']) {
+      const pet = side === 'attacker' ? state.atkPet : state.defPet;
+      if (!pet) continue;
+      searchBoxes[side].setValue(getPetName(pet), pet);
+      updateTypeBadges(side, pet);
+      updateFinalStats(side);
+      syncModifierButtons(side);
     }
-    if (state.defPet) {
-      searchBoxes.defender.setValue(getPetName(state.defPet), state.defPet);
-      onDefenderSelected();
-      syncModifierButtons('defender');
-    }
-    // 恢复技能类型
-    if (state.skillType === 'magic_attack') {
-      document.getElementById('skillTypeMagic').checked = true;
-    } else {
-      document.getElementById('skillTypeAttack').checked = true;
-    }
-    // 恢复技能属性按钮
-    updateSkillAttrButton();
-    // 恢复技能设置输入框（用快照覆盖，避免被中途逻辑清空）
-    Object.assign(state, snap);
-    document.getElementById('basePower').value = snap.basePower;
-    document.getElementById('fixedBonus').value = snap.fixedBonus;
-    document.getElementById('percentBonus').value = snap.percentBonus;
-    document.getElementById('buff').value = snap.buff;
-    document.getElementById('comboCount').value = snap.comboCount;
-    document.getElementById('debuffPercent').value = snap.debuffPercent || '0';
-    document.getElementById('defenseMod').value = snap.defenseMod || '0';
-    document.getElementById('starMeteor').value = snap.starMeteor || 0;
-    document.getElementById('finalPowerManual').value = snap.finalPowerManual || '';
+    writeSkillInputs();
     checkSameType();
     updateTypeEffectiveness();
     updateFinalPower();
     calculate();
     renderSkillIcons();
+    updateAllRoleMarks();
   }
 
   /* ============================================================
@@ -846,49 +784,27 @@ const DamagePage = (function () {
     const sb = CommonUI.createSearchBox({
       placeholder: '选择或搜索精灵',
       limit: 10,
-      onSelect: (pet) => {
-        if (side === 'attacker') {
-          state.atkPet = pet;
-          // 尝试从 localStorage 读取已保存的性格/个体配置
-          const saved = loadPetConfig(pet.id);
-          state.atkNature = saved.nature || {};
-          state.atkIV = saved.iv || {};
-        onAttackerSelected();
-        // 应用技能设置记忆；从未保存过则清空
-        applySkillMemory(pet.id);
-        syncModifierButtons('attacker');
-        } else {
-          state.defPet = pet;
-          const saved = loadPetConfig(pet.id);
-          state.defNature = saved.nature || {};
-          state.defIV = saved.iv || {};
-          onDefenderSelected();
-          syncModifierButtons('defender');
-        }
-      },
+      onSelect: pet => selectPet(side, pet),
       renderItem: CommonUI.monsterRenderItem()
     });
     searchBoxes[side] = sb;
     document.getElementById(slotId).appendChild(sb.wrapper);
   }
 
-  /* 性格/个体配置保存到 localStorage */
-  function savePetConfig(petId, nature, iv) {
-    try {
-      const raw = localStorage.getItem('rk_pet_configs');
-      const configs = raw ? JSON.parse(raw) : {};
-      configs[petId] = { nature, iv };
-      localStorage.setItem('rk_pet_configs', JSON.stringify(configs));
-    } catch (e) {}
+  /* Shared file only: failed writes remain in UserConfig's visible retry/close queue. */
+  const STAT_KEYS = ['attack', 'magic_attack', 'defense', 'magic_defense', 'hp', 'speed'];
+  function savePetConfig(petId, nature, iv, mode = 1) {
+    const previous = loadPetConfig(petId) || {};
+    const record = { ...previous, mode,
+      nature: { ...(previous.nature || {}), ...Object.fromEntries(STAT_KEYS.map(k => [k, nature[k] || 0])) },
+      iv: { ...(previous.iv || {}), ...Object.fromEntries(STAT_KEYS.map(k => [k, !!iv[k]])) } };
+    void window.UserConfig.patch('rk_pet_configs', { [petId]: record }).then(ok => {
+      if (ok && typeof FavoritePets !== 'undefined') FavoritePets.notify();
+    });
   }
 
   function loadPetConfig(petId) {
-    try {
-      const raw = localStorage.getItem('rk_pet_configs');
-      if (!raw) return {};
-      const configs = JSON.parse(raw);
-      return configs[petId] || {};
-    } catch (e) { return {}; }
+    return window.UserConfig.getObject('rk_pet_configs', {})[petId];
   }
 
 /* 技能设置记忆入口：有记忆则应用；从未保存过则清空（不沿用上一个精灵的参数） */
@@ -901,163 +817,120 @@ const DamagePage = (function () {
       renderSkillIcons(); // 清除上个精灵的技能选中高亮
     }
   }
-  const SKILL_CONFIG_KEYS = ['basePower','fixedBonus','percentBonus','buff','comboCount',
+  const SKILL_CONFIG_KEYS = ['basePower','basePowerExpression','fixedBonus','percentBonus','buff','comboCount',
     'debuffPercent','defenseMod','starMeteor','finalPowerManual'];
+  function skillSnapshot() {
+    return Object.fromEntries(Object.keys(SKILL_DEFAULTS).map(key => [key, state[key]]));
+  }
+  function saveActiveSkill() {
+    void window.UserConfig.patch('rk_damage_view', {
+      skill: { ...window.UserConfig.getObject('rk_damage_view', {}).skill, ...skillSnapshot() }
+    });
+  }
   function saveSkillConfig(petId) {
-    if (!petId) return;
-    try {
-      const raw = localStorage.getItem('rk_damage_skill_configs');
-      const configs = raw ? JSON.parse(raw) : {};
-      configs[petId] = {
-        basePower: state.basePower, fixedBonus: state.fixedBonus,
-        percentBonus: state.percentBonus, buff: state.buff,
-        comboCount: state.comboCount, debuffPercent: state.debuffPercent,
-        defenseMod: state.defenseMod, starMeteor: state.starMeteor,
-        finalPowerManual: state.finalPowerManual,
-        skillType: state.skillType, skillAttr: state.skillAttr,
-        currentSkillName: state.currentSkillName || ''
-      };
-      localStorage.setItem('rk_damage_skill_configs', JSON.stringify(configs));
-    } catch (e) {}
+    if (petId) void window.UserConfig.patch('rk_damage_skill_configs', {
+      [petId]: { ...loadSkillConfig(petId), ...skillSnapshot() }
+    });
+    // Also remember edits made without an attacker. This is NOT per-pet memory.
+    saveActiveSkill();
   }
   function loadSkillConfig(petId) {
-    if (!petId) return null;
-    try {
-      const raw = localStorage.getItem('rk_damage_skill_configs');
-      if (!raw) return null;
-      const configs = JSON.parse(raw);
-      return configs[petId] || null;
-    } catch (e) { return null; }
+    return petId ? window.UserConfig.getObject('rk_damage_skill_configs', {})[petId] || null : null;
   }
-  function applySkillConfig(cfg) {
-    if (!cfg) return;
-    // 覆盖 state 与输入框（跳过空值，避免应用未填/残留的空配置导致参数全空）
+  function writeSkillInputs() {
+    state.basePowerExpression = normalizePowerExpression(state.basePowerExpression, state.basePower);
     SKILL_CONFIG_KEYS.forEach(key => {
-      if (cfg[key] === undefined || cfg[key] === null) return;
-      // 空字符串仅对最终威力（手动模式）有效，其余参数视为无效不应用
-      if (cfg[key] === '' && key !== 'finalPowerManual') return;
-      state[key] = cfg[key];
       const el = document.getElementById(key);
-      if (el) el.value = cfg[key];
+      if (el) el.value = key === 'basePower' ? state.basePowerExpression || state.basePower : state[key];
     });
-    // 恢复物攻/魔攻单选与技能属性按钮
-    if (cfg.skillType === 'magic_attack') {
-      const el = document.getElementById('skillTypeMagic');
-      if (el) el.checked = true;
-      state.skillType = 'magic_attack';
-    } else if (cfg.skillType === 'attack') {
-      const el = document.getElementById('skillTypeAttack');
-      if (el) el.checked = true;
-      state.skillType = 'attack';
+    setSkillType(state.skillType);
+    updateSkillAttrButton();
+  }
+
+  function applySkillConfig(cfg) {
+    // 目标精灵缺少的旧字段使用默认值，绝不继承上一只精灵的残留。
+    Object.assign(state, SKILL_DEFAULTS);
+    for (const key of Object.keys(SKILL_DEFAULTS)) {
+      if (cfg?.[key] == null) continue;
+      if (cfg[key] === '' && !['finalPowerManual', 'currentSkillName', 'basePowerExpression'].includes(key)) continue;
+      state[key] = cfg[key];
     }
-    if (cfg.skillAttr) {
-      state.skillAttr = cfg.skillAttr;
-      updateSkillAttrButton();
-    }
-    if (cfg.currentSkillName) state.currentSkillName = cfg.currentSkillName;
+    writeSkillInputs();
     checkSameType();
     updateTypeEffectiveness();
     updateFinalPower();
     calculate();
   }
 
+  function petConfiguration(petId, teamData = null) {
+    const saved = teamData
+      ? { nature: teamData.petNatures?.[petId] || {}, iv: teamData.petIVs?.[petId] || {} }
+      : loadPetConfig(petId);
+    return PetConfiguration.resolve(RKData.getMonsterById(petId), saved);
+  }
+
+  let selectionTeams = { attacker: null, defender: null };
+  function readSelection() {
+    return window.UserConfig.getObject('rk_damage_selection', {});
+  }
+  function saveSelection(fields) {
+    void window.UserConfig.patch('rk_damage_selection', fields);
+  }
+  function selectionTeam(groupId, petId) {
+    if (!groupId) return null;
+    try {
+      const group = JSON.parse(localStorage.getItem('rk_team_config') || '{}').groups?.find(group => group.id === groupId);
+      return group?.team?.includes(petId) ? group : null;
+    } catch (_) { return null; }
+  }
+
+  function selectPet(side, pet, teamData = null) {
+    if (!pet) return;
+    const config = petConfiguration(pet.id, teamData);
+    if (side === 'attacker') {
+      // User edits already save per-pet memory. Role changes save only the active view.
+      state.atkPet = pet; state.atkNature = config.nature; state.atkIV = config.iv;
+      applySkillMemory(pet.id);
+      onAttackerSelected();
+      // 保留机幕方舟独立覆盖规则；仅换精灵时应用，不在切页时重置。
+      checkJmfzBonus();
+      calculate();
+    } else {
+      state.defPet = pet; state.defNature = config.nature; state.defIV = config.iv;
+      onDefenderSelected();
+    }
+    searchBoxes[side]?.setValue(getPetName(pet), pet);
+    syncModifierButtons(side);
+    renderSkillIcons();
+    selectionTeams[side] = teamData?.id || null;
+    saveSelection({ [side]: pet.id, [side + 'Team']: selectionTeams[side] });
+    saveActiveSkill();
+  }
+
   /* ============================================================
    * 7. 默认精灵 & 组队头像
    * ============================================================ */
   function initDefaultPets() {
-    const atkPet = RKData.getMonsterById(221);
+    const selection = readSelection();
+    const atkPet = selection.attacker == null ? null : RKData.getMonsterById(Number(selection.attacker));
     if (atkPet) {
       state.atkPet = atkPet;
-      state.atkNature = {};
-      state.atkIV = { attack: false, magic_attack: true, defense: false, magic_defense: false, hp: false, speed: false };
-      searchBoxes.attacker.setValue(getPetName(atkPet));
-      onAttackerSelected();
-      applySkillMemory(atkPet.id);
-      syncModifierButtons('attacker');
+      const team = selectionTeam(selection.attackerTeam, atkPet.id);
+      selectionTeams.attacker = team?.id || null;
+      const saved = petConfiguration(atkPet.id, team);
+      state.atkNature = saved.nature; state.atkIV = saved.iv;
     }
-    const defPet = RKData.getMonsterById(9001);
-    if (defPet) {
-      state.defPet = defPet;
-      state.defNature = {};
-      state.defIV = {};
-      searchBoxes.defender.setValue(getPetName(defPet), defPet);
-      onDefenderSelected();
-      syncModifierButtons('defender');
+    // Process startup alone chooses the dummy. Route navigation uses restoreFromState.
+    state.defPet = RKData.getMonsterById(9001) || null;
+    selectionTeams.defender = null;
+    if (state.defPet) {
+      const saved = petConfiguration(state.defPet.id);
+      state.defNature = saved.nature; state.defIV = saved.iv;
     }
-  }
-
-  function renderTeamAvatars(side) {
-    const container = document.getElementById(`${side}TeamAvatars`);
-    if (!container) return;
-
-    let teamData = null;
-    try {
-      const raw = localStorage.getItem('rk_team_config');
-      if (!raw) return;
-      const saved = JSON.parse(raw);
-      const group = saved.groups && saved.groups.find(g => g.id === saved.activeGroupId);
-      if (!group || !Array.isArray(group.team)) return;
-      teamData = group;
-    } catch (e) { return; }
-
-    const team = teamData.team;
-    const petNatures = teamData.petNatures || {};
-    const petIVs = teamData.petIVs || {};
-
-    let html = '';
-    for (let i = 0; i < 6; i++) {
-      const petId = team[i];
-      if (petId) {
-        const pet = RKData.getMonsterById(petId);
-        if (pet) {
-          const name = getPetName(pet);
-          const imgUrl = pet.image ? `assets/monster/images/${pet.image}` : '';
-          html += `<div class="team-avatar filled" data-side="${side}" data-pet-id="${petId}" title="${name} - 点击导入">
-            ${imgUrl ? `<img src="${imgUrl}" alt="${name}" loading="lazy">` : `<span>${name.charAt(0)}</span>`}
-          </div>`;
-          continue;
-        }
-      }
-      html += `<div class="team-avatar empty" title="未放置精灵"></div>`;
-    }
-    container.innerHTML = html;
-
-    container.querySelectorAll('.team-avatar.filled').forEach(el => {
-      el.addEventListener('click', () => importFromTeam(side, parseInt(el.dataset.petId), teamData));
-    });
-  }
-
-  function importFromTeam(side, petId, teamData) {
-    const pet = RKData.getMonsterById(petId);
-    if (!pet) return;
-
-    const natureData = (teamData.petNatures || {})[petId] || {};
-    const ivData = (teamData.petIVs || {})[petId] || {};
-
-    const nature = {};
-    ['attack', 'magic_attack', 'defense', 'magic_defense', 'hp', 'speed'].forEach(stat => {
-      if (natureData[stat] === 1) nature[stat] = 1;
-      else if (natureData[stat] === 2) nature[stat] = 2;
-    });
-
-    const iv = {};
-    ['attack', 'magic_attack', 'defense', 'magic_defense', 'hp', 'speed'].forEach(stat => {
-      iv[stat] = !!ivData[stat];
-    });
-
-    const name = getPetName(pet);
-    if (side === 'attacker') {
-      state.atkPet = pet; state.atkNature = nature; state.atkIV = iv;
-      searchBoxes.attacker.setValue(name);
-      onAttackerSelected();
-      // 应用技能设置记忆；从未保存过则清空
-        applySkillMemory(pet.id);
-    } else {
-      state.defPet = pet; state.defNature = nature; state.defIV = iv;
-      searchBoxes.defender.setValue(name);
-      onDefenderSelected();
-    }
-    syncModifierButtons(side);
+    const active = window.UserConfig.getObject('rk_damage_view', {}).skill;
+    // Populate inputs BEFORE any calculation reads the new DOM's 100 placeholders.
+    applySkillConfig(active || loadSkillConfig(atkPet?.id) || SKILL_DEFAULTS);
+    restoreFromState();
   }
 
   /* ============================================================
@@ -1068,6 +941,8 @@ const DamagePage = (function () {
     const iv = side === 'attacker' ? state.atkIV : state.defIV;
     const rootEl = document.querySelector(`.${side}-card`);
     CommonUI.StatBox.syncButtons(rootEl, nature, iv);
+    const modeKey = side === 'attacker' ? 'atkStatMode' : 'defStatMode';
+    document.querySelectorAll(`input[name="${modeKey}"]`).forEach(radio => { radio.checked = radio.value === state[modeKey]; });
   }
 
   function handleModifierClick(e, leftClick = true) {
@@ -1090,61 +965,52 @@ const DamagePage = (function () {
     }
 
     syncModifierButtons(side);
-    const mode = side === 'attacker' ? state.atkStatMode : state.defStatMode;
     updateFinalStats(side);
-    updateSpeedBasedPower();
+    updateSpecialPower();
     calculate();
     // 保存性格/个体配置
     const pet = side === 'attacker' ? state.atkPet : state.defPet;
     if (pet) {
       const nature = side === 'attacker' ? state.atkNature : state.defNature;
       const iv = side === 'attacker' ? state.atkIV : state.defIV;
+      selectionTeams[side] = null;
       savePetConfig(pet.id, nature, iv);
+      saveSelection({ [side + 'Team']: null });
+      saveActiveSkill();
     }
   }
 
   function resetModifiers(side) {
-    if (side === 'attacker') { state.atkNature = {}; state.atkIV = {}; }
-    else { state.defNature = {}; state.defIV = {}; }
+    const pet = side === 'attacker' ? state.atkPet : state.defPet;
+    if (!pet) return;
+    const config = PetConfiguration.defaults(pet);
+    if (side === 'attacker') { state.atkNature = config.nature; state.atkIV = config.iv; }
+    else { state.defNature = config.nature; state.defIV = config.iv; }
+    selectionTeams[side] = null;
+    savePetConfig(pet.id, config.nature, config.iv, 0);
+    saveSelection({ [side + 'Team']: null });
     syncModifierButtons(side);
+    updateFinalStats(side); calculate(); saveActiveSkill();
   }
 
   function resetSkillSettings() {
-    document.getElementById('skillTypeAttack').checked = true;
-    state.skillAttr = '普';
-    updateSkillAttrButton();
-    document.getElementById('basePower').value = 100;
-    document.getElementById('fixedBonus').value = 0;
-    document.getElementById('percentBonus').value = 0;
-    document.getElementById('buff').value = 0;
-    document.getElementById('comboCount').value = 1;
-    document.getElementById('debuffPercent').value = '0';
-    document.getElementById('defenseMod').value = '0';
-    document.getElementById('starMeteor').value = 0;
-    document.getElementById('finalPowerManual').value = '';
-    state.debuffPercent = '0';
-    state.defenseMod = '0';
-    state.starMeteor = 0;
-    state.finalPowerManual = '';
-    state.currentSkillName = '';
-    checkSameType();
-    updateTypeEffectiveness();
-    updateFinalPower();
-    calculate();
+    applySkillConfig(SKILL_DEFAULTS);
+    renderSkillIcons();
   }
 
   function swapPokemons() {
-    const atkVal = searchBoxes.attacker.getValue();
-    const defVal = searchBoxes.defender.getValue();
-    searchBoxes.attacker.setValue(defVal);
-    searchBoxes.defender.setValue(atkVal);
-    const tempPet = state.atkPet;
-    state.atkPet = state.defPet;
-    state.defPet = tempPet;
-    onAttackerSelected();
-    // 应用技能设置记忆；从未保存过则清空
-    applySkillMemory(state.atkPet && state.atkPet.id);
-    onDefenderSelected();
+    if (!state.atkPet || !state.defPet) return;
+    [state.atkPet, state.defPet] = [state.defPet, state.atkPet];
+    [state.atkNature, state.defNature] = [state.defNature, state.atkNature];
+    [state.atkIV, state.defIV] = [state.defIV, state.atkIV];
+    [state.atkStatMode, state.defStatMode] = [state.defStatMode, state.atkStatMode];
+    [selectionTeams.attacker, selectionTeams.defender] = [selectionTeams.defender, selectionTeams.attacker];
+    applySkillMemory(state.atkPet.id);
+    checkJmfzBonus();
+    restoreFromState();
+    saveSelection({ attacker: state.atkPet.id, defender: state.defPet.id,
+      attackerTeam: selectionTeams.attacker, defenderTeam: selectionTeams.defender });
+    saveActiveSkill();
   }
 
   /* ============================================================
@@ -1157,13 +1023,10 @@ const DamagePage = (function () {
     updateTypeBadges('attacker', pet);
     updateFinalStats('attacker');
 
-    const atk = getBaseStat(pet, 'attack');
-    const mag = getBaseStat(pet, 'magic_attack');
-    if (atk > mag) document.getElementById('skillTypeAttack').checked = true;
-    else if (mag > atk) document.getElementById('skillTypeMagic').checked = true;
-
+    // 攻击类型已由目标精灵的技能记忆/默认设置确定，不再只修改单选按钮。
+    setSkillType(state.skillType);
     checkSameType();
-    updateSpeedBasedPower();
+    updateSpecialPower();
     updateFinalPower();
     calculate();
     renderSkillIcons();
@@ -1179,7 +1042,7 @@ const DamagePage = (function () {
     updateFinalStats('defender');
 
     checkJmfzBonus();
-    updateSpeedBasedPower();
+    updateSpecialPower();
     updateTypeEffectiveness();
     calculate();
     addSearchedPet(pet);
@@ -1238,15 +1101,6 @@ const DamagePage = (function () {
     updateFinalStats(side);
   }
 
-  function showBaseStats(side) {
-    const rootEl = document.querySelector(`.${side}-card`);
-    if (rootEl) CommonUI.StatBox.showBaseValues(rootEl);
-  }
-
-  function showFinalStats(side) {
-    updateFinalStats(side);
-  }
-
   function updateTypeEffectiveness() {
     const defender = state.defPet;
     const el = document.getElementById('typeEffectiveness');
@@ -1286,18 +1140,12 @@ const DamagePage = (function () {
     dimLabels.forEach(l => l.classList.remove('dimmed'));
     if (sameTypeEl) sameTypeEl.classList.remove('dimmed');
     if (typeEffEl) typeEffEl.classList.remove('dimmed');
-    const basePower = parseInt(document.getElementById('basePower').value) || 0;
-    const fixedBonus = parseInt(document.getElementById('fixedBonus').value) || 0;
-    const percentBonus = parseFloat(document.getElementById('percentBonus').value) || 0;
-    const buffPercent = parseFloat(document.getElementById('buff').value) || 0;
-    const power = CalcEngine.calcBasePower(basePower, fixedBonus, percentBonus);
-
-    const sameTypeBonus = CalcEngine.isSameType(state.atkPet, state.skillAttr) ? 1.25 : 1.0;
-    const typeEff = CalcEngine.calcTypeEff(state.skillAttr, state.defPet);
-    const buffMod = CalcEngine.calcBuffMod(buffPercent);
-
-    const finalPower = Math.floor(power * sameTypeBonus * typeEff * buffMod);
-    fpEl.textContent = finalPower;
+    const basePower = Math.round(evalExpr(document.getElementById('basePower').value, 0));
+    const fixedBonus = Math.round(evalExpr(document.getElementById('fixedBonus').value, 0));
+    const percentBonus = evalExpr(document.getElementById('percentBonus').value, 0);
+    const buffPercent = evalExpr(document.getElementById('buff').value, 0);
+    fpEl.textContent = CalcEngine.calcFinalPower(basePower, fixedBonus, percentBonus,
+      state.atkPet, state.defPet, state.skillAttr, buffPercent, null);
   }
 
   /* ============================================================
@@ -1309,11 +1157,11 @@ const DamagePage = (function () {
     const stepsEl = document.getElementById('calculationSteps');
 
     // 同步输入到 state（支持 + - * / 表达式，如 30+40+50）
-    state.basePower = Math.round(evalExpr(document.getElementById('basePower').value, 0));
-    // 速度差技能：在 calculate 时重新计算威力
-    if (SPEED_BASED_SKILLS.includes(state.currentSkillName)) {
-      updateSpeedBasedPower();
-    }
+    const powerInput = String(document.getElementById('basePower').value).trim();
+    state.basePower = Math.round(evalExpr(powerInput, 0));
+    state.basePowerExpression = normalizePowerExpression(powerInput, state.basePower);
+    // 保留特殊技能自动覆盖；依据主技能表分别比较速度或物防。
+    updateSpecialPower();
     state.fixedBonus = Math.round(evalExpr(document.getElementById('fixedBonus').value, 0));
     state.percentBonus = evalExpr(document.getElementById('percentBonus').value, 0);
     state.buff = evalExpr(document.getElementById('buff').value, 0);
@@ -1358,12 +1206,13 @@ const DamagePage = (function () {
     updateSkillAttrButton();
     btn.addEventListener('click', () => {
       const existing = document.getElementById('skillAttrDropdown');
-      if (existing) { existing.remove(); return; }
+      if (existing) { if (closeSkillPicker) closeSkillPicker(); else existing.remove(); return; }
       openSkillAttrPicker();
     });
   }
 
   function openSkillAttrPicker() {
+    if (closeSkillPicker) closeSkillPicker();
     const btn = document.getElementById('skillAttrBtn');
     if (!btn) return;
     const current = state.skillAttr;
@@ -1388,13 +1237,12 @@ const DamagePage = (function () {
     }
     dropdown.innerHTML = html;
 
-    const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
-    const rect = btn.getBoundingClientRect();
-    dropdown.style.position = 'fixed';
-    dropdown.style.top = ((rect.bottom + 4) / _z) + 'px';
-    dropdown.style.left = (Math.max(8, rect.left) / _z) + 'px';
-
     document.body.appendChild(dropdown);
+    CommonUI.positionAnchoredLayer(btn, dropdown);
+    closeSkillPicker = CommonUI.bindAnchoredLayer(btn, dropdown, () => {
+      dropdown.remove();
+      closeSkillPicker = null;
+    });
 
     dropdown.querySelectorAll('.skill-attr-dropdown-item').forEach(el => {
       el.addEventListener('click', () => {
@@ -1405,18 +1253,12 @@ const DamagePage = (function () {
         updateTypeEffectiveness();
         updateFinalPower();
         calculate();
-        dropdown.remove();
+        saveSkillConfig(state.atkPet && state.atkPet.id);
+        if (closeSkillPicker) closeSkillPicker();
       });
     });
 
-    // 点击外部关闭
-    const closeHandler = (e) => {
-      if (!dropdown.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
-        dropdown.remove();
-        document.removeEventListener('click', closeHandler, true);
-      }
-    };
-    setTimeout(() => document.addEventListener('click', closeHandler, true), 0);
+    // 滚动、缩放、窗口变化、Escape 和外部点击由公共弹层生命周期处理。
   }
 
   function updateSkillAttrButton() {
@@ -1436,17 +1278,12 @@ const DamagePage = (function () {
     atkInput.addEventListener('input', function(e) {
       const name = e.target.value.trim();
       const pet = RKData.getMonsters().find(m => getPetName(m) === name);
-      if (pet) {
-        state.atkPet = pet;
-        onAttackerSelected();
-        // 应用技能设置记忆；从未保存过则清空
-        applySkillMemory(pet.id);
-      }
+      if (pet) selectPet('attacker', pet);
     });
     defInput.addEventListener('input', function(e) {
       const name = e.target.value.trim();
       const pet = RKData.getMonsters().find(m => getPetName(m) === name);
-      if (pet) { state.defPet = pet; onDefenderSelected(); }
+      if (pet) selectPet('defender', pet);
     });
 
     // 交换攻守方图标：点击交换 + hover时切换图标
@@ -1475,8 +1312,9 @@ const DamagePage = (function () {
 
     document.querySelectorAll('input[name="skillType"]').forEach(radio => {
       radio.addEventListener('change', () => {
-        state.skillType = document.querySelector('input[name="skillType"]:checked').value;
+        setSkillType(radio.value);
         calculate();
+        saveSkillConfig(state.atkPet && state.atkPet.id);
       });
     });
 
@@ -1496,13 +1334,14 @@ const DamagePage = (function () {
     document.querySelector('.defender-card').addEventListener('contextmenu', e => handleModifierClick(e, false));
 
     document.getElementById('resetAttackerBtn').addEventListener('click', () => {
-      resetModifiers('attacker'); updateFinalStats('attacker'); calculate();
+      resetModifiers('attacker');
     });
     document.getElementById('resetDefenderBtn').addEventListener('click', () => {
-      resetModifiers('defender'); updateFinalStats('defender'); calculate();
+      resetModifiers('defender');
     });
     document.getElementById('resetSkillSettingsBtn').addEventListener('click', () => {
       resetSkillSettings();
+      saveSkillConfig(state.atkPet && state.atkPet.id);
     });
   }
 
@@ -1534,14 +1373,16 @@ const DamagePage = (function () {
         }
       } catch (err) { console.error('复制失败:', err); }
     });
-    document.addEventListener('click', e => {
+    if (copyOutsideClick) document.removeEventListener('click', copyOutsideClick);
+    copyOutsideClick = e => {
       if (isCopied && !copyBtn.contains(e.target)) {
         copyBtn.innerHTML = originalHTML;
         copyBtn.style.background = '';
         copyBtn.style.color = '';
         isCopied = false;
       }
-    });
+    };
+    document.addEventListener('click', copyOutsideClick);
   }
 
   /* ============================================================
@@ -1600,67 +1441,22 @@ const DamagePage = (function () {
     </div>`;
   }
 
-  /* 绑定头像点击事件：左键攻方，右键守方，双击收藏 */
+  /* 绑定头像点击事件：左键攻方，右键守方，中键收藏 */
   function bindAvatarClicks(container) {
     const teamData = container._teamData || null;
-    const tPetNatures = teamData ? (teamData.petNatures || {}) : {};
-    const tPetIVs = teamData ? (teamData.petIVs || {}) : {};
-
-    function getNatureForPet(petId) {
-      // 优先从编队配置读取
-      if (tPetNatures[petId]) {
-        const n = {};
-        ['attack','magic_attack','defense','magic_defense','hp','speed'].forEach(stat => {
-          if (tPetNatures[petId][stat] === 1) n[stat] = 1;
-          else if (tPetNatures[petId][stat] === 2) n[stat] = 2;
-        });
-        return n;
-      }
-      // 否则从 localStorage 读取
-      const saved = loadPetConfig(petId);
-      return saved.nature || {};
-    }
-    function getIvForPet(petId) {
-      if (tPetIVs[petId]) {
-        const iv = {};
-        ['attack','magic_attack','defense','magic_defense','hp','speed'].forEach(stat => {
-          iv[stat] = !!tPetIVs[petId][stat];
-        });
-        return iv;
-      }
-      const saved = loadPetConfig(petId);
-      return saved.iv || {};
-    }
-
     container.querySelectorAll('.quick-pet-item').forEach(el => {
       el.addEventListener('click', () => {
         const petId = parseInt(el.dataset.petId);
         const pet = RKData.getMonsterById(petId);
         if (!pet) return;
-        const name = getPetName(pet);
-        state.atkPet = pet;
-        state.atkNature = getNatureForPet(petId);
-        state.atkIV = getIvForPet(petId);
-        searchBoxes.attacker.setValue(name);
-        onAttackerSelected();
-        // 应用技能设置记忆；从未保存过则清空
-        applySkillMemory(pet.id);
-        syncModifierButtons('attacker');
-        updateAllRoleMarks();
+        selectPet('attacker', pet, teamData);
       });
       el.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         const petId = parseInt(el.dataset.petId);
         const pet = RKData.getMonsterById(petId);
         if (!pet) return;
-        const name = getPetName(pet);
-        state.defPet = pet;
-        state.defNature = getNatureForPet(petId);
-        state.defIV = getIvForPet(petId);
-        searchBoxes.defender.setValue(name);
-        onDefenderSelected();
-        syncModifierButtons('defender');
-        updateAllRoleMarks();
+        selectPet('defender', pet, teamData);
       });
       el.addEventListener('auxclick', (e) => {
         if (e.button === 1) {
@@ -1793,16 +1589,15 @@ const DamagePage = (function () {
             m.dex_number === pet.dex_number && m.is_leader_form
           ).sort((a, b) => a.id - b.id);
           leaderForms.forEach(lf => {
-            html += buildPetAvatarHtml(lf.id, { title: `${getPetName(lf)} (首领形态) - 左键攻方/右键守方/双击收藏` });
+            html += buildPetAvatarHtml(lf.id, { title: `${getPetName(lf)} (首领形态) - 左键攻方/右键守方/中键收藏` });
           });
         }
       }
     }
     container.innerHTML = html || '<p class="ext-placeholder">编队为空</p>';
-    bindAvatarClicks(container);
-
-    // 存储编队数据供 importFromTeam 使用
+    // 必须先提供本编队的数据，再绑定读取它的事件。
     container._teamData = teamData;
+    bindAvatarClicks(container);
   }
 
   function renderQuickHistory() {
@@ -1836,10 +1631,14 @@ const DamagePage = (function () {
   }
 
   function saveFavPets() {
-    try { localStorage.setItem('rk_fav_pets', JSON.stringify(state.favPets)); } catch (e) {}
+    try {
+      localStorage.setItem('rk_fav_pets', JSON.stringify(state.favPets));
+      if (typeof FavoritePets !== 'undefined') FavoritePets.notify();
+    } catch (e) {}
   }
 
   function loadFavPets() {
+    if (typeof FavoritePets !== 'undefined') { state.favPets = FavoritePets.getDamageIds(); return; }
     try {
       const raw = localStorage.getItem('rk_fav_pets');
       if (raw) {
@@ -1866,5 +1665,33 @@ const DamagePage = (function () {
   /* ============================================================
    * 对外接口
    * ============================================================ */
-  return { render, getState: () => state, getExtState: () => extState, CalcEngine };
+  function onLeave() {
+    const scroller = document.querySelector('.calc-root.scroll-container');
+    if (scroller) pageScrollTop = scroller.scrollTop;
+    if (copyOutsideClick) document.removeEventListener('click', copyOutsideClick);
+    copyOutsideClick = null;
+    if (closeSkillPicker) closeSkillPicker();
+    clearTimeout(skillNoticeTimer);
+    document.getElementById('skill-variant-notice')?.remove();
+    Object.values(searchBoxes).forEach(box => box.destroy?.());
+  }
+
+  function reloadPersonalDefaults() {
+    for (const [side, prefix] of [['attacker','atk'],['defender','def']]) {
+      const pet = state[prefix + 'Pet'];
+      if (!pet || selectionTeams[side]) continue;
+      const config = petConfiguration(pet.id);
+      state[prefix + 'IV'] = config.iv;
+      state[prefix + 'Nature'] = config.nature;
+    }
+    // Keep skills, manual records and team-source values untouched; inactive pages
+    // use the updated in-memory IV/nature on restoreFromState when revisited.
+    if (document.querySelector('.attacker-card') && document.getElementById('basePower')) {
+      syncModifierButtons('attacker'); syncModifierButtons('defender');
+      updateFinalStats('attacker'); updateFinalStats('defender');
+      updateFinalPower(); calculate();
+    }
+  }
+  if (typeof window !== 'undefined') window.addEventListener?.('petdefaultsreset', reloadPersonalDefaults);
+  return { render, onLeave, getState: () => state, CalcEngine };
 })();

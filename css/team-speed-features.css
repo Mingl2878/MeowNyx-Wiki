@@ -1,0 +1,60 @@
+/* Only the new team offense summaries and responsive speed-table components. */
+.team-attack-summary .team-defense-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 80px), 1fr));
+  max-width: 800px;
+  margin-inline: auto;
+}
+.team-attack-summary .team-defense-item {
+  min-width: 0;
+  justify-content: center;
+  padding-inline: 4px;
+}
+.team-attack-summary .attack-positive {
+  color: #15803d;
+  border-color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+}
+.team-attack-summary .attack-risk {
+  color: #b91c1c;
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+}
+.team-attack-summary .attack-neutral { color: var(--text-muted); }
+[data-theme="dark"] .team-attack-summary .attack-positive { color: #86efac; }
+[data-theme="dark"] .team-attack-summary .attack-risk { color: #fca5a5; }
+
+.speed-responsive .speed-column-label { display: inline-block; white-space: nowrap; }
+.speed-responsive .speed-avatar-strip {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0;
+  line-height: 0;
+}
+.speed-responsive .speed-tier-avatar {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  margin: 0 1px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font: 12px/32px sans-serif;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.speed-responsive .speed-tier-avatar:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.speed-responsive .speed-tier-avatar img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: inherit;
+}

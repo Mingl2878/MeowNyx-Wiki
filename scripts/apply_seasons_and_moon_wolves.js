@@ -14,8 +14,9 @@ const S4_IDS = new Set(Array.from({ length: 30 }, (_, index) => 5931 + index));
 const ERRONEOUS_MOVE = '微型乒候';
 const CANONICAL_MOVE = '微型斥候';
 
-function readJSON(file) { return JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8')); }
-function writeJSON(file, value) { fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value, null, 2) + '\n', 'utf8'); }
+const { readWiki, writeWiki } = require('./lib/wiki-data.js');
+function readJSON(file) { return path.basename(file) === 'wiki_monster_data.json' ? readWiki(ROOT) : JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8')); }
+function writeJSON(file, value) { if (path.basename(file) === 'wiki_monster_data.json') return writeWiki(ROOT, value, { allowRemovedSkills: [ERRONEOUS_MOVE] }); fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value, null, 2) + '\n', 'utf8'); }
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function monsterName(monster) { return monster.localized?.zh?.name || ''; }
 

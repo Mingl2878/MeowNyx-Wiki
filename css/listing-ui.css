@@ -1,0 +1,90 @@
+/* Shared inline filter toolbar, modes and floating conditions.
+   Learner style/table rules and ATTRIBUTE PRIORITY follow below.
+   Only listing controls and learner tables; no calculator / global layout rules. */
+.listing-controls { container-type: inline-size; flex: 0 0 auto; min-width: 0; margin-bottom: 10px; padding: 10px 12px; border: 1px solid var(--border-light, var(--border)); border-radius: var(--radius, 8px); background: var(--bg-card); }
+/* No title row, spacer element or absolutely positioned controls. At regular
+   narrow widths the search gives up width before the modes could overlap it. */
+.listing-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) max-content; align-items: center; gap: 8px; }
+.listing-search-slot { display: flex; justify-content: center; min-width: 0; margin: 0; }
+.listing-search-slot .petdex-search-wrap, .listing-search-slot .search-bar { min-width: 0; box-sizing: border-box; }
+.listing-toolbar > .listing-modes { justify-self: end; }
+/* Equal real grid tracks keep the original 400px search geometrically centered
+   in the card at wide widths, independent of the segmented control's width. */
+@container (min-width: 780px) {
+  .listing-toolbar { grid-template-columns: minmax(0, 1fr) 400px minmax(0, 1fr); }
+  .listing-search-slot { grid-column: 2; }
+  .listing-toolbar > .listing-modes { grid-column: 3; }
+}
+@container (max-width: 300px) {
+  .listing-toolbar { grid-template-columns: minmax(0, 1fr); }
+  .listing-toolbar > .listing-modes { grid-row: 2; }
+}
+.listing-modes button, .listing-style-switch button { font: inherit; font-size: 13px; color: var(--text-secondary); background: transparent; border: 0; border-radius: 5px; padding: 5px 10px; cursor: pointer; }
+.listing-modes, .listing-style-switch { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid var(--border-light, var(--border)); border-radius: 7px; background: var(--bg-secondary); }
+.listing-modes button, .listing-style-switch button { white-space: nowrap; transition: background-color .15s, color .15s; }
+.listing-modes button:hover, .listing-style-switch button:hover { color: var(--text-primary); background: var(--bg-hover); }
+.listing-modes button[aria-pressed="true"], .listing-style-switch button[aria-pressed="true"] { color: #fff; background: var(--accent); }
+.listing-toolbar button:focus-visible, .listing-style-switch button:focus-visible, .listing-monster-table button:focus-visible, #multi-skill-selected-list button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.listing-filter-panel { min-width: 0; box-sizing: border-box; }
+.listing-controls > .listing-filter-panel { margin: 10px 0 0; max-height: calc(50vh / var(--page-zoom, 1)); overflow: auto; }
+.listing-filter-panel .filter-section { margin-bottom: 10px; }
+.listing-filter-panel .filter-section:last-child { margin-bottom: 0; }
+.listing-filter-panel .filter-section-label { margin-bottom: 5px; }
+.listing-filter-panel[hidden], .listing-learner-view[hidden] { display: none !important; }
+.listing-filter-floating { z-index: 150; margin: 0; padding: 10px 12px; border: 1px solid var(--border-light, var(--border)); border-radius: var(--radius, 8px); background: var(--bg-card); box-shadow: var(--shadow-sm); overscroll-behavior: contain; }
+.listing-filter-panel .type-pills-nowrap { max-width: 100%; overflow-x: auto; }
+.listing-filter-panel .type-pills-nowrap > * { flex-shrink: 0; }
+.listing-learner-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.listing-style-host { flex: 0 0 auto; }
+#multi-skill-selected-list button { font-family: inherit; cursor: pointer; }
+#multi-skill-selected-list button:hover { border-color: var(--accent); background: var(--bg-hover); }
+.listing-table-scroll { max-width: 100%; overflow-x: auto; margin-bottom: 16px; }
+.listing-monster-table { width: 100%; }
+.listing-monster-table th button { font: inherit; color: inherit; border: 0; padding: 0; background: transparent; cursor: pointer; white-space: nowrap; }
+.listing-monster-link { display: inline-flex; align-items: center; gap: 6px; text-align: left; font: inherit; color: var(--text-primary); border: 0; background: transparent; cursor: pointer; }
+.listing-monster-link .pet-icon-img { flex-shrink: 0; }
+@media (max-width: 640px) {
+  .listing-toolbar { gap: 4px; }
+  .listing-modes button { padding-inline: 6px; }
+  .listing-controls, .listing-filter-floating { padding: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .listing-modes button, .listing-style-switch button { transition: none; }
+}
+
+/* ATTRIBUTE PRIORITY (non-layout): preserve this block in toolbar rollback.
+   Same 40px cells / 28px icons / 4px gaps / 8px padding as team bloodline,
+   but only 18 native buttons; no shared team selectors or fixed z-index. */
+.listing-priority-popup { display: grid; grid-template-columns: repeat(6, minmax(0, 40px)); gap: 4px; box-sizing: border-box; padding: 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); box-shadow: 0 4px 16px rgba(0,0,0,.15); overscroll-behavior: contain; }
+.listing-priority-popup button { display: flex; align-items: center; justify-content: center; width: 100%; min-width: 0; height: 40px; padding: 0; border: 2px solid transparent; border-radius: 8px; background: transparent; color: var(--text-primary); cursor: pointer; transition: var(--transition); }
+.listing-priority-popup button:hover { background: var(--bg-secondary); }
+.listing-priority-popup button[aria-pressed="true"] { border-color: var(--accent); background: rgba(67,97,238,.1); }
+.listing-priority-popup button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.listing-priority-popup button img { width: 28px; height: 28px; max-width: 100%; object-fit: contain; border-radius: 50%; }
+.listing-monster-table th:has(> [data-listing-priority]) { padding: 0; }
+.listing-monster-table th > [data-listing-priority] { width: 100%; min-height: 36px; padding: 8px 10px; }
+.listing-priority-indicator { width: 14px; height: 14px; margin-left: 3px; vertical-align: middle; }
+@media (prefers-reduced-motion: reduce) { .listing-priority-popup button { transition: none; } }
+
+/* Value exclusion is opt-in: skill list and monster-detail skill filters only.
+   A visible minus and strike distinguish it without relying on color. */
+.type-pill[data-filter-state], .detail-skill-filter-btn[data-filter-state] { position: relative; }
+.type-pill.filter-excluded, .detail-skill-filter-btn.filter-excluded {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  outline: 1px dashed currentColor;
+  outline-offset: -2px;
+}
+.filter-exclusion-mark {
+  position: absolute;
+  top: 2px; right: 2px;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-sizing: border-box; width: 11px; height: 11px; border-radius: 50%;
+  font-size: 11px; font-weight: 700; line-height: 1;
+  background: var(--bg-primary); color: var(--text-primary);
+  border: 1px solid currentColor; pointer-events: none;
+}
+.filter-exclusion-mark[hidden] { display: none; }
+.type-pill[data-filter-state]:focus-visible, .detail-skill-filter-btn[data-filter-state]:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}

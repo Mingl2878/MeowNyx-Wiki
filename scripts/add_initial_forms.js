@@ -23,10 +23,13 @@ const ENTRIES = [
   { name: '布灵', dex: 464, elements: ['幻', '光'], stats: [66, 92, 32, 98, 77, 100], source: '布灵布灵', stage: '基础形态', chain: '布灵' }
 ];
 
+const { readWiki, writeWiki } = require('./lib/wiki-data.js');
 function readJSON(relativePath) {
+  if (path.basename(relativePath) === 'wiki_monster_data.json') return readWiki(ROOT);
   return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'));
 }
 function writeJSON(relativePath, value) {
+  if (path.basename(relativePath) === 'wiki_monster_data.json') return writeWiki(ROOT, value);
   fs.writeFileSync(path.join(ROOT, relativePath), JSON.stringify(value, null, 2) + '\n', 'utf8');
 }
 function clone(value) {

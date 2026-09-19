@@ -10,32 +10,110 @@
  * ============================================================ */
 (function () {
   let windowMaximized = false;
+  let windowStateInitialized = false;
+  // Detached read-only snapshots. Unknown native state is conservatively windowed.
+  const getWindowState = () => Object.freeze({ maximized: windowMaximized, initialized: windowStateInitialized });
+  let windowStatePending = false, windowStateDirty = false;
   let zoom = 1;
-  // 最大化时的缩放记忆：Ctrl+滚轮实时保存，再次最大化时恢复（设置页可改默认值）
-  let savedMaxZoom = Math.min(2, Math.max(1, parseFloat(localStorage.getItem('xwiki-max-zoom')) || 1));
+  // 缩放的唯一运行时入口；设置页和快捷操作都通过它更新。
+  const readMemory = key => { try { return localStorage.getItem(key); } catch (e) { return null; } };
+  const writeMemory = (key, value) => { try { localStorage.setItem(key, String(value)); } catch (e) {} };
+  const clampZoom = value => {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? Math.min(2, Math.max(0.5, number)) : 1;
+  };
+  let savedMaxZoom = clampZoom(readMemory('xwiki-max-zoom'));
+  let zoomRevision = 0;
   function applyZoom() {
     document.documentElement.style.zoom = zoom;
-    // CSS 变量供 vh/vw 及坐标修正使用
     document.documentElement.style.setProperty('--page-zoom', zoom);
+    window.dispatchEvent(new CustomEvent('appzoomchange', { detail: { zoom } }));
   }
+  // Runtime/cache setter only: applying a successful commit must never queue another save.
+  function setMaxZoom(value, persist = true) {
+    savedMaxZoom = clampZoom(value);
+    zoomRevision++;
+    if (persist) writeMemory('xwiki-max-zoom', savedMaxZoom);
+    zoom = windowMaximized ? savedMaxZoom : 1;
+    applyZoom();
+    return savedMaxZoom;
+  }
+  async function saveShortcutZoom(value) {
+    const next = setMaxZoom(value, false); // immediate visual preview, not a durable commit
+    try {
+      if (window.UserConfig?.saveSettings) {
+        const ok = await window.UserConfig.saveSettings({ default_max_zoom: Math.round(next * 100) });
+        if (!ok) return false; // UserConfig owns durable/cache failure reporting and flush tracking.
+      }
+      writeMemory('xwiki-max-zoom', next);
+      return true;
+    } catch (_) {
+      return false; // Keep the previous cache; UserConfig reports the failed queued operation.
+    }
+  }
+  const speedModes = ['include', 'exclude', 'threshold'];
+  const normalizeThreshold = value => {
+    const number = value == null || value === '' ? NaN : Number(value);
+    return Number.isFinite(number) ? Math.min(120, Math.max(40, Math.round(number))) : 80;
+  };
+  const cachedSpeedMode = readMemory('xwiki-effective-speed-mode');
+  let effectiveSpeedMode = speedModes.includes(cachedSpeedMode) ? cachedSpeedMode
+    : readMemory('xwiki-effective-include-speed') === 'false' ? 'exclude' : 'include';
+  let effectiveSpeedThreshold = normalizeThreshold(readMemory('xwiki-effective-speed-threshold'));
+  let effectiveRevision = 0;
+  const getEffectiveSpeedPolicy = () => ({ mode: effectiveSpeedMode, threshold: effectiveSpeedThreshold });
+  // Legacy boolean means unconditional inclusion; threshold requires the new policy API.
+  const getEffectiveIncludeSpeed = () => effectiveSpeedMode === 'include';
+  function setEffectiveSpeedPolicy(mode, threshold = effectiveSpeedThreshold, persist = true) {
+    const nextMode = speedModes.includes(mode) ? mode : 'include';
+    const nextThreshold = normalizeThreshold(threshold);
+    const changed = nextMode !== effectiveSpeedMode || nextThreshold !== effectiveSpeedThreshold;
+    effectiveSpeedMode = nextMode;
+    effectiveSpeedThreshold = nextThreshold;
+    effectiveRevision++;
+    if (persist) {
+      writeMemory('xwiki-effective-speed-mode', nextMode);
+      writeMemory('xwiki-effective-speed-threshold', nextThreshold);
+      writeMemory('xwiki-effective-include-speed', getEffectiveIncludeSpeed());
+    }
+    const policy = getEffectiveSpeedPolicy();
+    if (changed) window.dispatchEvent(new CustomEvent('appstatspreferenceschange', {
+      detail: { ...policy, includeSpeed: getEffectiveIncludeSpeed() }
+    }));
+    return policy;
+  }
+  function setEffectiveIncludeSpeed(value, persist = true) {
+    setEffectiveSpeedPolicy(value !== false ? 'include' : 'exclude', effectiveSpeedThreshold, persist);
+    return getEffectiveIncludeSpeed();
+  }
+  window.AppPreferences = Object.freeze({ getMaxZoom: () => savedMaxZoom, getZoom: () => zoom, setMaxZoom,
+    getEffectiveSpeedPolicy, setEffectiveSpeedPolicy, getEffectiveIncludeSpeed, setEffectiveIncludeSpeed,
+    getWindowState, isMaximized: () => windowMaximized });
   function refreshWindowState() {
-    fetch('/api/window/state')
-      .then(r => r.json())
+    // One shared request at a time. Resize during fetch invalidates that response and
+    // coalesces a fresh read; an old response cannot overwrite a newer native state.
+    if (windowStatePending) { windowStateDirty = true; return; }
+    windowStatePending = true;
+    fetch('/api/window/state', { cache: 'no-store' })
+      .then(r => { if (!r.ok) throw new Error('Window state unavailable'); return r.json(); })
       .then(d => {
-        windowMaximized = !!d.maximized;
+        if (windowStateDirty || typeof d?.maximized !== 'boolean') return;
+        const changed = !windowStateInitialized || windowMaximized !== d.maximized;
+        windowMaximized = d.maximized;
+        windowStateInitialized = true;
         const target = windowMaximized ? savedMaxZoom : 1;
         if (zoom !== target) { zoom = target; applyZoom(); }
+        // Initialization (unknown -> known) is a state change too; identical polls
+        // thereafter emit nothing. Consumers read the stored snapshot when mounting.
+        if (changed) window.dispatchEvent(new CustomEvent('appwindowstatechange', { detail: getWindowState() }));
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        windowStatePending = false;
+        if (windowStateDirty) { windowStateDirty = false; refreshWindowState(); }
+      });
   }
-  let activeFontFamily = '';
   let fontLoadToken = 0;
-
-  function getNativeFontStack(fontFamily) {
-    if (!fontFamily) return 'system-ui, sans-serif';
-    const safeFamily = String(fontFamily).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-    return `"${safeFamily}", system-ui, sans-serif`;
-  }
 
   function getAppFontStack(fontFamily) {
     if (!fontFamily) return 'system-ui, sans-serif';
@@ -46,7 +124,6 @@
     const root = document.documentElement;
     const token = ++fontLoadToken;
     if (!fontFamily) {
-      activeFontFamily = '';
       root.style.setProperty('--app-font-family', 'system-ui, sans-serif');
       if (document.body) document.body.style.fontFamily = 'system-ui, sans-serif';
       window.dispatchEvent(new CustomEvent('appfontchange', { detail: { fontFamily: '' } }));
@@ -59,7 +136,6 @@
       await font.load();
       if (token !== fontLoadToken) return { applied: false, fallback: false };
       document.fonts.add(font);
-      activeFontFamily = fontFamily;
       const stack = getAppFontStack(fontFamily);
       root.style.setProperty('--app-font-family', stack);
       if (document.body) document.body.style.fontFamily = stack;
@@ -67,7 +143,6 @@
       return { applied: true, fallback: false };
     } catch (error) {
       if (token !== fontLoadToken) return { applied: false, fallback: false };
-      activeFontFamily = '';
       root.style.setProperty('--app-font-family', 'system-ui, sans-serif');
       if (document.body) document.body.style.fontFamily = 'system-ui, sans-serif';
       window.dispatchEvent(new CustomEvent('appfontchange', { detail: { fontFamily: '' } }));
@@ -77,19 +152,27 @@
   window.getAppFontStack = getAppFontStack;
   window.applyAppFont = applyAppFont;
 
-  // 首次加载时读取设置：恢复字体，并在首次使用时恢复最大化缩放比例。
-  fetch('/api/settings')
-    .then(r => r.json())
-    .then(s => {
-      if (!s) return;
-      applyAppFont(s.font_family || '');
-      if (localStorage.getItem('xwiki-max-zoom') == null && s.default_max_zoom && s.default_max_zoom !== 100) {
-        savedMaxZoom = Math.min(2, Math.max(0.5, s.default_max_zoom / 100));
-        localStorage.setItem('xwiki-max-zoom', savedMaxZoom);
-        if (windowMaximized) { zoom = savedMaxZoom; applyZoom(); }
-      }
+  // The shared settings file is startup authority; per-port storage is only a cache.
+  // Parent app.init awaits this promise before choosing its initial route.
+  const initialEffectiveRevision = effectiveRevision;
+  const initialZoomRevision = zoomRevision;
+  window.appPreferencesReady = fetch('/api/settings', { cache: 'no-store' })
+    .then(r => {
+      if (!r.ok) throw new Error('加载共享设置失败');
+      return r.json();
     })
-    .catch(() => {});
+    .then(s => {
+      if (!s || typeof s !== 'object' || Array.isArray(s) || s.ok === false) throw new Error('共享设置响应无效');
+      writeMemory('xwiki-default-route', typeof s.default_route === 'string' && s.default_route ? s.default_route : 'petdex');
+      applyAppFont(s.font_family || '');
+      if (effectiveRevision === initialEffectiveRevision) setEffectiveSpeedPolicy(
+        speedModes.includes(s.effective_speed_mode) ? s.effective_speed_mode : s.effective_include_speed === false ? 'exclude' : 'include',
+        normalizeThreshold(s.effective_speed_threshold)
+      );
+      if (zoomRevision === initialZoomRevision) setMaxZoom((s.default_max_zoom ?? 100) / 100);
+      return s;
+    })
+    .catch(() => null);
   // 窗口最大化/还原时会触发 resize
   window.addEventListener('resize', refreshWindowState);
   refreshWindowState();
@@ -98,17 +181,13 @@
     e.preventDefault(); // 接管缩放，禁用浏览器原生 Ctrl+滚轮
     if (!windowMaximized) return; // 非最大化：完全忽略
     const delta = e.deltaY < 0 ? 0.1 : -0.1;
-    zoom = Math.min(2, Math.max(0.5, Math.round((zoom + delta) * 10) / 10));
-    savedMaxZoom = zoom;
-    localStorage.setItem('xwiki-max-zoom', zoom);
-    applyZoom();
+    return saveShortcutZoom(Math.round((zoom + delta) * 10) / 10);
   }, { passive: false });
-  // Ctrl+0 复位 100%（同时清除缩放记忆）
+  // Ctrl+0 resets the shared default to 100%, using the same queue as settings saves.
   window.addEventListener('keydown', function (e) {
     if (e.ctrlKey && (e.key === '0' || e.code === 'Digit0')) {
-      zoom = 1; savedMaxZoom = 1;
-      localStorage.setItem('xwiki-max-zoom', 1);
-      applyZoom();
+      e.preventDefault();
+      return saveShortcutZoom(1);
     }
   });
   // 供 fixed 定位下拉框修正坐标（CSS zoom 下 getBoundingClientRect 返回视觉坐标）
@@ -230,6 +309,84 @@ const CommonUI = (function () {
     return wrapper;
   }
 
+  /* 公共组件生命周期：路由切换主动清理，局部重绘由观察器兜底。 */
+  const managedWidgets = new Map();
+  function registerCleanup(owner, cleanup) {
+    if (!managedWidgets.has(owner)) managedWidgets.set(owner, new Set());
+    managedWidgets.get(owner).add(cleanup);
+    return () => {
+      const callbacks = managedWidgets.get(owner);
+      if (!callbacks) return;
+      callbacks.delete(cleanup);
+      if (!callbacks.size) managedWidgets.delete(owner);
+    };
+  }
+  function destroyWithin(root) {
+    for (const [owner, callbacks] of [...managedWidgets]) {
+      if (!root || root === owner || root.contains(owner)) for (const cleanup of [...callbacks]) cleanup();
+    }
+  }
+  if (typeof MutationObserver !== 'undefined' && document.body) {
+    new MutationObserver(() => {
+      for (const [owner, callbacks] of [...managedWidgets]) {
+        if (!owner.isConnected) for (const cleanup of [...callbacks]) cleanup();
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  function positionAnchoredLayer(anchor, layer, matchWidth = false, options = {}) {
+    const zoom = window.__getPageZoom?.() || 1;
+    const rect = anchor.getBoundingClientRect();
+    layer.style.position = 'fixed';
+    if (getComputedStyle(layer).display === 'none') layer.style.display = 'block';
+    if (matchWidth) layer.style.width = `${rect.width / zoom}px`;
+    layer.style.maxWidth = `${Math.max(0, window.innerWidth - 16) / zoom}px`;
+    layer.style.maxHeight = `${Math.min(320, Math.max(0, window.innerHeight - 16) / zoom)}px`;
+    layer.style.overflowY = 'auto';
+    // Toolbar popovers must leave their trigger/mode buttons accessible even at 200% zoom.
+    let useAbove = false;
+    if (options.avoidAnchor) {
+      const below = Math.max(0, window.innerHeight - rect.bottom - 12);
+      const above = Math.max(0, rect.top - 12);
+      useAbove = below < Math.min(140 * zoom, above);
+      layer.style.maxHeight = `${Math.min(320, (useAbove ? above : below) / zoom)}px`;
+    }
+    const popup = layer.getBoundingClientRect();
+    const left = Math.max(8, Math.min(rect.left, window.innerWidth - popup.width - 8));
+    let top = useAbove ? rect.top - popup.height - 4 : rect.bottom + 4;
+    if (!options.avoidAnchor) {
+      if (top + popup.height > window.innerHeight - 8 && rect.top > popup.height + 4) top = rect.top - popup.height - 4;
+      top = Math.max(8, Math.min(top, window.innerHeight - popup.height - 8));
+    }
+    layer.style.left = `${left / zoom}px`;
+    layer.style.top = `${top / zoom}px`;
+  }
+
+  function bindAnchoredLayer(anchor, layer, onClose) {
+    let closed = false;
+    const disposers = [];
+    const listen = (target, type, handler, options) => {
+      target.addEventListener(type, handler, options);
+      disposers.push(() => target.removeEventListener(type, handler, options));
+    };
+    const close = () => {
+      if (closed) return;
+      closed = true;
+      disposers.forEach(dispose => dispose());
+      unregister();
+      onClose();
+    };
+    const unregister = registerCleanup(anchor, close);
+    listen(document, 'scroll', event => { if (!layer.contains(event.target)) close(); }, true);
+    listen(window, 'resize', close);
+    listen(window, 'appzoomchange', close);
+    listen(document, 'pointerdown', event => { if (!anchor.contains(event.target) && !layer.contains(event.target)) close(); }, true);
+    listen(document, 'keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); }
+    }, true);
+    return close;
+  }
+
   /* ==================== 搜索框组件 ==================== */
 
   /**
@@ -243,9 +400,10 @@ const CommonUI = (function () {
    * @param {function} [opts.renderItem] - 自定义候选项渲染 (item, name) => html
    * @param {function} [opts.onSelect] - 选中回调，参数为精灵对象或自定义候选项对象
    * @param {function} [opts.onInput] - 输入回调，参数为当前文本值
-   * @param {number} [opts.limit=10] - 最多显示候选数
+   * @param {number} [opts.limit=10] - 自定义搜索最多候选数；精灵候选不截断，通过下拉滚动查看
    * @param {boolean} [opts.showIcon=true] - 是否在搜索框左侧显示图标占位
-   * @returns {{wrapper:?, input:HTMLInputElement, dropdown:HTMLDivElement, getValue:function, setValue:function}}
+   * @returns {{wrapper:?, input:HTMLInputElement, dropdown:HTMLDivElement, getValue:function, setValue:function, destroy:function}}
+   * 路由离开应 destroy；公共注册表同时处理局部 DOM 重绘造成的移除。
    */
   function createSearchBox(opts) {
     opts = opts || {};
@@ -330,11 +488,28 @@ const CommonUI = (function () {
 
     /* ---- 搜索逻辑 ---- */
     let suggestIndex = -1;
+    let destroyed = false;
+    let blurTimer = null;
+    let closeLayer = null;
+    function hideDropdown() {
+      dropdown.style.display = 'none';
+      suggestIndex = -1;
+      if (closeLayer) { const close = closeLayer; closeLayer = null; close(); }
+    }
+    function destroy() {
+      if (destroyed) return;
+      destroyed = true;
+      clearTimeout(blurTimer);
+      hideDropdown();
+      unregister();
+    }
+    const unregister = registerCleanup(input, destroy);
 
     function doSearch() {
+      if (destroyed) return;
       suggestIndex = -1;
       const kw = input.value.trim().toLowerCase();
-      if (!kw) { dropdown.style.display = 'none'; return; }
+      if (!kw) { hideDropdown(); return; }
 
       let list;
       if (customSearch) {
@@ -363,8 +538,8 @@ const CommonUI = (function () {
           return false;
         });
       }
-      if (list.length === 0) { dropdown.style.display = 'none'; return; }
-      if (list.length > limit) list = list.slice(0, limit);
+      if (list.length === 0) { hideDropdown(); return; }
+      if (customSearch && list.length > limit) list = list.slice(0, limit);
 
       dropdown.innerHTML = list.map(item => {
         if (customSearch) {
@@ -386,13 +561,10 @@ const CommonUI = (function () {
           <span class="autocomplete-name">${name}</span>
         </div>`;
       }).join('');
-      // position: fixed 定位到输入框下方（除以页面缩放，rect 为视觉坐标）
-      const _z = (window.__getPageZoom && window.__getPageZoom()) || 1;
-      const inputRect = input.getBoundingClientRect();
-      dropdown.style.left = (inputRect.left / _z) + 'px';
-      dropdown.style.top = ((inputRect.bottom + 4) / _z) + 'px';
-      dropdown.style.width = (inputRect.width / _z) + 'px';
-      dropdown.style.display = 'block';
+      positionAnchoredLayer(input, dropdown, true);
+      if (!closeLayer) closeLayer = bindAnchoredLayer(input, dropdown, () => {
+        closeLayer = null; dropdown.style.display = 'none'; suggestIndex = -1;
+      });
     }
 
     function updateHighlight() {
@@ -455,8 +627,7 @@ const CommonUI = (function () {
           items[suggestIndex].click();
         }
       } else if (e.key === 'Escape') {
-        dropdown.style.display = 'none';
-        suggestIndex = -1;
+        hideDropdown();
       }
     });
 
@@ -465,26 +636,9 @@ const CommonUI = (function () {
     });
 
     input.addEventListener('blur', () => {
-      setTimeout(() => { dropdown.style.display = 'none'; }, 200);
+      clearTimeout(blurTimer);
+      blurTimer = setTimeout(hideDropdown, 200);
     });
-
-    // 滚动时隐藏 dropdown（position:fixed 无法跟随滚动）
-    function hideOnScroll() {
-      if (dropdown.style.display !== 'none') {
-        dropdown.style.display = 'none';
-        suggestIndex = -1;
-      }
-    }
-    // 监听所有可滚动祖先
-    let scrollParent = input.parentElement;
-    while (scrollParent && scrollParent !== document.body) {
-      const style = getComputedStyle(scrollParent);
-      if (style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'auto' || style.overflow === 'scroll') {
-        scrollParent.addEventListener('scroll', hideOnScroll, { passive: true });
-      }
-      scrollParent = scrollParent.parentElement;
-    }
-    window.addEventListener('scroll', hideOnScroll, { passive: true });
 
     dropdown.addEventListener('click', e => {
       const itemEl = e.target.closest('.autocomplete-item');
@@ -495,8 +649,7 @@ const CommonUI = (function () {
         const found = list.find(x => String(x.id) === itemId);
         if (!found) return;
         input.value = found.name;
-        dropdown.style.display = 'none';
-        suggestIndex = -1;
+        hideDropdown();
         updateIcon(found);
         if (typeof opts.onSelect === 'function') opts.onSelect(found);
       } else {
@@ -504,8 +657,7 @@ const CommonUI = (function () {
         const pet = RKData.getMonsterById(petId);
         if (!pet) return;
         input.value = RKData.getMonsterDisplayName(pet);
-        dropdown.style.display = 'none';
-        suggestIndex = -1;
+        hideDropdown();
         updateIcon(pet);
         if (typeof opts.onSelect === 'function') opts.onSelect(pet);
       }
@@ -518,7 +670,8 @@ const CommonUI = (function () {
       getValue: () => input.value,
       setValue: (v, item) => { input.value = v; if (item) updateIcon(item); else syncIcon(); },
       focus: () => input.focus(),
-      hideDropdown: () => { dropdown.style.display = 'none'; suggestIndex = -1; }
+      hideDropdown,
+      destroy
     };
   }
 
@@ -622,6 +775,88 @@ const CommonUI = (function () {
     '条件攻击': 'conditional-attack', '能量': 'energy'
   };
 
+  // Per-view, three-state value filters. No storage or source-data mutations.
+  const FilterExclusion = (function () {
+    const dimensions = ['type', 'elem', 'energy', 'power', 'season'];
+    const selector = dimensions.map(key => '[data-filter-' + key + ']').join(',');
+    function create() {
+      return { include: Object.fromEntries(dimensions.map(key => [key, new Set()])),
+        exclude: Object.fromEntries(dimensions.map(key => [key, new Set()])) };
+    }
+    function toggle(state, dimension, value, exclude = false) {
+      value = String(value);
+      const target = state[exclude ? 'exclude' : 'include'][dimension];
+      state[exclude ? 'include' : 'exclude'][dimension].delete(value);
+      if (target.has(value)) target.delete(value); else target.add(value);
+    }
+    function valueMatches(dimension, filter, value) {
+      if (value == null || value === '') return false;
+      if (dimension === 'energy' && filter === '10+') return Number(value) >= 10;
+      if (dimension === 'power') {
+        if (filter === '140+') return Number(value) >= 140;
+        const max = Number(filter);
+        return Number(value) >= max - 19 && Number(value) <= max;
+      }
+      return String(value) === filter;
+    }
+    function matches(state, values) {
+      return dimensions.every(key => {
+        const match = value => valueMatches(key, value, values[key]);
+        return (!state.include[key].size || [...state.include[key]].some(match)) &&
+          ![...state.exclude[key]].some(match);
+      });
+    }
+    function hasSelection(state) {
+      return dimensions.some(key => state.include[key].size || state.exclude[key].size);
+    }
+    function identify(button) {
+      const dimension = dimensions.find(key => button.hasAttribute('data-filter-' + key));
+      return { dimension, value: button.getAttribute('data-filter-' + dimension) };
+    }
+    function sync(button, state) {
+      const { dimension, value } = identify(button);
+      const included = state.include[dimension].has(value), excluded = state.exclude[dimension].has(value);
+      button.classList.toggle('active', included);
+      button.classList.toggle('filter-excluded', excluded);
+      button.dataset.filterState = excluded ? 'exclude' : included ? 'include' : 'neutral';
+      button.setAttribute('role', 'button'); button.setAttribute('tabindex', '0');
+      button.setAttribute('aria-pressed', excluded ? 'mixed' : included ? 'true' : 'false');
+      const label = { type: '类型', elem: '属性', energy: '能耗', power: '威力', season: '赛季' }[dimension] + '：' + value;
+      button.setAttribute('aria-label', label + '，' + (excluded ? '已排除' : included ? '已纳入' : '不限制'));
+      button.title = label + '；左键或 Enter/空格：纳入；右键或 Shift+Enter/空格：排除；重复操作取消';
+      let mark = button.querySelector('.filter-exclusion-mark');
+      if (!mark) {
+        mark = document.createElement('span'); mark.className = 'filter-exclusion-mark';
+        mark.textContent = '−'; mark.setAttribute('aria-hidden', 'true'); button.appendChild(mark);
+      }
+      mark.hidden = !excluded;
+    }
+    function bind(container, state, onChange) {
+      // Bind the pills themselves: the live toolbar may portal their parent.
+      const buttons = [...container.querySelectorAll(selector)];
+      const removers = [];
+      buttons.forEach(button => {
+        sync(button, state);
+        const apply = exclude => {
+          const { dimension, value } = identify(button);
+          toggle(state, dimension, value, exclude); sync(button, state); onChange();
+        };
+        const click = event => { if (event.button === 0) { event.preventDefault(); apply(false); } };
+        const context = event => { event.preventDefault(); event.stopPropagation(); apply(true); };
+        const keydown = event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault(); event.stopPropagation();
+          if (!event.repeat) apply(event.shiftKey);
+        };
+        for (const [type, handler] of [['click',click],['contextmenu',context],['keydown',keydown]]) {
+          button.addEventListener(type, handler); removers.push(() => button.removeEventListener(type, handler));
+        }
+      });
+      return () => removers.forEach(remove => remove());
+    }
+    return { create, toggle, matches, hasSelection, bind, sync, selector };
+  })();
+
   const SkillPicker = (function () {
 
     function renderFilterBar(skills) {
@@ -653,52 +888,24 @@ const CommonUI = (function () {
         </div>`;
     }
 
-    function bindFilterEvents(container, itemSelector) {
+    function bindFilterEvents(container, itemSelector, options = {}) {
       const filterContainer = container.querySelector('.detail-skill-filter');
       if (!filterContainer) return;
 
-      const activeTypes = new Set();
-      const activeElems = new Set();
-      const activeEnergy = new Set();
-
-      filterContainer.addEventListener('click', function (e) {
-        const btn = e.target.closest('.detail-skill-filter-btn');
-        if (!btn) return;
-
-        if (btn.dataset.filterType) {
-          const val = btn.dataset.filterType;
-          if (activeTypes.has(val)) { activeTypes.delete(val); btn.classList.remove('active'); }
-          else { activeTypes.add(val); btn.classList.add('active'); }
-        }
-        if (btn.dataset.filterElem) {
-          const val = btn.dataset.filterElem;
-          if (activeElems.has(val)) { activeElems.delete(val); btn.classList.remove('active'); }
-          else { activeElems.add(val); btn.classList.add('active'); }
-        }
-        if (btn.dataset.filterEnergy) {
-          const val = btn.dataset.filterEnergy;
-          if (activeEnergy.has(val)) { activeEnergy.delete(val); btn.classList.remove('active'); }
-          else { activeEnergy.add(val); btn.classList.add('active'); }
-        }
-
+      const filterState = FilterExclusion.create();
+      const applyFilters = () => {
         // 筛选前记录滚动位置
-        const scrollBody = container.querySelector('.team-skill-picker-body') || container.querySelector('.hide-scrollbar');
+        const scrollBody = container.querySelector('.team-skill-picker-body') || container.querySelector('.hide-scrollbar') ||
+          (container.id === 'pet-modal-body' ? container : null);
         const savedScrollTop = scrollBody ? scrollBody.scrollTop : 0;
 
         container.querySelectorAll(itemSelector || '.detail-skill-item').forEach(item => {
           const itemType = item.dataset.skillType;
           const itemElem = item.dataset.skillElem;
           const itemEnergy = item.dataset.skillEnergy;
-          const typeMatch = activeTypes.size === 0 || activeTypes.has(itemType);
-          const elemMatch = activeElems.size === 0 || activeElems.has(itemElem);
-          let energyMatch = true;
-          if (activeEnergy.size > 0) {
-            energyMatch = [...activeEnergy].some(ae => {
-              if (ae === '10+') return itemEnergy !== '' && parseInt(itemEnergy) >= 10;
-              return itemEnergy === ae;
-            });
-          }
-          item.style.display = (typeMatch && elemMatch && energyMatch) ? '' : 'none';
+          item.style.display = FilterExclusion.matches(filterState, {
+            type: itemType, elem: itemElem, energy: itemEnergy
+          }) ? '' : 'none';
         });
 
         container.querySelectorAll('.detail-skill-group').forEach(group => {
@@ -709,7 +916,7 @@ const CommonUI = (function () {
         // 滚动 spacer：在底部插入空白，使 scrollTop 不被浏览器 clamp
         if (scrollBody) {
           let spacer = scrollBody.querySelector('.skill-filter-scroll-spacer');
-          const hasFilter = activeTypes.size > 0 || activeElems.size > 0 || activeEnergy.size > 0;
+          const hasFilter = FilterExclusion.hasSelection(filterState);
           if (hasFilter && savedScrollTop > 0) {
             // 先移除旧 spacer
             if (spacer) spacer.remove();
@@ -723,9 +930,10 @@ const CommonUI = (function () {
             scrollBody.scrollTop = savedScrollTop;
             // 下一帧精简 spacer 到刚好够用
             requestAnimationFrame(() => {
+              if (!spacer.isConnected || !scrollBody.isConnected) return;
               const maxScroll = scrollBody.scrollHeight - scrollBody.clientHeight;
               if (maxScroll > savedScrollTop) {
-                spacer.style.height = (spacerHeight - (maxScroll - savedScrollTop)) + 'px';
+                spacer.style.height = Math.max(0, spacerHeight - (maxScroll - savedScrollTop)) + 'px';
                 scrollBody.scrollTop = savedScrollTop;
               }
             });
@@ -733,7 +941,23 @@ const CommonUI = (function () {
             if (spacer) spacer.remove();
           }
         }
-      });
+      };
+      if (options.allowExclusion === true) {
+        const destroy = FilterExclusion.bind(filterContainer, filterState, applyFilters);
+        registerCleanup(filterContainer, destroy);
+      } else {
+        // Team picker and other legacy callers remain include-only unless opted in.
+        filterContainer.addEventListener('click', event => {
+          const button = event.target.closest('.detail-skill-filter-btn');
+          if (!button || !filterContainer.contains(button)) return;
+          const dimension = ['type', 'elem', 'energy'].find(key => button.hasAttribute('data-filter-' + key));
+          if (!dimension) return;
+          const value = button.getAttribute('data-filter-' + dimension);
+          FilterExclusion.toggle(filterState, dimension, value);
+          button.classList.toggle('active', filterState.include[dimension].has(value));
+          applyFilters();
+        });
+      }
     }
 
     function renderSkillList(skills, allMoves, options) {
@@ -773,7 +997,7 @@ const CommonUI = (function () {
             if (moveId != null && options.showMoveLink) extraAttrs.push(`data-move-id="${moveId}" style="cursor:pointer;"`);
             return RKData.buildSkillCardHtml({
               name: s.name, desc: s.desc, type: s.type, element: s.element,
-              energy: energy, power: power,
+              energy: energy, power: power, moveId: moveId,
               extraClass: extraClass.join(' '),
               extraAttrs: extraAttrs.join(' ')
             });
@@ -818,10 +1042,11 @@ const CommonUI = (function () {
       </div>`;
     }
 
-    /** 同步性格/个体按钮状态（不更新数值） */
+    /** 同步显示；自由模拟面板不显示组队上限提示。 */
     function syncButtons(rootEl, nature, iv) {
       if (!rootEl) return;
       const stats = DEFAULT_STATS;
+      const freeSimulation = rootEl.dataset.statPolicy === 'free';
       const hasPositive = stats.some(s => (nature && nature[s]) === 1);
       const ivCount = stats.filter(s => (iv && iv[s])).length;
 
@@ -837,12 +1062,12 @@ const CommonUI = (function () {
           if (natureVal === 1) { natureBtn.classList.add('active-positive'); natureBtn.textContent = '性格+'; }
           else if (natureVal === 2) { natureBtn.classList.add('active-negative'); natureBtn.textContent = '性格-'; }
           else { natureBtn.textContent = '性格'; }
-          if (natureVal !== 1 && natureVal !== 2 && hasPositive) natureBtn.classList.add('btn-disabled');
+          if (!freeSimulation && natureVal !== 1 && natureVal !== 2 && hasPositive) natureBtn.classList.add('btn-disabled');
         }
         if (ivBtn) {
           ivBtn.classList.remove('active', 'btn-disabled');
           if (ivVal) ivBtn.classList.add('active');
-          if (!ivVal && ivCount >= 3) ivBtn.classList.add('btn-disabled');
+          if (!freeSimulation && !ivVal && ivCount >= 3) ivBtn.classList.add('btn-disabled');
         }
       });
     }
@@ -883,11 +1108,14 @@ const CommonUI = (function () {
   })();
 
   return {
+    // Enabled UI labels only; never normalize arbitrary text or mathematical roots.
+    enabledText: (enabled, label) => `${enabled ? '✓' : '×'}${label}`,
     bindBackToTop, bindScrollControls, wrapRelative,
+    registerCleanup, destroyWithin, positionAnchoredLayer, bindAnchoredLayer,
     createSearchBox,
     monsterRenderItem, monsterTypeText, renderTypePills,
     showAlert, showConfirm,
-    SkillPicker,
+    SkillPicker, FilterExclusion,
     StatBox
   };
 })();

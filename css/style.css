@@ -30,6 +30,10 @@
   --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
   --nav-height: 52px;
   --transition: 0.15s ease;
+  --control-positive: #3d7e1b;
+  --control-negative: #b93220;
+  --control-on-color: #ffffff;
+  --chart-grid: rgba(0,0,0,0.1);
   /* 唯一字体入口：由 WebView2 解析当前 Windows 的系统 UI 字体。 */
   --app-font-family: system-ui, sans-serif;
   --app-font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
@@ -63,6 +67,9 @@
    --radius-xl: 20px;
    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
    --shadow-hover: 0 6px 16px rgba(0,0,0,0.4);
+   --control-positive: #356c1e;
+   --control-negative: #b93220;
+   --chart-grid: rgba(255,255,255,0.14);
  }
 
  /* 夜间模式：滚动条 */
@@ -136,7 +143,11 @@ a:hover { color: var(--accent-hover); }
 .nav-links {
   display: flex;
   gap: 2px;
-  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .nav-link {
@@ -157,7 +168,7 @@ a:hover { color: var(--accent-hover); }
 .nav-link.active::after {
   content: '';
   position: absolute;
-  bottom: -14px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -262,8 +273,8 @@ a:hover { color: var(--accent-hover); }
 .search-bar::placeholder { color: var(--text-muted); }
 
 /* 自动补全下拉框 */
-.autocomplete-search-wrap { position: relative; display: inline-block; }
-#move-search-slot { display: flex; justify-content: center; margin-bottom: 16px; }
+.autocomplete-search-wrap { position: relative; display: inline-block; width: 512px; max-width: 100%; }
+.autocomplete-search-wrap .search-bar { width: 100%; min-width: 0; max-width: none; }
 .autocomplete-input-icon {
   position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
   width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
@@ -1076,26 +1087,6 @@ a:hover { color: var(--accent-hover); }
 .refraction-effect-elem { font-weight: 600; color: var(--text-primary); flex-shrink: 0; min-width: 36px; }
 .refraction-effect-desc { flex: 1; }
 
-/* 卡片网格 */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
-.card.selected { border-color: var(--accent); background: var(--accent-light); }
-.card-name { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-.card-info { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-secondary); }
-
 /* 克制表 */
 .type-chart-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .type-chart-table th, .type-chart-table td {
@@ -1477,8 +1468,8 @@ a:hover { color: var(--accent-hover); }
     width: max-content;
 }
 .final-stat-item:hover { background: rgba(108, 92, 231, 0.08); }
-.final-stat-item .stat-label { font-size: 0.85em; min-width: 0; flex: 0 0 auto; color: #636E72; font-weight: 500; }
-.final-stat-item .stat-value { min-width: 0; text-align: left; flex: 0 0 auto; font-size: 1em; color: #6C5CE7; font-weight: 700; }
+.final-stat-item .stat-label { font-size: 0.85em; min-width: 0; flex: 0 0 auto; color: var(--text-secondary); font-weight: 500; }
+.final-stat-item .stat-value { min-width: 0; text-align: left; flex: 0 0 auto; font-size: 1em; color: var(--accent); font-weight: 700; }
 .nature-btn, .iv-btn {
     padding: 5px 10px;
     font-size: 0.75em;
@@ -1499,9 +1490,8 @@ a:hover { color: var(--accent-hover); }
 .iv-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 .nature-btn.btn-disabled, .iv-btn.btn-disabled { opacity: 0.4; cursor: pointer; pointer-events: auto; }
 .nature-btn.btn-disabled:hover, .iv-btn.btn-disabled:hover { border-color: var(--border); transform: none; }
-.stat-mode-group { gap: 10px; }
-/* 单选按钮组（通用） */
-.radio-group { display: flex; gap: 15px; }
+/* 单选组只在这里定义间距；组件通过参数选用紧凑间距，不再互相覆盖 gap。 */
+.radio-group { display: flex; gap: var(--radio-group-gap, 15px); }
 .radio-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.95em; color: var(--text-primary); transition: all 0.2s ease; }
 .radio-label:hover { color: var(--accent); }
 .radio-label input[type="radio"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
@@ -1628,12 +1618,10 @@ a:hover { color: var(--accent-hover); }
 .stat-bar-atk { background: #ef4444; }
 .stat-bar-def { background: #3b82f6; }
 .stat-bar-spd { background: #f59e0b; }
-.stat-value { font-size: 12px; color: var(--text-secondary); min-width: 28px; text-align: right; }
 
 /* 响应式 */
 @media (max-width: 768px) {
-  #navbar { flex-direction: column; height: auto; padding: 12px; gap: 8px; }
-  .nav-links { flex-wrap: wrap; justify-content: center; }
+  #navbar { padding: 0 12px; gap: 8px; }
   #app { padding: 12px; }
   .team-slots { grid-template-columns: repeat(3, 1fr); }
   .team-layout { grid-template-columns: 1fr; }
@@ -1944,19 +1932,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 .ud-tab { cursor: pointer; }
 
 
-/* ===================== 伤害计算器专用样式 ===================== */
-/* 全局样式 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* 水印层 */
-/* body::before removed */
-
-/* body::after removed */
-
+/* ===================== 计算器布局与共用表单样式 ===================== */
 
 /* 图标样式 */
 .title-icon {
@@ -1990,27 +1966,10 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     transition: none;
 }
 
-/* ===================== 夜间模式覆盖 ===================== */
-[data-theme="dark"] input,
-[data-theme="dark"] select,
-[data-theme="dark"] textarea,
-[data-theme="dark"] .skill-section,
-[data-theme="dark"] .result-card,
-[data-theme="dark"] .card,
-[data-theme="dark"] .chart-mode-btn,
-[data-theme="dark"] .chart-control-btn,
-[data-theme="dark"] .chart-power-slider,
-[data-theme="dark"] .chart-power-number {
-    background: var(--bg-card) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border) !important;
-}
-[data-theme="dark"] .modifier-value {
-    color: var(--text-primary) !important;
-}
+/* 颜色直接引用主题变量，不使用会覆盖选中/警告状态的全局 !important。 */
 
 /* 容器 */
-.container {
+.calc-root .container {
     width: 100%;
     margin: 0 auto;
     padding: 12px;
@@ -2022,7 +1981,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 
 
 /* 主内容区 */
-.main-content {
+.calc-root .main-content {
     display: flex;
     flex-direction: row;
     gap: 12px;
@@ -2040,17 +1999,8 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 
 
-.top-row > .ext-module,
-.top-row .attacker-card,
-.top-row .defender-card {
-    flex: 1;
-    min-width: 0;
-}
 
-
-/* 扩展行：历史记录全宽 */
-
-/* 卡片样式（计算器专用，限定在 .calc-root 下） */
+/* 卡片的唯一基础样式：仅供 calc-root 内页面使用，不依赖全局 .card。 */
 .calc-root .card {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
@@ -2059,12 +2009,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     cursor: default;
     padding: 0;
     transition: none;
-}
-
-.calc-root .card:hover {
-    border-color: var(--border);
-    transform: none;
-    box-shadow: none;
+    animation: fadeIn 0.3s ease;
 }
 
 .calc-root .card-header {
@@ -2076,21 +2021,20 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     border-bottom: 2px solid var(--border);
 }
 
-/* 技能卡片header调整padding使横杠对齐攻击方卡片 */
+/* 技能卡片维持原有紧凑布局；当前模板没有 card-header。 */
 .skill-card {
     max-width: fit-content;
-    margin-bottom: 0px; /* 从-2px改为0px,增加2px间隔 */
-}
-
-.skill-card .card-header {
-    padding: 14.5px 25px; /* 上下padding从15px减少到14.5px,再减少1px */
+    margin-bottom: 0;
 }
 
 .skill-card .card-body {
     width: fit-content;
 }
 
+/* 技能输入区的唯一布局规则：三项同行、允许收缩；没有另一套通用布局作底层。 */
 .skill-card .input-row {
+    display: flex;
+    gap: 15px;
     flex-wrap: nowrap;
 }
 
@@ -2122,7 +2066,8 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     gap: 6px;
 }
 
-.header-left {
+.calc-root .header-left {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -2130,19 +2075,19 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     min-width: 0;
 }
 
-.header-left h3 {
+.calc-root .header-left h3 {
     margin-left: 0;
     flex-shrink: 0;
 }
 
-.header-left label {
+.calc-root .header-left label {
     font-size: 1.05em;
     color: var(--text-secondary);
     font-weight: 500;
     white-space: nowrap;
 }
 
-.header-right {
+.calc-root .header-right {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -2150,7 +2095,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     white-space: nowrap;
 }
 
-.header-right label {
+.calc-root .header-right label {
     font-size: 1.05em;
     color: var(--text-secondary);
     font-weight: 500;
@@ -2163,60 +2108,12 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 
 
-.team-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-}
 
-.team-avatar.empty {
-    border-style: dashed;
-    opacity: 0.4;
-}
-
-.team-avatar.filled {
-    cursor: pointer;
-    border-color: var(--accent);
-}
-
-.team-avatar.filled:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-}
-
-.team-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.team-avatar span {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-muted);
-}
-
-
-/* 确保输入框内的文本输入不显示%后缀 */
-#debuff {
-    padding-right: 30px;
-}
-
-
-/* 精灵选择器 — 使用通用 .autocomplete-search-wrap + .search-bar 样式 */
-.header-left { position: relative; }
-.autocomplete-search-wrap .search-bar {
-    width: auto;
-    min-width: 120px;
-    max-width: 200px;
-    padding: 10px 16px 10px 48px;
-}
+/* 只有攻守卡片使用紧凑搜索框，不限制其他页面的公共搜索框。 */
+.attacker-card .autocomplete-search-wrap,
+.defender-card .autocomplete-search-wrap { width: 200px; max-width: 100%; }
+.attacker-card .autocomplete-search-wrap .search-bar,
+.defender-card .autocomplete-search-wrap .search-bar { padding: 10px 16px 10px 48px; }
 
 
 /* 种族值显示 */
@@ -2247,15 +2144,6 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     display: inline-block;
 }
 
-.stats-section h4 {
-    font-size: 1.1em;
-    color: var(--text-primary);
-    font-weight: 700;
-    margin-bottom: 10px;
-    padding-bottom: 0;
-    border-bottom: none;
-}
-
 /* 属性值标题和重置按钮 */
 .stats-header-with-button {
     display: flex;
@@ -2266,19 +2154,14 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     flex-wrap: wrap;
 }
 
-.stats-header-with-button h4 {
-    margin-bottom: 0;
-}
-
 .stats-title-row {
     display: flex;
     align-items: center;
     gap: 7px;
 }
 
-.stat-mode-group {
-    gap: 10px;
-}
+/* 仅攻守属性标题栏使用10px；其他页面及技能类型组仍用默认15px。 */
+.stats-title-row .stat-mode-group { --radio-group-gap: 10px; }
 
 .reset-stats-btn {
     width: 26px;
@@ -2301,46 +2184,10 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     color: var(--accent);
 }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 210px));
-    gap: 10px;
-    justify-content: start;
-}
 
 
-.stat-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
-    background: var(--bg-primary);
-    border-radius: var(--radius-md);
-    transition: all 0.2s ease;
-}
-
-.stat-item:hover {
-    background: rgba(108, 92, 231, 0.08);
-    transform: translateX(3px);
-}
-
-.stat-label {
-    font-size: 0.95em;
-    color: var(--text-secondary);
-    font-weight: 500;
-    min-width: 40px;
-}
-
-.stat-value {
-    font-size: 1em;
-    color: var(--text-primary);
-    font-weight: 700;
-    min-width: 40px;
-    text-align: right;
-}
-
-.stat-value.accent {
-    color: var(--accent);
+/* 标签、宽度和对齐交给公共 StatBox；只保留计算器原有的数值字号。 */
+.calc-root .final-stat-item .stat-value.accent {
     font-size: 1.05em;
 }
 
@@ -2351,23 +2198,6 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 
 .skill-section:last-child {
     margin-bottom: 0;
-}
-
-.skill-section > label {
-    display: block;
-    font-size: 1em;
-    color: var(--text-secondary);
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.skill-section > h4 {
-    font-size: 1.1em;
-    color: var(--text-primary);
-    font-weight: 700;
-    margin-bottom: 10px;
-    padding-bottom: 0;
-    border-bottom: none;
 }
 
 /* 技能类型行：物攻/魔攻 + 属性选择器同一行 */
@@ -2464,19 +2294,8 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     object-fit: cover;
 }
 
-/* 输入行 */
-.input-row {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.input-group {
-    flex: 1;
-    min-width: 120px;
-}
-
-.input-group label {
+/* 仅共用表单外观。排列、换行和字段最小宽度由各页面自己定义。 */
+.calc-root .input-group label {
     display: block;
     font-size: 0.95em;
     color: var(--text-secondary);
@@ -2484,20 +2303,15 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     font-weight: 600;
 }
 
-.input-group label.warning-label {
-    color: #ff7675;
-}
-
-.input-group label.combo-label,
-.input-group label.damage-reduction-label {
+.calc-root .input-group label.combo-label {
     color: var(--danger);
 }
 
-.input-group label.accent-label {
+.calc-root .input-group label.accent-label {
     color: var(--accent);
 }
 
-.input-group input[type="number"], .input-group input[type="text"] {
+.calc-root .input-group input[type="number"], .calc-root .input-group input[type="text"] {
     width: 100%;
     padding: 10px 12px;
     font-size: 0.95em;
@@ -2510,43 +2324,25 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 
 /* 隐藏Chrome/Safari的加减按钮 */
-.input-group input[type="number"]::-webkit-outer-spin-button,
-.input-group input[type="number"]::-webkit-inner-spin-button {
+.calc-root .input-group input[type="number"]::-webkit-outer-spin-button,
+.calc-root .input-group input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.input-group input[type="number"]:hover, .input-group input[type="text"]:hover {
+.calc-root .input-group input[type="number"]:hover, .calc-root .input-group input[type="text"]:hover {
     border-color: var(--accent);
 }
 
-.input-group input[type="number"]:focus, .input-group input[type="text"]:focus {
+.calc-root .input-group input[type="number"]:focus, .calc-root .input-group input[type="text"]:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
-/* 文本输入框、文本域、下拉框 — 与 number input 保持统一样式 */
-.input-group input[type="text"] {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 0.95em;
-    border: 2px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--bg-card);
-    color: var(--text-primary);
-    transition: all 0.2s ease;
-}
-.input-group input[type="text"]:hover {
-    border-color: var(--accent);
-}
-.input-group input[type="text"]:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
-}
+/* 计算器和数据编辑页共用的表单样式，限定于 calc-root。 */
 
-.input-group textarea {
+.calc-root .input-group textarea {
     width: 100%;
     padding: 10px 12px;
     font-size: 0.95em;
@@ -2558,16 +2354,16 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     resize: vertical;
     font-family: inherit;
 }
-.input-group textarea:hover {
+.calc-root .input-group textarea:hover {
     border-color: var(--accent);
 }
-.input-group textarea:focus {
+.calc-root .input-group textarea:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
-.input-group select {
+.calc-root .input-group select {
     width: 100%;
     padding: 10px 12px;
     font-size: 0.95em;
@@ -2578,17 +2374,17 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     transition: all 0.2s ease;
     cursor: pointer;
 }
-.input-group select:hover {
+.calc-root .input-group select:hover {
     border-color: var(--accent);
 }
-.input-group select:focus {
+.calc-root .input-group select:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
 /* 带后缀的输入框 */
-.input-with-suffix {
+.calc-root .input-with-suffix {
     position: relative;
     display: flex;
     align-items: center;
@@ -2599,16 +2395,16 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     overflow: hidden;
 }
 
-.input-with-suffix:hover {
+.calc-root .input-with-suffix:hover {
     border-color: var(--accent);
 }
 
-.input-with-suffix:focus-within {
+.calc-root .input-with-suffix:focus-within {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
-.input-with-suffix input {
+.calc-root .input-with-suffix input {
     flex: 1;
     padding: 10px 12px;
     border: none !important;
@@ -2621,30 +2417,23 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 
 /* 隐藏Chrome/Safari的加减按钮 */
-.input-with-suffix input::-webkit-outer-spin-button,
-.input-with-suffix input::-webkit-inner-spin-button {
+.calc-root .input-with-suffix input::-webkit-outer-spin-button,
+.calc-root .input-with-suffix input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-.input-with-suffix input:focus {
+.calc-root .input-with-suffix input:focus {
     outline: none !important;
     border: none !important;
     box-shadow: none !important;
 }
 
-.input-with-suffix .suffix {
+.calc-root .input-with-suffix .suffix {
     padding: 0 12px;
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.9em;
-}
-
-/* 技能卡片输入框字体 */
-.skill-card .input-group input[type="number"], .skill-card .input-group input[type="text"],
-.skill-card .input-with-suffix input,
-.skill-card .input-with-suffix .suffix {
-    font-family: var(--app-font-family);
 }
 
 /* 修正系数显示 */
@@ -2716,16 +2505,6 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     border-bottom: none;
 }
 
-/* 隐藏伤害显示时的样式 */
-.damage-display.hidden {
-    max-height: 0;
-    padding: 0;
-    margin: 0;
-    border: none;
-    overflow: hidden;
-    opacity: 0;
-}
-
 .damage-label {
     font-size: 1.1em;
     color: var(--text-secondary);
@@ -2763,11 +2542,6 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     margin-bottom: 0;
 }
 
-/* 当伤害显示隐藏时,减少计算过程的上边距并往上移 */
-.damage-display.hidden + .process-header {
-    margin-top: -10px; /* 往上移动 */
-}
-
 .process-header {
     display: flex;
     justify-content: space-between;
@@ -2778,28 +2552,11 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     border-top: none;
 }
 
-/* 展开状态下减少与计算步骤之间的间距 */
-.process-header.expanded {
-    margin-top: 0;
-    padding-top: 0;
-    margin-bottom: 0;
-}
-
-.process-step:first-child {
-    margin-top: 0 !important;
-}
-
 .process-title {
     font-size: 1em;
     color: var(--text-primary);
-    font-family: var(--app-font-family);
     font-weight: 900;
     margin: 0;
-}
-
-.process-buttons {
-    display: flex;
-    gap: 10px;
 }
 
 .process-buttons {
@@ -2810,21 +2567,20 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 .process-copy-btn {
     padding: 6px 12px;
     min-width: 72px;
-    border: 1px solid #11998e;
+    border: 1px solid var(--accent);
     background: var(--bg-card);
-    color: #11998e;
+    color: var(--accent);
     line-height: 1;
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.85em;
-    font-family: var(--app-font-family);
     font-weight: 900;
     white-space: nowrap;
 }
 
 .process-copy-btn:hover {
-    background: #11998e;
-    color: white;
+    background: var(--accent);
+    color: var(--control-on-color);
 }
 
 
@@ -2838,27 +2594,15 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     margin-bottom: 0;
 }
 
-.process-steps.collapsed {
-    max-height: 0;
-    padding: 0;
-    overflow: hidden;
-    margin-top: 0;
-}
-
 .process-step {
     font-size: 0.9em;
     color: var(--text-secondary);
     margin: 8px 0;
     line-height: 1.6;
-    font-family: var(--app-font-family);
 }
 
 .process-step:first-child {
     margin-top: 0;
-}
-
-.process-step:last-child {
-    margin-bottom: 0; /* 最后一个元素不要底部边距 */
 }
 
 .process-step:last-child {
@@ -2892,30 +2636,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     }
 }
 
-.calc-root .card {
-    animation: fadeIn 0.3s ease;
-}
-
-/* 滚动条样式 */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-primary);
-    border-radius: var(--radius-sm);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: var(--radius-sm);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent);
-}
-
+/* 滚动条统一使用文件顶部的公共定义。 */
 
 .chart-header-right {
     display: flex;
@@ -2925,36 +2646,32 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 
 .chart-mode-btn {
     padding: 4px 12px;
-    border: 1px solid #4a90e2;
+    border: 1px solid var(--accent);
     border-radius: var(--radius-md);
     background: var(--bg-card);
-    color: #4a90e2;
+    color: var(--accent);
     cursor: pointer;
     font-size: 0.85em;
     transition: all 0.15s;
 }
-.chart-mode-btn:hover {
-    background: #4a90e2;
-    color: white;
-}
+.chart-mode-btn:hover,
 .chart-mode-btn.active {
-    background: #4a90e2;
-    color: white;
-    border-color: #4a90e2;
+    background: var(--accent);
+    color: var(--control-on-color);
+    border-color: var(--accent);
 }
 
 .chart-power-control {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
     margin-bottom: 8px;
     justify-content: center;
 }
-.chart-power-slider {
-    width: 260px;
-    cursor: pointer;
-}
 .chart-power-number {
+    background: var(--bg-card);
+    color: var(--text-primary);
     width: 70px;
     padding: 2px 6px;
     border: 1px solid var(--border);
@@ -2972,7 +2689,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     padding: 4px 0;
     background: none;
     margin-bottom: 6px;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 14px;
 }
 
@@ -2989,7 +2706,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     display: inline-block;
     width: 1px;
     height: 20px;
-    background: #ccc;
+    background: var(--border);
     margin: 0 6px;
     vertical-align: middle;
 }
@@ -3003,37 +2720,26 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     padding: 3px 14px;
     border: none;
     border-radius: var(--radius-md);
-    background: #e8e8e8;
+    background: var(--bg-hover);
     color: var(--text-primary);
     cursor: pointer;
     font-size: 0.9em;
     font-weight: 600;
     transition: all 0.15s;
 }
-.chart-control-btn:hover {
-    background: #d0d0d0;
-}
-.chart-control-btn.active-iv {
-    background: #3d7e1b;
-    color: white;
-}
+.chart-control-btn:hover { box-shadow: inset 0 0 0 1px var(--accent); }
+.chart-control-btn.active-iv,
 .chart-control-btn.active-positive {
-    background: #3d7e1b;
-    color: white;
+    background: var(--control-positive);
+    color: var(--control-on-color);
 }
 .chart-control-btn.active-negative {
-    background: #e43316;
-    color: white;
+    background: var(--control-negative);
+    color: var(--control-on-color);
 }
 
-.chart-container {
-    position: relative;
-    height: calc(100vh / var(--page-zoom, 1) - 340px);
-    min-height: 400px;
-    width: 100%;
-}
 /* 最终威力手动输入 */
-.final-power-manual-label.manual-active {
+.calc-root .input-group label.final-power-manual-label.manual-active {
     color: var(--danger);
 }
 .dimmed {
@@ -3050,32 +2756,17 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     filter: grayscale(1);
 }
 
-/* ===== 扩展模块占位样式 ===== */
-.ext-module {
-    background: var(--bg-card);
-    border: 1px solid #e0e0e0;
+/* ===== 快捷访问与技能图标卡片 ===== */
+.calc-root .card.ext-module {
     border-radius: 12px;
-    overflow: hidden;
     min-height: 120px;
-}
-.ext-module .card-header {
-    background: #f5f7fa;
-    padding: 10px 16px;
-    border-bottom: 1px solid #e0e0e0;
-}
-.ext-module .card-header h3 {
-    font-size: 14px;
-    font-weight: 700;
-    color: #333;
-    display: flex;
-    align-items: center;
 }
 .ext-module .card-body {
     padding: 10px 16px;
 }
 .ext-placeholder {
     font-size: 13px;
-    color: #999;
+    color: var(--text-muted);
     text-align: center;
     line-height: 1.6;
 }
@@ -3163,7 +2854,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 .skill-icon-name {
     font-size: 10px;
-    color: #666;
+    color: var(--text-secondary);
     text-align: center;
     line-height: 1.3;
     padding: 2px 0 0;
@@ -3214,17 +2905,6 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 .quick-pet-item:hover {
     transform: translateY(-2px);
 }
-.quick-pet-item img {
-    width: 44px;
-    height: 44px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 2px solid var(--border);
-}
-.quick-pet-item:hover img {
-    border-color: var(--accent);
-    box-shadow: 0 2px 8px rgba(108, 92, 231, 0.25);
-}
 .quick-pet-img-wrapper {
     position: relative;
     width: 44px;
@@ -3250,7 +2930,7 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
     font-size: 1.2em;
     font-weight: 700;
     color: var(--text-secondary);
-    background: #f5f7fa;
+    background: var(--bg-primary);
 }
 .quick-pet-fav-mark {
     position: absolute;
@@ -3298,50 +2978,18 @@ textarea.ud-input { resize: vertical; font-family: inherit; }
 }
 
 /* ===== 新增：减伤拆分 / 防御修正 / 星陨 / 最终威力手动输入 ===== */
-.input-group label.debuff-percent-label {
+.calc-root .input-group label.debuff-percent-label {
     color: var(--danger);
 }
-.input-group label.defense-mod-label {
+.calc-root .input-group label.defense-mod-label {
     color: var(--accent);
 }
-.input-group label.star-meteor-label {
+.calc-root .input-group label.star-meteor-label {
     color: var(--accent);
 }
+/* 最终威力标签沿用当前共用标签外观；仅保留光标与上方手动警告状态。 */
 .final-power-manual-label {
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 0.85em;
-    display: flex;
-    align-items: center;
-    gap: 4px;
     cursor: help;
 }
-.final-power-manual-label:hover .final-power-manual-tooltip {
-    display: block;
-}
-.final-power-manual-input {
-    width: 100%;
-    font-size: 0.95em;
-    color: var(--text-primary);
-    border: 2px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
-    background: var(--bg-card);
-    -moz-appearance: textfield;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-.final-power-manual-input:hover {
-    border-color: var(--accent);
-}
-.final-power-manual-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
-    outline: none;
-}
-.final-power-manual-input::-webkit-outer-spin-button,
-.final-power-manual-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
+/* 最终威力输入框直接复用共用文本输入样式，无需重复外观或数字框伪元素。 */
 
