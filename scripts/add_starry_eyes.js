@@ -28,11 +28,14 @@ const GROUPS = {
   '技能石': ['引力偏转', '恐吓', '虚化', '热砂', '陨石', '钧势', '刺盾', '遁地', '阻断', '借用', '锐利眼神', '吓退', '无畏之心']
 };
 
+const { readWiki, writeWiki } = require('./lib/wiki-data.js');
 function readJSON(relativePath) {
+  if (path.basename(relativePath) === 'wiki_monster_data.json') return readWiki(ROOT);
   return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'));
 }
 
 function writeJSON(relativePath, value) {
+  if (path.basename(relativePath) === 'wiki_monster_data.json') return writeWiki(ROOT, value);
   fs.writeFileSync(path.join(ROOT, relativePath), JSON.stringify(value, null, 2) + '\n', 'utf8');
 }
 

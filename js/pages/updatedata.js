@@ -1,6 +1,6 @@
 ﻿/**
  * updatedata.js — 数据更新页面
- * 复用 calc.css（.calc-root 包裹）+ style.css（.btn / .type-pill 等）
+ * 复用 style.css 的控件外观；表单排列只由本页面限定的规则负责。
  */
 const UpdateDataPage = (function () {
   const GITHUB_URL = 'https://github.com/akikocc/desktop-tutorial';
@@ -22,6 +22,9 @@ const UpdateDataPage = (function () {
 
   // 数据更新页面专用样式（注入在页面 HTML 中，避免 CSS 缓存问题）
   const PAGE_STYLE = `<style>
+    /* 仅数据编辑表单需要换行和120px最小宽度；不得放回共用 .calc-root 布局。 */
+    #ud-tab-content .input-row { display: flex; gap: 15px; flex-wrap: wrap; }
+    #ud-tab-content .input-group { flex: 1; min-width: 120px; }
     /* 大按钮 */
     .ud-btn-lg {
       padding: 12px 32px !important;
@@ -703,6 +706,8 @@ const UpdateDataPage = (function () {
   function renderEditorForm(m) {
     const el = document.getElementById('ud-editor-form');
     if (!el || !m) return;
+    const skillsLoaded = Array.isArray(RKData.getResolvedWikiData(m)?.skills);
+    const originalSkillList = JSON.stringify(editorSkillList);
     const traitName = (m.trait && m.trait.localized && m.trait.localized.zh && m.trait.localized.zh.name) || '';
     const traitDesc = (m.trait && m.trait.localized && m.trait.localized.zh && m.trait.localized.zh.description) || '';
 
@@ -753,6 +758,7 @@ const UpdateDataPage = (function () {
               <div id="ud-editor-skill-slot" style="position:relative;"></div>
             </div>
           </div>
+          ${skillsLoaded ? '' : '<p style="color:var(--danger);">技能数据未成功关联；保存其他资料不会覆盖技能。请先修复数据后再编辑技能。</p>'}
           <div id="ud-editor-skill-list" class="ud-skill-list">${skillListHtml(editorSkillList)}</div>
         </div>
         <div class="ud-btn-row">
@@ -786,6 +792,13 @@ const UpdateDataPage = (function () {
     document.getElementById('ud-save-btn').addEventListener('click', async () => {
       const r = document.getElementById('ud-save-result');
       const typeArr = [...editorTypeSel];
+      const skillsChanged = JSON.stringify(editorSkillList) !== originalSkillList;
+      if (skillsChanged && !skillsLoaded) {
+        if (r) r.textContent = '技能数据未成功关联，已阻止覆盖。请修复数据并刷新后重试。';
+        return;
+      }
+      const allowEmptySkills = skillsChanged && editorSkillList.length === 0;
+      if (allowEmptySkills && !window.confirm('确认清空这只精灵的全部技能？此操作只修改当前精灵，不会清空它的进化来源。')) return;
       const payload = {
         id: m.id,
         base_hp: +document.getElementById('ud-base_hp').value || 0,
@@ -802,7 +815,8 @@ const UpdateDataPage = (function () {
         evolves_from_id: editorEvolvesFromID,
         trait_name: document.getElementById('ud-trait-name').value.trim(),
         trait_desc: document.getElementById('ud-trait-desc').value.trim(),
-        skillList: editorSkillList
+        // 未编辑技能时不回传列表，避免查询失败或旧页面状态覆盖已有学习面。
+        ...(skillsChanged ? { skillList: editorSkillList, allowEmptySkills } : {})
       };
       if (r) r.innerHTML = '<span style="color:var(--text-secondary);">正在保存...</span>';
       try {

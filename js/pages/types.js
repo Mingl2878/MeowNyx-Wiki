@@ -260,7 +260,7 @@ const TypesPage = (function () {
         makeList(triple, '三倍弱点 (3×)', 'red') +
         makeList(dbl, '双倍弱点 (2×)', 'orange') +
         makeList(half, '半倍抵抗 (0.5×)', 'blue') +
-        makeList(quarter, '三倍抵抗 (1/3×)', 'green') +
+        makeList(quarter, '四倍抵抗 (0.25×)', 'green') +
         makeList(neutral, '正常效果 (1×)', 'gray');
     }
   }

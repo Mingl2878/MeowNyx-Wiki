@@ -2,8 +2,8 @@
 rem ============================================
 rem  小黑猫 Wiki - 一键打包脚本
 rem  用法:
-rem    build.bat            → 用默认版本 1.1.0 打包
-rem    build.bat 1.2.0      → 用指定版本 1.2.0 打包
+rem    build.bat            → 使用 version.txt 中的统一版本打包
+rem    修改版本只编辑 version.txt，不再接受任意命令行版本
 rem 产物(在 dist\ 目录):
 rem    小黑猫Wiki-vXXX-Portable.zip  便携版
 rem    小黑猫Wiki-Setup-vXXX.exe     安装包
@@ -11,9 +11,13 @@ rem ============================================
 chcp 65001 >nul
 setlocal
 
-set VERSION=%~1
-if "%VERSION%"=="" set VERSION=1.1.0
-set APPNAME=小黑猫 Wiki
+if not "%~1"=="" (
+    echo 请修改 version.txt 设置统一版本，不再接受版本参数。
+    exit /b 1
+)
+set /p VERSION=<"%~dp0version.txt"
+if "%VERSION%"=="" exit /b 1
+set APPNAME=小黑猫 wiki
 set DISTDIR=dist
 
 echo 正在打包版本: %VERSION%
@@ -49,7 +53,7 @@ for %%i in ("C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Program Files\Inn
 )
 if defined ISCC (
     echo 生成安装包...
-    "%ISCC%" /DMyAppVersion=%VERSION% "installer.iss"
+    "%ISCC%" "installer.iss"
     echo     - %DISTDIR%\小黑猫Wiki-Setup-v%VERSION%.exe
 ) else (
     echo [跳过安装包] 未找到 Inno Setup，请安装: https://jrsoftware.org/isdl.php

@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小黑猫 Wiki</title>
+  <title>小黑猫 wiki</title>
   <link rel="icon" href="assets/favicon.ico">
   <script>
     // 自动给所有本地资源加时间戳，彻底避免缓存问题
     document.addEventListener('DOMContentLoaded', function(){});
   </script>
   <link rel="stylesheet" href="css/style.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/listing-ui.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/chart-features.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/team-speed-features.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/game-glossary.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/user-config.css?v={{CACHE_BUST}}">
   <script src="js/chart.umd.min.js"></script>
 </head>
 <body>
@@ -17,9 +22,9 @@
   <nav id="navbar">
     <div class="nav-brand" draggable="false">
       <img src="assets/favicon.svg" alt="logo" class="nav-logo" draggable="false" onerror="this.style.display='none'">
-      <span>小黑猫 Wiki</span>
+      <span>小黑猫 wiki</span>
     </div>
-    <div class="nav-links">
+    <div class="nav-links" aria-label="页面导航" title="横向滚动查看更多页面">
       <a href="#/petdex" class="nav-link" data-route="petdex" draggable="false">精灵图鉴</a>
       <a href="#/moves" class="nav-link" data-route="moves" draggable="false">技能列表</a>
       <a href="#/types" class="nav-link" data-route="types" draggable="false">克制关系</a>
@@ -27,6 +32,7 @@
       <a href="#/team" class="nav-link" data-route="team" draggable="false">组队系统</a>
       <a href="#/damage" class="nav-link" data-route="damage" draggable="false">伤害计算</a>
       <a href="#/chart" class="nav-link" data-route="chart" draggable="false">伤害曲线</a>
+      <a href="#/game-description" class="nav-link" data-route="game-description" draggable="false">游戏描述</a>
       <a href="#/updatedata" class="nav-link" data-route="updatedata" draggable="false">数据更新</a>
     </div>
     <button id="theme-toggle" class="theme-toggle-btn" title="切换夜间模式" draggable="false">
@@ -56,18 +62,28 @@
     <div class="modal-content hide-scrollbar" id="move-modal-body"><!-- 详情内容 --></div>
   </div>
 
-  <!-- 数据层 -->
+  <!-- 数据层：浏览器与更新脚本共用身份解析规则 -->
+  <script src="js/battle-math.js?v={{CACHE_BUST}}"></script>
+  <script src="js/monster-identity.js?v={{CACHE_BUST}}"></script>
   <script src="js/data.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pet-configuration.js?v={{CACHE_BUST}}"></script>
   <!-- 公共组件 -->
+  <script src="js/user-config.js?v={{CACHE_BUST}}"></script>
   <script src="js/common.js?v={{CACHE_BUST}}"></script>
+  <script src="js/listing-ui.js?v={{CACHE_BUST}}"></script>
+  <script src="js/favorites.js?v={{CACHE_BUST}}"></script>
+  <script src="js/chart-workspace.js?v={{CACHE_BUST}}"></script>
+  <script src="js/game-glossary.js?v={{CACHE_BUST}}"></script>
   <!-- 页面模块 -->
   <script src="js/pages/petdex.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/moves.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/types.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/speed.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/team.js?v={{CACHE_BUST}}"></script>
+  <script src="js/skill-variants.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/damage.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/chart.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/game-description.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/updatedata.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/settings.js?v={{CACHE_BUST}}"></script>
   <!-- 主应用 -->

@@ -17,11 +17,14 @@ const CATEGORY_TO_TYPE = {
   Defense: '防御'
 };
 
+const { readWiki, writeWiki } = require('./lib/wiki-data.js');
 function readJSON(relativePath) {
+  if (path.basename(relativePath) === 'wiki_monster_data.json') return readWiki(ROOT);
   return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'));
 }
 
 function writeJSON(relativePath, data) {
+  if (path.basename(relativePath) === 'wiki_monster_data.json') return writeWiki(ROOT, data);
   fs.writeFileSync(path.join(ROOT, relativePath), JSON.stringify(data, null, 2) + '\n', 'utf8');
 }
 
@@ -54,7 +57,7 @@ const SKILLS = [
     excluded: ['布灵']
   },
   {
-    name: '擦影', element: '幽', category: 'Physical Attack', energy: 3, power: 65,
+    name: '掠影', element: '幽', category: 'Physical Attack', energy: 3, power: 65,
     desc: '造成物伤，若上回合双方有精灵使用火系技能，偷取敌方3能量。',
     learners: ['斑枭', '荆棘电环', '混乱鱿彩', '秩序鱿墨', '银月狼王']
   },

@@ -22,11 +22,12 @@ const PetDexPage = (function () {
   let expandedForms = new Set();
 
   function render(container) {
+    CommonUI.destroyWithin(container);
     container.innerHTML = `
       <div class="petdex-page-layout">
       <!-- 筛选面板 -->
       <div class="filter-panel">
-        <div id="petdex-search-slot" style="text-align:center;margin-bottom:16px;"></div>
+        <div id="petdex-search-slot"></div>
         <!-- 属性 pills -->
         <div class="filter-section">
           <div class="type-pills" id="type-pills"></div>
@@ -61,14 +62,7 @@ const PetDexPage = (function () {
               <th>精灵</th>
               <th>属性</th>
               <th>特性</th>
-              <th data-sort="base_hp">生命</th>
-              <th data-sort="base_phy_atk">物攻</th>
-              <th data-sort="base_mag_atk">魔攻</th>
-              <th data-sort="base_phy_def">物防</th>
-              <th data-sort="base_mag_def">魔防</th>
-              <th data-sort="base_spd">速度</th>
-              <th data-sort="total">总种族值</th>
-              <th data-sort="effective">有效种族值</th>
+              ${ListingUI.statHeaders({ key: state.sortKey, asc: state.sortAsc }, { petdex: true })}
             </tr>
           </thead>
           <tbody id="pet-tbody"></tbody>
@@ -108,6 +102,8 @@ const PetDexPage = (function () {
       applySearch();
     });
     document.getElementById('petdex-search-slot').appendChild(searchWrap);
+    ListingUI.mountFilters(container.querySelector('.filter-panel'), 'petdex');
+    ListingUI.onStatsChange(container.querySelector('.petdex-page-layout'), renderTable);
     bindEvents();
     // 恢复形态按钮状态
     if (state.activeForms.has('high')) document.querySelector('.form-btn[data-form="high"]')?.classList.add('active');
@@ -222,6 +218,7 @@ const PetDexPage = (function () {
     const isDexNumberSort = state.sortKey === 'dex_number';
     document.querySelectorAll('#pet-table th[data-sort]').forEach(th => {
       th.classList.remove('sort-asc', 'sort-desc');
+      th.setAttribute('aria-sort', th.dataset.sort === state.sortKey ? (state.sortAsc ? 'ascending' : 'descending') : 'none');
       if (th.dataset.sort === state.sortKey) th.classList.add(state.sortAsc ? 'sort-asc' : 'sort-desc');
       if (th.dataset.sort === 'dex_number') th.textContent = isDexNumberSort ? '编号' : '#';
     });
@@ -340,25 +337,8 @@ const PetDexPage = (function () {
       });
     }
 
-    // 排序
-    const key = state.sortKey;
-    list.sort((a, b) => {
-      let va, vb;
-      if (key === 'name') {
-        va = RKData.getMonsterName(a);
-        vb = RKData.getMonsterName(b);
-        return state.sortAsc ? va.localeCompare(vb, 'zh') : vb.localeCompare(va, 'zh');
-      }
-      if (key === 'total') { va = RKData.getTotalStats(a); vb = RKData.getTotalStats(b); }
-      else if (key === 'effective') {
-        va = RKData.getTotalStats(a) - Math.min(a.base_phy_atk || 0, a.base_mag_atk || 0);
-        vb = RKData.getTotalStats(b) - Math.min(b.base_phy_atk || 0, b.base_mag_atk || 0);
-      }
-      else { va = a[key] || 0; vb = b[key] || 0; }
-      return state.sortAsc ? va - vb : vb - va;
-    });
-
-    return list;
+    // Shared stable numeric sorting; filtering and form policies remain local.
+    return ListingUI.sortMonsters(list, state.sortKey, state.sortAsc);
   }
 
   function renderTable() {
@@ -373,8 +353,6 @@ const PetDexPage = (function () {
       const nameHtml = RKData.getMonsterDisplayNameHtml(m);
       const mainType = m.main_type ? m.main_type.name : '';
       const subType = m.sub_type ? m.sub_type.name : '';
-      const total = RKData.getTotalStats(m);
-      const effective = total - Math.min(m.base_phy_atk || 0, m.base_mag_atk || 0);
       const dexNum = isDexNumberSort
         ? String(m.dex_number || m.id).padStart(3, '0')
         : String(idx + 1);
@@ -447,14 +425,7 @@ const PetDexPage = (function () {
           </td>
           <td>${typeBadges || '-'}</td>
           <td style="max-width:280px;white-space:normal;font-size:12px;">${traitCellHtml}</td>
-          <td class="stat-col"><span class="stat-num">${m.base_hp || 0}</span></td>
-          <td class="stat-col"><span class="stat-num">${m.base_phy_atk || 0}</span></td>
-          <td class="stat-col"><span class="stat-num">${m.base_mag_atk || 0}</span></td>
-          <td class="stat-col"><span class="stat-num">${m.base_phy_def || 0}</span></td>
-          <td class="stat-col"><span class="stat-num">${m.base_mag_def || 0}</span></td>
-          <td class="stat-col"><span class="stat-num">${m.base_spd || 0}</span></td>
-          <td class="stat-col"><span class="stat-total">${total}</span></td>
-          <td class="stat-col"><span class="stat-effective">${effective}</span></td>
+          ${ListingUI.statCells(m)}
         </tr>
       `;
     }).join('');
@@ -517,27 +488,8 @@ const PetDexPage = (function () {
     return `<span class="def-type-item"><img src="${icon}" class="def-type-icon" alt="${zh}">${zh}</span>`;
   }
 
-  function showPetDetail(id) {
-   try {
-    const m = RKData.getMonsterById(id);
-    if (!m) return;
-    const modal = document.getElementById('pet-modal');
-    const body = document.getElementById('pet-modal-body');
-    if (!modal || !body) return;
-    const name = RKData.getMonsterDisplayName(m);
-    const nameHtml = RKData.getMonsterDisplayNameHtml(m);
-    const baseName = RKData.getMonsterName(m);
-    const mainType = m.main_type ? m.main_type.name : '';
-    const subType = m.sub_type ? m.sub_type.name : '';
-    const total = RKData.getTotalStats(m);
-    const effective = total - Math.min(m.base_phy_atk || 0, m.base_mag_atk || 0);
-
-    // 计算种族值排名
+  function getEffectiveRank(m) {
     const allMonsters = RKData.getMonsters().filter(mm => !mm.hidden);
-    const totalRank = allMonsters
-      .map(mm => ({ id: mm.id, t: RKData.getTotalStats(mm) }))
-      .sort((a, b) => b.t - a.t)
-      .findIndex(mm => mm.id === m.id) + 1;
     // 有效种族值排名：基础形态不显示，高级形态只与高级形态比，首领形态与高级+首领比
     let effectiveRank = 0;
     let effectiveRankTotal = 0;
@@ -552,6 +504,40 @@ const PetDexPage = (function () {
         .sort((a, b) => b.e - a.e)
         .findIndex(mm => mm.id === m.id) + 1;
     }
+    return { rank: effectiveRank, count: effectiveRankTotal };
+  }
+
+  function refreshPetStats(m, body) {
+    const modal = document.getElementById('pet-modal');
+    if (!modal || modal.style.display === 'none') return;
+    const valueEl = body.querySelector('.detail-stats-total');
+    if (!valueEl) return;
+    const { rank, count } = getEffectiveRank(m);
+    valueEl.innerHTML = `${RKData.getEffectiveStats(m)}${rank > 0 ? `<span class="detail-stats-rank"> #${rank}/${count}</span>` : ''}`;
+  }
+
+  function showPetDetail(id) {
+   try {
+    const m = RKData.getMonsterById(id);
+    if (!m) return;
+    const modal = document.getElementById('pet-modal');
+    const body = document.getElementById('pet-modal-body');
+    if (!modal || !body) return;
+    const name = RKData.getMonsterDisplayName(m);
+    const nameHtml = RKData.getMonsterDisplayNameHtml(m);
+    const baseName = RKData.getMonsterName(m);
+    const mainType = m.main_type ? m.main_type.name : '';
+    const subType = m.sub_type ? m.sub_type.name : '';
+    const total = RKData.getTotalStats(m);
+    const effective = RKData.getEffectiveStats(m);
+
+    // 计算种族值排名
+    const allMonsters = RKData.getMonsters().filter(mm => !mm.hidden);
+    const totalRank = allMonsters
+      .map(mm => ({ id: mm.id, t: RKData.getTotalStats(mm) }))
+      .sort((a, b) => b.t - a.t)
+      .findIndex(mm => mm.id === m.id) + 1;
+    const { rank: effectiveRank, count: effectiveRankTotal } = getEffectiveRank(m);
     const totalRankStr = totalRank > 0 ? ` #${totalRank}` : '';
     const effectiveRankStr = effectiveRank > 0 ? ` #${effectiveRank}/${effectiveRankTotal}` : '';
 
@@ -641,6 +627,7 @@ const PetDexPage = (function () {
       showMoveLink: true
     });
 
+    CommonUI.destroyWithin(body);
     body.innerHTML = `
       <div class="detail-layout">
         <div class="detail-col-1">
@@ -694,6 +681,7 @@ const PetDexPage = (function () {
         ${skillsHtml}
       </div>` : ''}
     `;
+    ListingUI.onStatsChange(body.querySelector('.detail-layout'), () => refreshPetStats(m, body));
     body.scrollTop = 0;
     modal.style.display = 'flex';
     // 动态调整 z-index，确保显示在技能弹窗之上
@@ -713,7 +701,7 @@ const PetDexPage = (function () {
     };
 
     // 绑定筛选按钮事件 — 使用 SkillPicker 公共模块（多选并集）
-    CommonUI.SkillPicker.bindFilterEvents(body);
+    CommonUI.SkillPicker.bindFilterEvents(body, undefined, { allowExclusion: true });
 
     // 绑定技能卡片点击事件 —— 打开技能详情弹窗
     body.querySelectorAll('.detail-skill-item[data-move-id]').forEach(item => {

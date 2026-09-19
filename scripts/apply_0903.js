@@ -9,8 +9,9 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 let errors = [];
 
-function readJSON(p) { return JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8')); }
-function writeJSON(p, data) { fs.writeFileSync(path.join(ROOT, p), JSON.stringify(data, null, 2) + '\n', 'utf8'); }
+const { readWiki, writeWiki } = require('./lib/wiki-data.js');
+function readJSON(p) { return path.basename(p) === 'wiki_monster_data.json' ? readWiki(ROOT) : JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8')); }
+function writeJSON(p, data) { if (path.basename(p) === 'wiki_monster_data.json') return writeWiki(ROOT, data); fs.writeFileSync(path.join(ROOT, p), JSON.stringify(data, null, 2) + '\n', 'utf8'); }
 
 /* ============ 1. monsters.json 种族值调整 ============ */
 const FIELD = { '生命': 'base_hp', '物攻': 'base_phy_atk', '魔攻': 'base_mag_atk', '物防': 'base_phy_def', '魔防': 'base_mag_def', '速度': 'base_spd' };

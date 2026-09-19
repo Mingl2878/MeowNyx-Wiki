@@ -41,6 +41,17 @@ const SettingsPage = (function () {
         font-weight: 400;
       }
       .settings-control { flex: 1; min-width: 0; }
+      .settings-speed-control { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+      .settings-speed-modes { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); }
+      .settings-speed-modes button { font: inherit; font-size: 13px; padding: 6px 10px; border: 0; border-radius: 5px; background: transparent; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
+      .settings-speed-modes button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+      .settings-speed-modes button:focus-visible, #set-effective-threshold:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .settings-speed-threshold { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; font-size: 13px; }
+      .settings-speed-threshold[hidden] { display: none; }
+      .settings-speed-threshold input { width: 140px; min-width: 40px; accent-color: var(--accent); }
+      .settings-speed-threshold output { min-width: 3ch; font-variant-numeric: tabular-nums; }
+      .settings-speed-row { flex-wrap: wrap; }
+      .settings-speed-row .settings-control { flex-basis: 280px; }
       .settings-pills {
         display: flex;
         gap: 8px;
@@ -171,31 +182,37 @@ const SettingsPage = (function () {
       }
     </style>`;
 
-  let settings = {
+  const DEFAULT_SETTINGS = {
     close_behavior: 'close',
     window_width: 1280,
     window_height: 800,
     window_maximized: false,
     default_route: 'petdex',
     default_max_zoom: 100,
+    effective_include_speed: true,
+    effective_speed_mode: 'include',
+    effective_speed_threshold: 80,
     hotkey_mods: 0,
     hotkey_vk: 0,
     font_family: ''
   };
 
-  var DEFAULT_SETTINGS = {
-    close_behavior: 'close',
-    window_width: 1280,
-    window_height: 800,
-    window_maximized: false,
-    default_route: 'petdex',
-    default_max_zoom: 100,
-    hotkey_mods: 0,
-    hotkey_vk: 0,
-    font_family: ''
-  };
+  function speedSettings(data) {
+    const mode = ['include', 'exclude', 'threshold'].includes(data.effective_speed_mode)
+      ? data.effective_speed_mode : data.effective_include_speed === false ? 'exclude' : 'include';
+    const raw = data.effective_speed_threshold;
+    const number = raw == null || raw === '' ? NaN : Number(raw);
+    const threshold = Number.isFinite(number) ? Math.min(120, Math.max(40, Math.round(number))) : 80;
+    return { effective_speed_mode: mode, effective_speed_threshold: threshold, effective_include_speed: mode === 'include' };
+  }
 
+  let settings = { ...DEFAULT_SETTINGS };
   let loaded = false;
+  let dirty = false;
+  let revision = 0;
+  let saving = false;
+  let renderVersion = 0;
+  let resultDismissHandler = null, personalResetHandler = null;
   function escapeHtml(value) {
     const node = document.createElement('span');
     node.textContent = value;
@@ -223,6 +240,8 @@ const SettingsPage = (function () {
 
   // 未保存更改提示
   function markDirty() {
+    dirty = true;
+    revision++;
     var el = document.getElementById('settings-dirty-hint');
     if (el) el.style.display = 'block';
     // 任何更改后清除"保存成功/已恢复默认"等结果提示
@@ -230,6 +249,7 @@ const SettingsPage = (function () {
     if (r) r.innerHTML = '';
   }
   function clearDirty() {
+    dirty = false;
     var el = document.getElementById('settings-dirty-hint');
     if (el) el.style.display = 'none';
   }
@@ -258,11 +278,15 @@ const SettingsPage = (function () {
 
   async function loadSettings() {
     try {
-      const res = await fetch('/api/settings');
+      const res = await fetch('/api/settings', { cache: 'no-store' });
       const data = await res.json();
+      if (!res.ok || !data || typeof data !== 'object' || Array.isArray(data) || data.ok === false) throw new Error('加载共享设置失败');
       Object.assign(settings, data);
+      if (settings.default_route === 'game-description') settings.default_route = 'petdex';
       settings.font_family = settings.font_family || '';
+      Object.assign(settings, speedSettings(data));
       savedFontFamily = settings.font_family;
+      if (window.AppPreferences) settings.default_max_zoom = Math.round(window.AppPreferences.getMaxZoom() * 100);
       applyFontPreview(settings.font_family);
       // 兼容旧版后端：无 monitor_count 字段时按单屏处理
       if (typeof settings.monitor_count !== 'number') settings.monitor_count = 1;
@@ -275,37 +299,79 @@ const SettingsPage = (function () {
   }
 
   async function saveSettings() {
+    if (saving) return false;
+    saving = true;
+    const proposal = { ...settings, ...speedSettings(settings) };
+    const submittedRevision = revision;
     const r = document.getElementById('settings-result');
-    if (r) r.innerHTML = '<span style="color:var(--text-secondary);">正在保存...</span>';
+    const button = document.getElementById('set-save-btn');
+    if (button) button.disabled = true;
+    if (r) r.textContent = '正在保存...';
     try {
-      // 同时更新 localStorage 中的默认路由与最大化缩放记忆
-      localStorage.setItem('xwiki-default-route', settings.default_route);
-      if (settings.default_max_zoom) {
-        localStorage.setItem('xwiki-max-zoom', settings.default_max_zoom / 100);
-      }
-
-      const res = await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings)
-      });
-      const data = await res.json();
-      if (r) r.innerHTML = !data.ok
-        ? '<span style="color:var(--danger);">保存失败</span>'
-        : (data.hotkey_failed
-          ? '<span style="color:var(--danger);">✓ 已保存，但全局快捷键注册失败：该组合键可能已被其他程序占用，请更换后重新保存</span>'
-          : '<span style="color:var(--success);font-weight:600;">✓ 保存成功！部分设置重启后生效</span>');
-      if (data.ok) {
-        settings.font_family = settings.font_family || '';
-        savedFontFamily = settings.font_family;
-        clearDirty();
+      let data = {};
+      if (window.UserConfig?.saveSettings) {
+        const ok = await window.UserConfig.saveSettings(proposal);
+        if (!ok) throw new Error(window.UserConfig.getStatus?.()?.error || '共享设置保存失败');
+        data = window.UserConfig.getSettingsResult?.() || {};
       } else {
+        const res = await fetch('/api/settings', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(proposal)
+        });
+        data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || '保存失败');
+      }
+      // Only accepted writes commit caches/runtime. This setter does NOT enqueue a save.
+      let cacheFailed = false;
+      const committedZoom = window.AppPreferences
+        ? window.AppPreferences.setMaxZoom(proposal.default_max_zoom / 100, false)
+        : proposal.default_max_zoom / 100;
+      try {
+        localStorage.setItem('xwiki-default-route', proposal.default_route);
+        localStorage.setItem('xwiki-max-zoom', String(committedZoom));
+      } catch (e) { cacheFailed = true; }
+      window.AppPreferences?.setEffectiveSpeedPolicy?.(proposal.effective_speed_mode, proposal.effective_speed_threshold);
+      savedFontFamily = proposal.font_family || '';
+      if (revision === submittedRevision) clearDirty();
+      if (r) r.innerHTML = data.hotkey_failed
+        ? '<span style="color:var(--danger);">✓ 已保存，但全局快捷键注册失败，请更换组合键后重新保存</span>'
+        : cacheFailed ? '<span style="color:var(--warning);">✓ 设置已保存，但本地页面缓存不可写</span>'
+        : '<span style="color:var(--success);font-weight:600;">✓ 保存成功！缩放已同步，其他部分设置重启后生效</span>';
+      return true;
+    } catch (e) {
+      if (r) r.textContent = '保存失败：' + e.message;
+      if (revision === submittedRevision) {
         settings.font_family = savedFontFamily;
         applyFontPreview(savedFontFamily);
+        const select = document.getElementById('set-font');
+        if (select) select.value = savedFontFamily;
       }
-    } catch (e) {
-      if (r) r.innerHTML = '<span style="color:var(--danger);">请求失败: ' + e.message + '</span>';
+      return false;
+    } finally {
+      saving = false;
+      if (button) button.disabled = false;
     }
+  }
+
+  function bindSpeedSettings() {
+    const buttons = document.querySelectorAll('#set-effective-speed [data-speed-mode]');
+    const thresholdControl = document.getElementById('set-effective-threshold-control');
+    const slider = document.getElementById('set-effective-threshold');
+    const value = document.getElementById('set-effective-threshold-value');
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        settings.effective_speed_mode = button.dataset.speedMode;
+        settings.effective_include_speed = settings.effective_speed_mode === 'include';
+        buttons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+        if (thresholdControl) thresholdControl.hidden = settings.effective_speed_mode !== 'threshold';
+        markDirty();
+      });
+    });
+    slider?.addEventListener('input', () => {
+      settings.effective_speed_threshold = speedSettings({ effective_speed_threshold: slider.value }).effective_speed_threshold;
+      slider.value = settings.effective_speed_threshold;
+      if (value) value.textContent = settings.effective_speed_threshold;
+      markDirty();
+    });
   }
 
   function buildHtml() {
@@ -424,6 +490,28 @@ const SettingsPage = (function () {
       +   '</div>'
       + '</div>'
 
+      // 统计偏好只编辑草稿；成功保存后刷新全站有效种族显示与排序。
+      + '<div class="settings-card">'
+      + '<div class="settings-card-header">有效种族值</div><div class="settings-card-body">'
+      + '<div class="settings-row settings-speed-row"><div class="settings-label">速度计入方式</div>'
+      + '<div class="settings-control settings-speed-control" id="set-effective-speed">'
+      + '<div class="settings-speed-modes" role="group" aria-label="有效种族速度模式">'
+      + [['include', '包含速度'], ['exclude', '不包含速度'], ['threshold', '速度综合']].map(([mode, label]) =>
+          '<button type="button" data-speed-mode="' + mode + '" aria-pressed="' + (settings.effective_speed_mode === mode) + '">' + label + '</button>').join('')
+      + '</div><label class="settings-speed-threshold" id="set-effective-threshold-control"' + (settings.effective_speed_mode === 'threshold' ? '' : ' hidden') + '>'
+      + '<span>门槛</span><input type="range" id="set-effective-threshold" min="40" max="120" step="1" value="' + settings.effective_speed_threshold + '">'
+      + '<output id="set-effective-threshold-value" for="set-effective-threshold">' + settings.effective_speed_threshold + '</output></label>'
+      + '</div></div></div></div>'
+
+      // Explicit personal reset, independent of settings drafts and chart/team data.
+      + '<div class="settings-card">'
+      + '<div class="settings-card-header">精灵个人配置</div><div class="settings-card-body">'
+      + '<div class="settings-row"><div class="settings-label">个体与性格</div><div class="settings-control" style="display:flex;flex-wrap:wrap;gap:8px;">'
+      + '<button type="button" class="btn" id="set-reset-pet-defaults" style="max-width:100%;white-space:normal;">全部精灵个人配置恢复默认</button>'
+      + '<button type="button" class="btn" id="set-clear-pet-configs" style="max-width:100%;white-space:normal;">清空所有精灵配置</button>'
+      + '<div id="pet-defaults-result" role="status" aria-live="polite" style="flex-basis:100%;"></div>'
+      + '</div></div></div></div>'
+
       // 默认页面
       + '<div class="settings-card">'
       +   '<div class="settings-card-header">默认打开页面</div>'
@@ -453,11 +541,13 @@ const SettingsPage = (function () {
 
   function bindEvents() {
     // 点击空白处（非交互控件）时清除结果提示（保存成功/已恢复默认等）
-    document.addEventListener('click', function(e) {
+    if (resultDismissHandler) document.removeEventListener('click', resultDismissHandler);
+    resultDismissHandler = function(e) {
       if (e.target.closest('button, input, select, label, .settings-pill, .settings-route-item')) return;
       var r = document.getElementById('settings-result');
       if (r && r.innerHTML) r.innerHTML = '';
-    });
+    };
+    document.addEventListener('click', resultDismissHandler);
 
     // 字体选择：立即预览，保存后持久化。
     var fontSelect = document.getElementById('set-font');
@@ -515,7 +605,7 @@ const SettingsPage = (function () {
     };
     }
 
-    // 最大化时界面缩放（拖动即写入记忆，保存后持久化到设置文件）
+    // 缩放控件只编辑草稿；保存成功后同步运行时与记忆，失败不改变旧配置。
     var zoomSlider = document.getElementById('set-zoom-slider');
     var zoomInput = document.getElementById('set-zoom');
     function applyZoomSetting(v) {
@@ -526,13 +616,14 @@ const SettingsPage = (function () {
       markDirty();
       if (zoomSlider) zoomSlider.value = v;
       if (zoomInput) zoomInput.value = v;
-      // 实时写入缩放记忆，下次最大化立即生效
-      localStorage.setItem('xwiki-max-zoom', v / 100);
+      // 不在请求成功前写入 localStorage。
     }
     if (zoomSlider && zoomInput) {
       zoomSlider.addEventListener('input', function() { applyZoomSetting(+zoomSlider.value); });
       zoomInput.addEventListener('input', function() { applyZoomSetting(+zoomInput.value || 100); });
     }
+
+    bindSpeedSettings();
 
     // 默认页面
     var routeGrid = document.getElementById('set-route-grid');
@@ -675,20 +766,67 @@ const SettingsPage = (function () {
       });
     }
 
-    // 恢复默认
+    if (personalResetHandler) window.removeEventListener('petdefaultsreset', personalResetHandler);
+    personalResetHandler = event => {
+      const result = document.getElementById('pet-defaults-result');
+      if (result) {
+        result.textContent = event.detail?.operation === 'clear' ? '✓ 所有精灵的个人个体、性格已全部设为不选择。' : '✓ 全部精灵个人配置已恢复自动默认。';
+        result.style.color = 'var(--success)';
+      }
+    };
+    window.addEventListener('petdefaultsreset', personalResetHandler);
+    const petReset = document.getElementById('set-reset-pet-defaults');
+    if (petReset) petReset.addEventListener('click', async () => {
+      const result = document.getElementById('pet-defaults-result');
+      const api = window.UserConfig;
+      if (!api?.resetPetDefaults || !api.getStatus().ready) {
+        result.textContent = '共享配置尚未就绪，未执行重置。';
+        return;
+      }
+      const count = Object.values(api.getObject('rk_pet_configs', {})).filter(record => record?.mode !== 0).length;
+      if (!window.confirm(`将全部精灵的个人个体、性格恢复自动默认（当前${count}条人工配置）。\n不是全部关闭；不影响技能记忆、收藏、编队和曲线。\n保存前会自动备份。确定恢复吗？`)) return;
+      petReset.disabled = true;
+      document.getElementById('set-clear-pet-configs').disabled = true;
+      result.textContent = '正在备份并恢复个人配置…';
+      try {
+        const ok = await api.resetPetDefaults();
+        result.textContent = ok ? '✓ 全部精灵个人配置已恢复自动默认。' : '未完成保存，请使用共享配置提示中的“重试保存”；未把失败操作显示为成功。';
+        result.style.color = ok ? 'var(--success)' : 'var(--danger)';
+      } catch (error) {
+        result.textContent = '恢复失败：' + (error.message || String(error));
+        result.style.color = 'var(--danger)';
+      } finally { petReset.disabled = false; document.getElementById('set-clear-pet-configs')?.removeAttribute('disabled'); }
+    });
+
+    const petClear = document.getElementById('set-clear-pet-configs');
+    if (petClear) petClear.addEventListener('click', async () => {
+      const result = document.getElementById('pet-defaults-result'), api = window.UserConfig;
+      if (!api?.clearPetConfigs || !api.getStatus().ready) { result.textContent = '共享配置尚未就绪，未执行清空。'; return; }
+      const ids = [...new Set(RKData.getMonsters().map(p => p.id))];
+      if (!ids.length) { result.textContent = '精灵资料尚未就绪，未执行清空。'; return; }
+      if (!window.confirm('将当前所有精灵（含木桩）的个人个体、性格全部设为“不选择”，重启后保持。\n这不是恢复默认；技能记忆、收藏、编队和独立曲线设置不变。\n保存前会自动备份。确定清空吗？')) return;
+      petClear.disabled = true; if (petReset) petReset.disabled = true;
+      result.textContent = '正在备份并清空个人个体、性格…';
+      try {
+        const ok = await api.clearPetConfigs(ids);
+        result.textContent = ok ? '✓ 所有精灵的个人个体、性格已全部设为不选择。' : '未完成保存，请使用共享配置提示中的“重试保存”。';
+        result.style.color = ok ? 'var(--success)' : 'var(--danger)';
+      } catch (error) { result.textContent = '清空失败：' + (error.message || String(error)); result.style.color = 'var(--danger)'; }
+      finally { petClear.disabled = false; if (petReset) petReset.disabled = false; }
+    });
+
+    // 恢复应用设置，与上面的个人配置重置无关。
     var resetBtn = document.getElementById('set-reset-btn');
     if (resetBtn) {
       resetBtn.addEventListener('click', async function() {
         Object.assign(settings, DEFAULT_SETTINGS);
-        savedFontFamily = '';
+        markDirty();
         applyFontPreview('');
-        localStorage.setItem('xwiki-max-zoom', DEFAULT_SETTINGS.default_max_zoom / 100);
-        await saveSettings();
-        var container = document.querySelector('.calc-root .scroll-container');
-        if (container) {
-          container.innerHTML = buildHtml();
-          bindEvents();
-        }
+        const version = renderVersion;
+        if (!await saveSettings()) return;
+        if (version !== renderVersion) return;
+        var container = document.getElementById('page-container');
+        if (container) render(container);
         var r = document.getElementById('settings-result');
         if (r) r.innerHTML = '<span style="color:var(--success);font-weight:600;">✓ 已恢复默认设置</span>';
       });
@@ -696,23 +834,31 @@ const SettingsPage = (function () {
   }
 
   function onLeave() {
+    renderVersion++;
+    if (resultDismissHandler) document.removeEventListener('click', resultDismissHandler);
+    resultDismissHandler = null;
+    if (personalResetHandler) window.removeEventListener('petdefaultsreset', personalResetHandler);
+    personalResetHandler = null;
     if (settings.font_family !== savedFontFamily) {
       settings.font_family = savedFontFamily;
       applyFontPreview(savedFontFamily);
-      clearDirty();
     }
   }
 
   function render(container) {
-    if (loaded) {
+    const version = ++renderVersion;
+    const paint = () => {
+      if (version !== renderVersion) return;
+      if (!dirty && window.AppPreferences) settings.default_max_zoom = Math.round(window.AppPreferences.getMaxZoom() * 100);
       container.innerHTML = buildHtml();
       bindEvents();
-    } else {
+      const hint = document.getElementById('settings-dirty-hint');
+      if (hint) hint.style.display = dirty ? 'block' : 'none';
+    };
+    if (loaded) paint();
+    else {
       container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">加载设置中...</div>';
-      Promise.all([loadSettings(), loadFontFamilies()]).then(function() {
-        container.innerHTML = buildHtml();
-        bindEvents();
-      });
+      Promise.all([loadSettings(), loadFontFamilies()]).then(paint);
     }
   }
 

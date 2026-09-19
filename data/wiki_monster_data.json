@@ -359,7 +359,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 172
   },
   "上岸蛙": {
     "image": "assets/monster/images/wiki/上岸蛙.png",
@@ -672,7 +673,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 490
   },
   "不咕钟": {
     "image": "assets/monster/images/wiki/不咕钟.png",
@@ -1020,7 +1022,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 564
   },
   "丢丢（沙地附近的样子）": {
     "image": "assets/monster/images/wiki/丢丢（沙地附近的样子）.png",
@@ -1340,7 +1343,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 102
   },
   "丢丢（火山附近的样子）": {
     "image": "assets/monster/images/wiki/丢丢（火山附近的样子）.png",
@@ -1660,7 +1664,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 101
   },
   "丢丢（草地附近的样子）": {
     "image": "assets/monster/images/wiki/丢丢（草地附近的样子）.png",
@@ -1980,7 +1985,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 100
   },
   "丢丢（雪山附近的样子）": {
     "image": "assets/monster/images/wiki/丢丢（雪山附近的样子）.png",
@@ -2307,7 +2313,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 103
   },
   "乌拉塔（极夜的样子）": {
     "image": "assets/monster/images/wiki/乌拉塔（极夜的样子）.png",
@@ -2655,7 +2662,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 405
   },
   "乌拉塔（极昼的样子）": {
     "image": "assets/monster/images/wiki/乌拉塔（极昼的样子）.png",
@@ -2996,7 +3004,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 404
   },
   "乌达（极夜的样子）": {
     "image": "assets/monster/images/wiki/乌达（极夜的样子）.png",
@@ -3344,7 +3353,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 401
   },
   "乌达（极昼的样子）": {
     "image": "assets/monster/images/wiki/乌达（极昼的样子）.png",
@@ -3685,7 +3695,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 400
   },
   "乖乖鹄": {
     "image": "assets/monster/images/wiki/乖乖鹄.png",
@@ -3949,7 +3960,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 179
   },
   "九尾狐": {
     "image": "assets/monster/images/wiki/九尾狐.png",
@@ -4304,7 +4316,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 251
   },
   "九幽菇": {
     "image": "assets/monster/images/wiki/九幽菇.png",
@@ -4673,7 +4686,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 285
   },
   "书卷守护": {
     "image": "assets/monster/images/wiki/书卷守护.png",
@@ -4979,7 +4993,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 454
   },
   "书魔虫": {
     "image": "assets/monster/images/wiki/书魔虫.png",
@@ -5285,7 +5300,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 453
   },
   "仪使者": {
     "image": "assets/monster/images/wiki/仪使者.png",
@@ -5654,7 +5670,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 206
   },
   "仪式之星": {
     "image": "assets/monster/images/wiki/仪式之星.png",
@@ -6023,7 +6040,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 207
   },
   "仪式巨像": {
     "image": "assets/monster/images/wiki/仪式巨像.png",
@@ -6406,7 +6424,8 @@
         "element": "幻",
         "desc": "自己获得魔攻和魔防+70%。"
       }
-    ]
+    ],
+    "monster_id": 208
   },
   "伊兰亚龙": {
     "image": "assets/monster/images/wiki/伊兰亚龙.png",
@@ -6747,7 +6766,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 327
   },
   "伊兰龙": {
     "image": "assets/monster/images/wiki/伊兰龙.png",
@@ -7088,7 +7108,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 328
   },
   "伊贝儿": {
     "image": "assets/monster/images/wiki/伊贝儿.png",
@@ -7457,7 +7478,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 154
   },
   "伊贝粉粉": {
     "image": "assets/monster/images/wiki/伊贝粉粉.png",
@@ -7826,7 +7848,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 155
   },
   "伊雷龙": {
     "image": "assets/monster/images/wiki/伊雷龙.png",
@@ -8167,7 +8190,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 326
   },
   "伏地兽": {
     "image": "assets/monster/images/wiki/伏地兽.png",
@@ -8487,7 +8511,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 130
   },
   "优优": {
     "image": "assets/monster/images/wiki/优优.png",
@@ -8800,7 +8825,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 415
   },
   "光纤兽": {
     "image": "assets/monster/images/wiki/光纤兽.png",
@@ -9120,7 +9146,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 461
   },
   "克莱因龙": {
     "image": "assets/monster/images/wiki/克莱因龙.png",
@@ -9447,7 +9474,8 @@
         "element": "龙",
         "desc": "减伤90%，应对攻击。巧变：龙系状态技能。"
       }
-    ]
+    ],
+    "monster_id": 551
   },
   "公平鸽": {
     "image": "assets/monster/images/wiki/公平鸽.png",
@@ -9802,7 +9830,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 265
   },
   "兽花蕾": {
     "image": "assets/monster/images/wiki/兽花蕾.png",
@@ -10157,7 +10186,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 129
   },
   "冬羽雀": {
     "image": "assets/monster/images/wiki/冬羽雀.png",
@@ -10825,7 +10855,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 46
   },
   "冬羽雀（春天的样子）": {
     "image": "assets/monster/images/wiki/冬羽雀（春天的样子）.png",
@@ -11159,7 +11190,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 45
   },
   "冬羽雀（秋天的样子）": {
     "image": "assets/monster/images/wiki/冬羽雀（秋天的样子）.png",
@@ -11493,7 +11525,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 47
   },
   "冰封怨灵": {
     "image": "assets/monster/images/wiki/冰封怨灵.png",
@@ -11869,7 +11902,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 242
   },
   "冰钻布鲁斯": {
     "image": "assets/monster/images/wiki/冰钻布鲁斯.png",
@@ -12203,7 +12237,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 396
   },
   "凡雀": {
     "image": "assets/monster/images/wiki/凡雀.png",
@@ -12565,7 +12600,8 @@
         "source": "传说",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 502
   },
   "凡鹰": {
     "image": "assets/monster/images/wiki/凡鹰.png",
@@ -12927,7 +12963,8 @@
         "source": "传说",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 504
   },
   "利灯鱼": {
     "image": "assets/monster/images/wiki/利灯鱼.png",
@@ -13247,7 +13284,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 471
   },
   "刺电环": {
     "image": "assets/monster/images/wiki/刺电环.png",
@@ -13609,7 +13647,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 333
   },
   "刺盔虫": {
     "image": "assets/monster/images/wiki/刺盔虫.png",
@@ -13936,7 +13975,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 161
   },
   "刺盔虫（磨损的样子）": {
     "image": "assets/monster/images/wiki/刺盔虫（磨损的样子）.png",
@@ -14263,7 +14303,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 162
   },
   "刺轮砣（上弦的样子）": {
     "image": "assets/monster/images/wiki/刺轮砣（上弦的样子）.png",
@@ -14632,7 +14673,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 377
   },
   "刺轮砣（下弦的样子）": {
     "image": "assets/monster/images/wiki/刺轮砣（下弦的样子）.png",
@@ -15001,7 +15043,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 378
   },
   "加尔": {
     "image": "assets/monster/images/wiki/加尔.png",
@@ -15391,7 +15434,8 @@
         "source": "传说",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 568
   },
   "加油海葵": {
     "image": "assets/monster/images/wiki/加油海葵.png",
@@ -15732,7 +15776,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 511
   },
   "加油蟹": {
     "image": "assets/monster/images/wiki/加油蟹.png",
@@ -16073,7 +16118,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 512
   },
   "加油蟹（单只海葵的样子）": {
     "image": "assets/monster/images/wiki/加油蟹（单只海葵的样子）.png",
@@ -16414,7 +16460,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 513
   },
   "加灵": {
     "image": "assets/monster/images/wiki/加灵.png",
@@ -16706,7 +16753,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 566
   },
   "加益": {
     "image": "assets/monster/images/wiki/加益.png",
@@ -16998,7 +17046,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 567
   },
   "动力猿": {
     "image": "assets/monster/images/wiki/动力猿.png",
@@ -17339,7 +17388,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 157
   },
   "化蝶（喵喵的样子）": {
     "image": "assets/monster/images/wiki/化蝶（喵喵的样子）.png",
@@ -17687,7 +17737,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 76
   },
   "化蝶（奇丽花的样子）": {
     "image": "assets/monster/images/wiki/化蝶（奇丽花的样子）.png",
@@ -18035,7 +18086,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 77
   },
   "化蝶（平常的样子）": {
     "image": "assets/monster/images/wiki/化蝶（平常的样子）.png",
@@ -18383,7 +18435,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 74
   },
   "化蝶（幽冥眼的样子）": {
     "image": "assets/monster/images/wiki/化蝶（幽冥眼的样子）.png",
@@ -18731,7 +18784,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 75
   },
   "十字蛙": {
     "image": "assets/monster/images/wiki/十字蛙.png",
@@ -19051,7 +19105,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 580
   },
   "十字蝌蚪": {
     "image": "assets/monster/images/wiki/十字蝌蚪.png",
@@ -19371,7 +19426,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 579
   },
   "千棘海针": {
     "image": "assets/monster/images/wiki/千棘海针.png",
@@ -19698,7 +19754,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 165
   },
   "千棘海针（磨损的样子）": {
     "image": "assets/monster/images/wiki/千棘海针（磨损的样子）.png",
@@ -20025,7 +20082,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 166
   },
   "千棘盔": {
     "image": "assets/monster/images/wiki/千棘盔.png",
@@ -20352,7 +20410,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 163
   },
   "千棘盔（磨损的样子）": {
     "image": "assets/monster/images/wiki/千棘盔（磨损的样子）.png",
@@ -20679,7 +20738,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 164
   },
   "半朽蜜果灵": {
     "image": "assets/monster/images/wiki/半朽蜜果灵.png",
@@ -21013,7 +21073,8 @@
         "element": "幽",
         "desc": "敌方队伍中所有精灵失去1能量。"
       }
-    ]
+    ],
+    "monster_id": 587
   },
   "卡卡虫（沙地附近的样子）": {
     "image": "assets/monster/images/wiki/卡卡虫（沙地附近的样子）.png",
@@ -21333,7 +21394,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 106
   },
   "卡卡虫（火山附近的样子）": {
     "image": "assets/monster/images/wiki/卡卡虫（火山附近的样子）.png",
@@ -21653,7 +21715,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 105
   },
   "卡卡虫（草地附近的样子）": {
     "image": "assets/monster/images/wiki/卡卡虫（草地附近的样子）.png",
@@ -21973,7 +22036,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 104
   },
   "卡卡虫（雪山附近的样子）": {
     "image": "assets/monster/images/wiki/卡卡虫（雪山附近的样子）.png",
@@ -22300,7 +22364,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 107
   },
   "卡拉波斯": {
     "image": "assets/monster/images/wiki/卡拉波斯.png",
@@ -22634,7 +22699,8 @@
         "element": "恶",
         "desc": "敌方的属性增益变为对应的属性减益。"
       }
-    ]
+    ],
+    "monster_id": 583
   },
   "卡波": {
     "image": "assets/monster/images/wiki/卡波.png",
@@ -22954,7 +23020,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 582
   },
   "卡洛儿": {
     "image": "assets/monster/images/wiki/卡洛儿.png",
@@ -23323,7 +23390,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 296
   },
   "卡瓦重（沙地附近的样子）": {
     "image": "assets/monster/images/wiki/卡瓦重（沙地附近的样子）.png",
@@ -23650,7 +23718,8 @@
         "element": "草",
         "desc": "造成物伤，若上回合双方有精灵使用萌系技能，自己回复7能量。"
       }
-    ]
+    ],
+    "monster_id": 110
   },
   "卡瓦重（火山附近的样子）": {
     "image": "assets/monster/images/wiki/卡瓦重（火山附近的样子）.png",
@@ -23970,7 +24039,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 109
   },
   "卡瓦重（草地附近的样子）": {
     "image": "assets/monster/images/wiki/卡瓦重（草地附近的样子）.png",
@@ -24297,7 +24367,8 @@
         "element": "草",
         "desc": "造成物伤，若上回合双方有精灵使用萌系技能，自己回复7能量。"
       }
-    ]
+    ],
+    "monster_id": 108
   },
   "卡瓦重（雪山附近的样子）": {
     "image": "assets/monster/images/wiki/卡瓦重（雪山附近的样子）.png",
@@ -24624,7 +24695,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 111
   },
   "卷毛鸭": {
     "image": "assets/monster/images/wiki/卷毛鸭.png",
@@ -24979,7 +25051,8 @@
         "element": "水",
         "desc": "雨天的回合数延长4回合，应对防御：改为延长8回合。"
       }
-    ]
+    ],
+    "monster_id": 289
   },
   "卷胡巨獭": {
     "image": "assets/monster/images/wiki/卷胡巨獭.png",
@@ -25348,7 +25421,8 @@
         "element": "水",
         "desc": "雨天的回合数延长4回合，应对防御：改为延长8回合。"
       }
-    ]
+    ],
+    "monster_id": 82
   },
   "厉毒修萝": {
     "image": "assets/monster/images/wiki/厉毒修萝.png",
@@ -25675,7 +25749,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 442
   },
   "厉毒小萝": {
     "image": "assets/monster/images/wiki/厉毒小萝.png",
@@ -26002,7 +26077,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 441
   },
   "友爱天天": {
     "image": "assets/monster/images/wiki/友爱天天.png",
@@ -26329,7 +26405,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 548
   },
   "友爱星飞": {
     "image": "assets/monster/images/wiki/友爱星飞.png",
@@ -26663,7 +26740,8 @@
         "element": "翼",
         "desc": "减伤50%，应对攻击：敌方和自己均脱离。"
       }
-    ]
+    ],
+    "monster_id": 549
   },
   "双灯鱼": {
     "image": "assets/monster/images/wiki/双灯鱼.png",
@@ -26983,7 +27061,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 470
   },
   "古卷匣魔像": {
     "image": "assets/monster/images/wiki/古卷匣魔像.png",
@@ -27366,7 +27445,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 456
   },
   "古卷执政官": {
     "image": "assets/monster/images/wiki/古卷执政官.png",
@@ -27749,7 +27829,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 455
   },
   "古啦多": {
     "image": "assets/monster/images/wiki/古啦多.png",
@@ -28132,7 +28213,8 @@
         "element": "毒",
         "desc": "造成魔伤，敌方每有1层中毒效果，本技能能耗-1，敌方获得1层中毒。"
       }
-    ]
+    ],
+    "monster_id": 228
   },
   "古钟蛇": {
     "image": "assets/monster/images/wiki/古钟蛇.png",
@@ -28522,7 +28604,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 337
   },
   "叮叮卯": {
     "image": "assets/monster/images/wiki/叮叮卯.png",
@@ -28849,7 +28932,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 531
   },
   "叮叮恶魔": {
     "image": "assets/monster/images/wiki/叮叮恶魔.png",
@@ -29183,7 +29267,8 @@
         "element": "翼",
         "desc": "造成物伤，2连击，若上回合双方有精灵使用幻系技能，本技能获得迅捷。"
       }
-    ]
+    ],
+    "monster_id": 70
   },
   "可爱猿": {
     "image": "assets/monster/images/wiki/可爱猿.png",
@@ -29524,7 +29609,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 391
   },
   "可立鸡": {
     "image": "assets/monster/images/wiki/可立鸡.png",
@@ -29802,7 +29888,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 411
   },
   "叶冕魔力猫": {
     "image": "assets/monster/images/wiki/叶冕魔力猫.png",
@@ -30164,7 +30251,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 9
   },
   "叶眼魔": {
     "image": "assets/monster/images/wiki/叶眼魔.png",
@@ -30519,7 +30607,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 559
   },
   "号儿鱼": {
     "image": "assets/monster/images/wiki/号儿鱼.png",
@@ -30832,7 +30921,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 292
   },
   "吸泥鸥": {
     "image": "assets/monster/images/wiki/吸泥鸥.png",
@@ -31159,7 +31249,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 436
   },
   "呆小路": {
     "image": "assets/monster/images/wiki/呆小路.png",
@@ -31521,7 +31612,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 317
   },
   "呼呼猪": {
     "image": "assets/monster/images/wiki/呼呼猪.png",
@@ -31848,7 +31940,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 239
   },
   "咔咔壳": {
     "image": "assets/monster/images/wiki/咔咔壳.png",
@@ -32168,7 +32261,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 33
   },
   "咔咔壳（蜕皮时的样子）": {
     "image": "assets/monster/images/wiki/咔咔壳（蜕皮时的样子）.png",
@@ -32488,7 +32582,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 34
   },
   "咔咔羽毛": {
     "image": "assets/monster/images/wiki/咔咔羽毛.png",
@@ -32850,7 +32945,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 187
   },
   "咔咔雀": {
     "image": "assets/monster/images/wiki/咔咔雀.png",
@@ -33212,7 +33308,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 188
   },
   "咔咔鸟": {
     "image": "assets/monster/images/wiki/咔咔鸟.png",
@@ -33574,7 +33671,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 189
   },
   "咕咕帽": {
     "image": "assets/monster/images/wiki/咕咕帽.png",
@@ -33908,7 +34006,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 519
   },
   "咕德帽帽": {
     "image": "assets/monster/images/wiki/咕德帽帽.png",
@@ -34256,7 +34355,8 @@
         "element": "幻",
         "desc": "自己脱离，更换入场的精灵以月陨星状态登场。"
       }
-    ]
+    ],
+    "monster_id": 520
   },
   "咬咬小子": {
     "image": "assets/monster/images/wiki/咬咬小子.png",
@@ -34569,7 +34669,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 570
   },
   "哭哭菇": {
     "image": "assets/monster/images/wiki/哭哭菇.png",
@@ -34917,7 +35018,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 229
   },
   "喵呜": {
     "image": "assets/monster/images/wiki/喵呜.png",
@@ -35279,7 +35381,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 7
   },
   "喵喵": {
     "image": "assets/monster/images/wiki/喵喵.png",
@@ -35641,7 +35744,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 6
   },
   "嗜光嗡嗡": {
     "image": "assets/monster/images/wiki/嗜光嗡嗡.png",
@@ -36017,7 +36121,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 473
   },
   "嗜波螺": {
     "image": "assets/monster/images/wiki/嗜波螺.png",
@@ -36386,7 +36491,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 281
   },
   "嗜波螺（被污染的样子）": {
     "image": "assets/monster/images/wiki/嗜波螺（被污染的样子）.png",
@@ -36755,7 +36861,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 282
   },
   "嘟嘟煲": {
     "image": "assets/monster/images/wiki/嘟嘟煲.png",
@@ -37089,7 +37196,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 118
   },
   "嘟嘟锅": {
     "image": "assets/monster/images/wiki/嘟嘟锅.png",
@@ -37423,7 +37531,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 119
   },
   "噼啪鸟": {
     "image": "assets/monster/images/wiki/噼啪鸟.png",
@@ -37799,7 +37908,8 @@
         "element": "机械",
         "desc": "对敌方精灵造成魔法伤害。"
       }
-    ]
+    ],
+    "monster_id": 417
   },
   "圆号鱼": {
     "image": "assets/monster/images/wiki/圆号鱼.png",
@@ -38119,7 +38229,8 @@
         "element": "机械",
         "desc": "对敌方精灵造成魔法伤害。"
       }
-    ]
+    ],
+    "monster_id": 293
   },
   "圆眼蜘蛛": {
     "image": "assets/monster/images/wiki/圆眼蜘蛛.png",
@@ -38467,7 +38578,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 274
   },
   "圣代甜甜": {
     "image": "assets/monster/images/wiki/圣代甜甜.png",
@@ -38843,7 +38955,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 368
   },
   "圣代甜甜（杨桃巧克力口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（杨桃巧克力口味）.png",
@@ -39219,7 +39332,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 374
   },
   "圣代甜甜（杨桃抹茶口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（杨桃抹茶口味）.png",
@@ -39595,7 +39709,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 376
   },
   "圣代甜甜（杨桃草莓口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（杨桃草莓口味）.png",
@@ -39971,7 +40086,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 375
   },
   "圣代甜甜（樱桃抹茶口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（樱桃抹茶口味）.png",
@@ -40347,7 +40463,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 370
   },
   "圣代甜甜（樱桃草莓口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（樱桃草莓口味）.png",
@@ -40723,7 +40840,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 369
   },
   "圣代甜甜（蓝莓巧克力口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（蓝莓巧克力口味）.png",
@@ -41099,7 +41217,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 371
   },
   "圣代甜甜（蓝莓抹茶口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（蓝莓抹茶口味）.png",
@@ -41475,7 +41594,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 373
   },
   "圣代甜甜（蓝莓草莓口味）": {
     "image": "assets/monster/images/wiki/圣代甜甜（蓝莓草莓口味）.png",
@@ -41851,7 +41971,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 372
   },
   "圣光迪莫": {
     "image": "assets/monster/images/wiki/圣光迪莫.png",
@@ -42227,9 +42348,10 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 2
   },
-  "圣剑_X": {
+  "圣剑-X": {
     "image": "assets/monster/images/wiki/圣剑_X.png",
     "skills": [
       {
@@ -42595,7 +42717,18 @@
         "name": "沙石阵",
         "source": "技能石",
         "type": "状态"
+      },
+      {
+        "name": "拖拉机",
+        "source": "技能石",
+        "type": "物攻",
+        "element": "机械",
+        "desc": "造成物伤，位于1号位时，先手+1。传动1。"
       }
+    ],
+    "monster_id": 434,
+    "aliases": [
+      "圣剑_X"
     ]
   },
   "圣剑侍从": {
@@ -42965,7 +43098,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 433
   },
   "圣剑骑士": {
     "image": "assets/monster/images/wiki/圣剑骑士.png",
@@ -43334,7 +43468,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 435
   },
   "圣水守护": {
     "image": "assets/monster/images/wiki/圣水守护.png",
@@ -43654,7 +43789,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 18
   },
   "圣水迪莫": {
     "image": "assets/monster/images/wiki/圣水迪莫.png",
@@ -44030,7 +44166,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 5
   },
   "圣火迪莫": {
     "image": "assets/monster/images/wiki/圣火迪莫.png",
@@ -44406,7 +44543,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 4
   },
   "圣羽翼王": {
     "image": "assets/monster/images/wiki/圣羽翼王.png",
@@ -44782,7 +44920,8 @@
         "element": "翼",
         "desc": "对敌方精灵造成物理伤害。"
       }
-    ]
+    ],
+    "monster_id": 255
   },
   "圣草迪莫": {
     "image": "assets/monster/images/wiki/圣草迪莫.png",
@@ -45158,7 +45297,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 3
   },
   "地鼠（储水时的样子）": {
     "image": "assets/monster/images/wiki/地鼠（储水时的样子）.png",
@@ -45499,7 +45639,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 423
   },
   "地鼠（枯水期的样子）": {
     "image": "assets/monster/images/wiki/地鼠（枯水期的样子）.png",
@@ -45840,7 +45981,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 422
   },
   "墨鱿士": {
     "image": "assets/monster/images/wiki/墨鱿士.png",
@@ -46125,7 +46267,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 428
   },
   "声波缇塔": {
     "image": "assets/monster/images/wiki/声波缇塔.png",
@@ -46473,7 +46616,8 @@
         "element": "机械",
         "desc": "造成物伤，位于1号位时，先手+1。传动1。"
       }
-    ]
+    ],
+    "monster_id": 359
   },
   "壳乙螺": {
     "image": "assets/monster/images/wiki/壳乙螺.png",
@@ -46842,7 +46986,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 295
   },
   "壳栗丝鼠": {
     "image": "assets/monster/images/wiki/壳栗丝鼠.png",
@@ -47190,7 +47335,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 591
   },
   "多啦多": {
     "image": "assets/monster/images/wiki/多啦多.png",
@@ -47566,7 +47712,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 227
   },
   "多多": {
     "image": "assets/monster/images/wiki/多多.png",
@@ -47942,7 +48089,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 226
   },
   "多彩方方": {
     "image": "assets/monster/images/wiki/多彩方方.png",
@@ -48276,7 +48424,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 409
   },
   "多菇丁": {
     "image": "assets/monster/images/wiki/多菇丁.png",
@@ -48645,7 +48794,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 284
   },
   "多西": {
     "image": "assets/monster/images/wiki/多西.png",
@@ -48979,7 +49129,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 349
   },
   "夜宿颅": {
     "image": "assets/monster/images/wiki/夜宿颅.png",
@@ -49320,7 +49471,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 478
   },
   "夜枭": {
     "image": "assets/monster/images/wiki/夜枭.png",
@@ -49668,7 +49820,8 @@
         "element": "幻",
         "desc": "自己获得魔攻和魔防+70%。"
       }
-    ]
+    ],
+    "monster_id": 479
   },
   "夜游魔": {
     "image": "assets/monster/images/wiki/夜游魔.png",
@@ -50030,7 +50183,8 @@
         "element": "恶",
         "desc": "对敌方精灵造成魔法伤害。"
       }
-    ]
+    ],
+    "monster_id": 557
   },
   "大头骨龙": {
     "image": "assets/monster/images/wiki/大头骨龙.png",
@@ -50343,7 +50497,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 439
   },
   "大耳帽兜": {
     "image": "assets/monster/images/wiki/大耳帽兜.png",
@@ -50698,7 +50853,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 244
   },
   "奇丽叶": {
     "image": "assets/monster/images/wiki/奇丽叶.png",
@@ -51060,7 +51216,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 97
   },
   "奇丽果": {
     "image": "assets/monster/images/wiki/奇丽果.png",
@@ -51422,7 +51579,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 99
   },
   "奇丽花": {
     "image": "assets/monster/images/wiki/奇丽花.png",
@@ -51784,7 +51942,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 98
   },
   "奇丽草": {
     "image": "assets/monster/images/wiki/奇丽草.png",
@@ -52146,7 +52305,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 96
   },
   "奇梦咪": {
     "image": "assets/monster/images/wiki/奇梦咪.png",
@@ -52508,7 +52668,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 323
   },
   "奔乐鹿": {
     "image": "assets/monster/images/wiki/奔乐鹿.png",
@@ -52863,7 +53024,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 355
   },
   "奔波鼠": {
     "image": "assets/monster/images/wiki/奔波鼠.png",
@@ -53204,7 +53366,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 315
   },
   "女王蜂": {
     "image": "assets/monster/images/wiki/女王蜂.png",
@@ -53566,7 +53729,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 175
   },
   "学院呱呱": {
     "image": "",
@@ -55636,7 +55800,8 @@
         "source": "血脉",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 527
   },
   "守夜烛": {
     "image": "assets/monster/images/wiki/守夜烛.png",
@@ -55984,7 +56149,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 584
   },
   "宝藏小狐": {
     "image": "assets/monster/images/wiki/宝藏小狐.png",
@@ -56297,7 +56463,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 593
   },
   "宝藏沙狐": {
     "image": "assets/monster/images/wiki/宝藏沙狐.png",
@@ -56610,7 +56777,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 594
   },
   "寂灭骨龙": {
     "image": "assets/monster/images/wiki/寂灭骨龙.png",
@@ -56923,7 +57091,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 440
   },
   "寒音蛇": {
     "image": "assets/monster/images/wiki/寒音蛇.png",
@@ -57313,7 +57482,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 338
   },
   "小丑兔": {
     "image": "assets/monster/images/wiki/小丑兔.png",
@@ -57661,7 +57831,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 515
   },
   "小丑公爵": {
     "image": "assets/monster/images/wiki/小丑公爵.png",
@@ -58009,7 +58180,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 516
   },
   "小丑豆豆": {
     "image": "assets/monster/images/wiki/小丑豆豆.png",
@@ -58357,7 +58529,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 514
   },
   "小勇狮": {
     "image": "assets/monster/images/wiki/小勇狮.png",
@@ -58698,7 +58871,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 259
   },
   "小夜": {
     "image": "assets/monster/images/wiki/小夜.png",
@@ -59060,7 +59234,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 176
   },
   "小帕尔": {
     "image": "assets/monster/images/wiki/小帕尔.png",
@@ -59394,7 +59569,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 443
   },
   "小怂猫": {
     "image": "assets/monster/images/wiki/小怂猫.png",
@@ -59749,7 +59925,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 266
   },
   "小星光（星光能量的样子）": {
     "image": "assets/monster/images/wiki/小星光（星光能量的样子）.png",
@@ -60104,7 +60281,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 168
   },
   "小星光（月光能量的样子）": {
     "image": "assets/monster/images/wiki/小星光（月光能量的样子）.png",
@@ -60466,7 +60644,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 169
   },
   "小灵菇": {
     "image": "assets/monster/images/wiki/小灵菇.png",
@@ -60835,7 +61014,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 56
   },
   "小灵面": {
     "image": "assets/monster/images/wiki/小灵面.png",
@@ -61176,7 +61356,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 120
   },
   "小独角兽": {
     "image": "assets/monster/images/wiki/小独角兽.png",
@@ -61524,7 +61705,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 210
   },
   "小狮鹫（崖间地的样子）": {
     "image": "assets/monster/images/wiki/小狮鹫（崖间地的样子）.png",
@@ -61858,7 +62040,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 268
   },
   "小狮鹫（高山地的样子）": {
     "image": "assets/monster/images/wiki/小狮鹫（高山地的样子）.png",
@@ -62192,7 +62375,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 269
   },
   "小甲虫": {
     "image": "assets/monster/images/wiki/小甲虫.png",
@@ -62526,7 +62710,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 431
   },
   "小电企鹅": {
     "image": "assets/monster/images/wiki/小电企鹅.png",
@@ -62867,7 +63052,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 234
   },
   "小皮球": {
     "image": "assets/monster/images/wiki/小皮球.png",
@@ -63201,7 +63387,8 @@
         "element": "幻",
         "desc": "自己脱离，更换入场的精灵以月陨星状态登场。"
       }
-    ]
+    ],
+    "monster_id": 482
   },
   "小箱怪": {
     "image": "assets/monster/images/wiki/小箱怪.png",
@@ -63570,7 +63757,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 335
   },
   "小绒茧": {
     "image": "assets/monster/images/wiki/小绒茧.png",
@@ -63932,7 +64120,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 458
   },
   "小翼龙": {
     "image": "assets/monster/images/wiki/小翼龙.png",
@@ -64259,7 +64448,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 352
   },
   "小草虫": {
     "image": "assets/monster/images/wiki/小草虫.png",
@@ -64621,7 +64811,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 190
   },
   "小雪人": {
     "image": "assets/monster/images/wiki/小雪人.png",
@@ -64976,7 +65167,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 505
   },
   "小鹬": {
     "image": "assets/monster/images/wiki/小鹬.png",
@@ -65352,7 +65544,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 360
   },
   "小黑猫": {
     "image": "assets/monster/images/wiki/小黑猫.png",
@@ -65672,7 +65865,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 221
   },
   "小鼓象": {
     "image": "assets/monster/images/wiki/小鼓象.png",
@@ -65992,7 +66186,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 523
   },
   "小鼠獭": {
     "image": "assets/monster/images/wiki/小鼠獭.png",
@@ -66354,7 +66549,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 80
   },
   "尖嘴狐仙": {
     "image": "assets/monster/images/wiki/尖嘴狐仙.png",
@@ -66709,7 +66905,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 252
   },
   "尖角蜘蛛": {
     "image": "assets/monster/images/wiki/尖角蜘蛛.png",
@@ -67057,7 +67254,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 275
   },
   "岚鸟": {
     "image": "assets/monster/images/wiki/岚鸟.png",
@@ -67732,7 +67930,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 51
   },
   "岚鸟（春天的样子）": {
     "image": "assets/monster/images/wiki/岚鸟（春天的样子）.png",
@@ -68066,7 +68265,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 50
   },
   "岚鸟（秋天的样子）": {
     "image": "assets/monster/images/wiki/岚鸟（秋天的样子）.png",
@@ -68400,7 +68600,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 52
   },
   "巨噬针鼹": {
     "image": "assets/monster/images/wiki/巨噬针鼹.png",
@@ -68720,7 +68921,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 132
   },
   "巨灵石": {
     "image": "assets/monster/images/wiki/巨灵石.png",
@@ -69082,7 +69284,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 205
   },
   "巨鼓象": {
     "image": "assets/monster/images/wiki/巨鼓象.png",
@@ -69402,7 +69605,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 524
   },
   "布克棱岩": {
     "image": "assets/monster/images/wiki/布克棱岩.png",
@@ -69736,7 +69940,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 67
   },
   "布是岩": {
     "image": "assets/monster/images/wiki/布是岩.png",
@@ -70070,7 +70275,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 66
   },
   "布是石": {
     "image": "assets/monster/images/wiki/布是石.png",
@@ -70404,7 +70610,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 65
   },
   "布瓜蝌": {
     "image": "assets/monster/images/wiki/布瓜蝌.png",
@@ -70717,7 +70924,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 489
   },
   "布鲁斯": {
     "image": "assets/monster/images/wiki/布鲁斯.png",
@@ -71051,7 +71259,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 394
   },
   "帅帅魔偶": {
     "image": "assets/monster/images/wiki/帅帅魔偶.png",
@@ -71469,7 +71678,8 @@
         "element": "幻",
         "desc": "减伤80%，应对攻击：以魔法伤害触发敌方的星陨效果。"
       }
-    ]
+    ],
+    "monster_id": 526
   },
   "帕尔萨斯": {
     "image": "assets/monster/images/wiki/帕尔萨斯.png",
@@ -71803,7 +72013,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 444
   },
   "帕帕斯卡": {
     "image": "assets/monster/images/wiki/帕帕斯卡.png",
@@ -72123,7 +72334,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 407
   },
   "帽兜娃娃": {
     "image": "assets/monster/images/wiki/帽兜娃娃.png",
@@ -72478,7 +72690,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 245
   },
   "幻影灵菇": {
     "image": "assets/monster/images/wiki/幻影灵菇.png",
@@ -72847,7 +73060,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 58
   },
   "幻影荆棘": {
     "image": "assets/monster/images/wiki/幻影荆棘.png",
@@ -73202,7 +73416,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 79
   },
   "幻灵菇": {
     "image": "assets/monster/images/wiki/幻灵菇.png",
@@ -73571,7 +73786,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 57
   },
   "幻雪兽": {
     "image": "assets/monster/images/wiki/幻雪兽.png",
@@ -73898,7 +74114,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 543
   },
   "幽冥眼（睁眼的样子）": {
     "image": "assets/monster/images/wiki/幽冥眼（睁眼的样子）.png",
@@ -74246,7 +74463,8 @@
         "element": "幽",
         "desc": "造成物伤，若敌方本回合更换精灵，敌方失去4能量。"
       }
-    ]
+    ],
+    "monster_id": 123
   },
   "幽冥眼（闭眼的样子）": {
     "image": "assets/monster/images/wiki/幽冥眼（闭眼的样子）.png",
@@ -74601,7 +74819,8 @@
         "element": "幽",
         "desc": "造成物伤，若敌方本回合更换精灵，敌方失去4能量。"
       }
-    ]
+    ],
+    "monster_id": 124
   },
   "幽影树": {
     "image": "assets/monster/images/wiki/幽影树.png",
@@ -74963,7 +75182,8 @@
         "element": "幽",
         "desc": "敌方队伍中所有精灵失去1能量。"
       }
-    ]
+    ],
+    "monster_id": 78
   },
   "幽星光": {
     "image": "assets/monster/images/wiki/幽星光.png",
@@ -75290,7 +75510,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 496
   },
   "库多西": {
     "image": "assets/monster/images/wiki/库多西.png",
@@ -75624,7 +75845,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 350
   },
   "彩虹独角兽": {
     "image": "assets/monster/images/wiki/彩虹独角兽.png",
@@ -75972,7 +76194,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 212
   },
   "彩蝶鲨": {
     "image": "assets/monster/images/wiki/彩蝶鲨.png",
@@ -76292,7 +76515,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 202
   },
   "影狸": {
     "image": "assets/monster/images/wiki/影狸.png",
@@ -76654,7 +76878,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 225
   },
   "徘徊爪爪": {
     "image": "assets/monster/images/wiki/徘徊爪爪.png",
@@ -76974,7 +77199,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 576
   },
   "快鳍鱼": {
     "image": "assets/monster/images/wiki/快鳍鱼.png",
@@ -77336,7 +77562,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 382
   },
   "忽幽狸": {
     "image": "assets/monster/images/wiki/忽幽狸.png",
@@ -77698,7 +77925,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 224
   },
   "怒目怂猫": {
     "image": "assets/monster/images/wiki/怒目怂猫.png",
@@ -78060,7 +78288,8 @@
         "element": "草",
         "desc": "自己获得连击数+2，应对防御：额外造成打断，且敌方下回合获得眩晕。"
       }
-    ]
+    ],
+    "monster_id": 267
   },
   "怖哭菇": {
     "image": "assets/monster/images/wiki/怖哭菇.png",
@@ -78408,7 +78637,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 231
   },
   "怖须菇": {
     "image": "assets/monster/images/wiki/怖须菇.png",
@@ -78756,7 +78986,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 230
   },
   "恶魔叮": {
     "image": "assets/monster/images/wiki/恶魔叮.png",
@@ -79083,7 +79314,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 69
   },
   "恶魔狼": {
     "image": "assets/monster/images/wiki/恶魔狼.png",
@@ -79410,7 +79642,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 232
   },
   "恶魔狼王": {
     "image": "assets/monster/images/wiki/恶魔狼王.png",
@@ -79737,7 +79970,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 233
   },
   "恶魔男爵": {
     "image": "assets/monster/images/wiki/恶魔男爵.png",
@@ -80064,7 +80298,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 71
   },
   "恶魔红钻": {
     "image": "assets/monster/images/wiki/恶魔红钻.png",
@@ -80419,7 +80654,8 @@
         "element": "虫",
         "desc": "造成物伤，若敌方本回合更换精灵，己方队伍随机获得3次随机奉献。"
       }
-    ]
+    ],
+    "monster_id": 340
   },
   "护主犬": {
     "image": "assets/monster/images/wiki/护主犬.png",
@@ -80732,7 +80968,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 112
   },
   "抱枕松鼠": {
     "image": "assets/monster/images/wiki/抱枕松鼠.png",
@@ -81087,7 +81324,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 116
   },
   "抹茶布丁": {
     "image": "assets/monster/images/wiki/抹茶布丁.png",
@@ -81449,7 +81687,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 464
   },
   "拉特": {
     "image": "assets/monster/images/wiki/拉特.png",
@@ -81811,7 +82050,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 329
   },
   "捕尘长绒": {
     "image": "assets/monster/images/wiki/捕尘长绒.png",
@@ -82145,7 +82385,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 447
   },
   "斑斑": {
     "image": "assets/monster/images/wiki/斑斑.png",
@@ -82507,7 +82748,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 286
   },
   "斑枭": {
     "image": "assets/monster/images/wiki/斑枭.png",
@@ -82870,13 +83112,14 @@
         "type": "魔攻"
       },
       {
-        "name": "擦影",
+        "name": "掠影",
         "source": "技能石",
         "type": "物攻",
         "element": "幽",
         "desc": "造成物伤，若上回合双方有精灵使用火系技能，偷取敌方3能量。"
       }
-    ]
+    ],
+    "monster_id": 287
   },
   "旋叶虫（枯叶的样子）": {
     "image": "assets/monster/images/wiki/旋叶虫（枯叶的样子）.png",
@@ -83203,7 +83446,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 214
   },
   "旋叶虫（金黄的样子）": {
     "image": "assets/monster/images/wiki/旋叶虫（金黄的样子）.png",
@@ -83530,7 +83774,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 213
   },
   "星云旅者": {
     "image": "assets/monster/images/wiki/星云旅者.png",
@@ -83864,7 +84109,8 @@
         "element": "幻",
         "desc": "自己获得魔攻和魔防+70%。"
       }
-    ]
+    ],
+    "monster_id": 561
   },
   "星光狮（星光能量的样子）": {
     "image": "assets/monster/images/wiki/星光狮（星光能量的样子）.png",
@@ -84226,7 +84472,8 @@
         "element": "光",
         "desc": "造成物伤，自己脱离。"
       }
-    ]
+    ],
+    "monster_id": 170
   },
   "星光狮（月光能量的样子）": {
     "image": "assets/monster/images/wiki/星光狮（月光能量的样子）.png",
@@ -84602,7 +84849,8 @@
         "element": "光",
         "desc": "造成物伤，自己脱离。"
       }
-    ]
+    ],
+    "monster_id": 171
   },
   "星尘虫": {
     "image": "assets/monster/images/wiki/星尘虫.png",
@@ -84957,7 +85205,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 467
   },
   "春兔": {
     "image": "assets/monster/images/wiki/春兔.png",
@@ -85326,7 +85575,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 494
   },
   "春团": {
     "image": "assets/monster/images/wiki/春团.png",
@@ -85695,7 +85945,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 493
   },
   "春花兔": {
     "image": "assets/monster/images/wiki/春花兔.png",
@@ -86064,7 +86315,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 495
   },
   "晕晕鸡": {
     "image": "assets/monster/images/wiki/晕晕鸡.png",
@@ -86342,7 +86594,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 412
   },
   "晶尾蝎": {
     "image": "assets/monster/images/wiki/晶尾蝎.png",
@@ -86704,7 +86957,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 534
   },
   "晶石蜗（星彩榴石的样子）": {
     "image": "assets/monster/images/wiki/晶石蜗（星彩榴石的样子）.png",
@@ -87073,7 +87327,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 86
   },
   "晶石蜗（火山琉璃的样子）": {
     "image": "assets/monster/images/wiki/晶石蜗（火山琉璃的样子）.png",
@@ -87442,7 +87697,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 87
   },
   "晶石蜗（烧蓝黄金的样子）": {
     "image": "assets/monster/images/wiki/晶石蜗（烧蓝黄金的样子）.png",
@@ -87811,7 +88067,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 89
   },
   "晶石蜗（莲花刚玉的样子）": {
     "image": "assets/monster/images/wiki/晶石蜗（莲花刚玉的样子）.png",
@@ -88180,7 +88437,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 85
   },
   "晶石蜗（蓝锥矿的样子）": {
     "image": "assets/monster/images/wiki/晶石蜗（蓝锥矿的样子）.png",
@@ -88549,7 +88807,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 88
   },
   "晶石蜗（西瓜碧玺的样子）": {
     "image": "assets/monster/images/wiki/晶石蜗（西瓜碧玺的样子）.png",
@@ -88918,7 +89177,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 84
   },
   "暗夜颅主": {
     "image": "assets/monster/images/wiki/暗夜颅主.png",
@@ -89259,7 +89519,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 480
   },
   "暗影灵面（睁眼的样子）": {
     "image": "assets/monster/images/wiki/暗影灵面（睁眼的样子）.png",
@@ -89600,7 +89861,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 122
   },
   "暗影灵面（闭眼的样子）": {
     "image": "assets/monster/images/wiki/暗影灵面（闭眼的样子）.png",
@@ -89948,7 +90210,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 121
   },
   "暮星辰": {
     "image": "assets/monster/images/wiki/暮星辰.png",
@@ -90282,7 +90545,8 @@
         "element": "幻",
         "desc": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。"
       }
-    ]
+    ],
+    "monster_id": 498
   },
   "暮风隐者（枯叶的样子）": {
     "image": "assets/monster/images/wiki/暮风隐者（枯叶的样子）.png",
@@ -90609,7 +90873,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 220
   },
   "暮风隐者（金黄的样子）": {
     "image": "assets/monster/images/wiki/暮风隐者（金黄的样子）.png",
@@ -90936,7 +91201,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 219
   },
   "曜星光": {
     "image": "assets/monster/images/wiki/曜星光.png",
@@ -91263,7 +91529,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 497
   },
   "月亮砣（上弦的样子）": {
     "image": "assets/monster/images/wiki/月亮砣（上弦的样子）.png",
@@ -91632,7 +91899,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 379
   },
   "月亮砣（下弦的样子）": {
     "image": "assets/monster/images/wiki/月亮砣（下弦的样子）.png",
@@ -92001,7 +92269,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 380
   },
   "月牙雪熊": {
     "image": "assets/monster/images/wiki/月牙雪熊.png",
@@ -92321,7 +92590,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 472
   },
   "朔夜伊芙": {
     "image": "assets/monster/images/wiki/朔夜伊芙.png",
@@ -92683,7 +92953,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 178
   },
   "机幕方舟": {
     "image": "assets/monster/images/wiki/机幕方舟.png",
@@ -93045,7 +93316,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 501
   },
   "机械方方": {
     "image": "assets/monster/images/wiki/机械方方.png",
@@ -93379,9 +93651,10 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 408
   },
-  "权杖_V": {
+  "权杖-V": {
     "image": "assets/monster/images/wiki/权杖_V.png",
     "skills": [
       {
@@ -93741,9 +94014,13 @@
         "source": "技能石",
         "type": "魔攻"
       }
+    ],
+    "monster_id": 249,
+    "aliases": [
+      "权杖_V"
     ]
   },
-  "权杖_Ⅱ": {
+  "权杖-Ⅱ": {
     "image": "assets/monster/images/wiki/权杖_Ⅱ.png",
     "skills": [
       {
@@ -94103,6 +94380,10 @@
         "source": "技能石",
         "type": "魔攻"
       }
+    ],
+    "monster_id": 248,
+    "aliases": [
+      "权杖_Ⅱ"
     ]
   },
   "松仔": {
@@ -94437,7 +94718,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 256
   },
   "松叶羊": {
     "image": "assets/monster/images/wiki/松叶羊.png",
@@ -94771,7 +95053,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 257
   },
   "板板壳": {
     "image": "assets/monster/images/wiki/板板壳.png",
@@ -95091,7 +95374,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 31
   },
   "板板壳（蜕皮时的样子）": {
     "image": "assets/monster/images/wiki/板板壳（蜕皮时的样子）.png",
@@ -95411,7 +95695,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 32
   },
   "果冻": {
     "image": "assets/monster/images/wiki/果冻.png",
@@ -95689,7 +95974,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 463
   },
   "柴渣虫": {
     "image": "assets/monster/images/wiki/柴渣虫.png",
@@ -96016,7 +96302,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 475
   },
   "栗鼠": {
     "image": "assets/monster/images/wiki/栗鼠.png",
@@ -96364,7 +96651,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 590
   },
   "格兰球": {
     "image": "assets/monster/images/wiki/格兰球.png",
@@ -96712,7 +97000,8 @@
         "element": "光",
         "desc": "自己获得魔攻+20%，己方队伍中精灵每有1个不同的系别，额外获得魔攻+10%。"
       }
-    ]
+    ],
+    "monster_id": 421
   },
   "格兰种子": {
     "image": "assets/monster/images/wiki/格兰种子.png",
@@ -97046,7 +97335,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 419
   },
   "格兰花": {
     "image": "assets/monster/images/wiki/格兰花.png",
@@ -97380,7 +97670,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 420
   },
   "梦悠悠（穿旧睡衣的样子）": {
     "image": "assets/monster/images/wiki/梦悠悠（穿旧睡衣的样子）.png",
@@ -97728,7 +98019,8 @@
         "element": "幽",
         "desc": "造成物伤，若敌方本回合更换精灵，敌方失去4能量。"
       }
-    ]
+    ],
+    "monster_id": 127
   },
   "梦悠悠（穿星星睡衣的样子）": {
     "image": "assets/monster/images/wiki/梦悠悠（穿星星睡衣的样子）.png",
@@ -98083,7 +98375,8 @@
         "element": "幽",
         "desc": "造成物伤，若敌方本回合更换精灵，敌方失去4能量。"
       }
-    ]
+    ],
+    "monster_id": 128
   },
   "梦想三三": {
     "image": "assets/monster/images/wiki/梦想三三.png",
@@ -98452,7 +98745,8 @@
         "element": "普通",
         "desc": "造成魔伤，1连击，应对状态：本技能变为3连击。"
       }
-    ]
+    ],
+    "monster_id": 322
   },
   "梦游（穿旧睡衣的样子）": {
     "image": "assets/monster/images/wiki/梦游（穿旧睡衣的样子）.png",
@@ -98786,7 +99080,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 125
   },
   "梦游（穿星星睡衣的样子）": {
     "image": "assets/monster/images/wiki/梦游（穿星星睡衣的样子）.png",
@@ -99127,7 +99422,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 126
   },
   "棋契陛下（白棋棋祈督分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（白棋棋祈督分支）.png",
@@ -99517,7 +99813,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 309
   },
   "棋契陛下（白棋棋绮后分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（白棋棋绮后分支）.png",
@@ -99914,7 +100211,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 313
   },
   "棋契陛下（白棋棋骑士分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（白棋棋骑士分支）.png",
@@ -100311,7 +100609,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 301
   },
   "棋契陛下（白棋棋齐垒分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（白棋棋齐垒分支）.png",
@@ -100694,7 +100993,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 305
   },
   "棋契陛下（黑棋棋祈督分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（黑棋棋祈督分支）.png",
@@ -101084,7 +101384,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 310
   },
   "棋契陛下（黑棋棋绮后分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（黑棋棋绮后分支）.png",
@@ -101481,7 +101782,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 314
   },
   "棋契陛下（黑棋棋骑士分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（黑棋棋骑士分支）.png",
@@ -101878,7 +102180,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 302
   },
   "棋契陛下（黑棋棋齐垒分支）": {
     "image": "assets/monster/images/wiki/棋契陛下（黑棋棋齐垒分支）.png",
@@ -102261,7 +102564,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 306
   },
   "棋棋（白子）": {
     "image": "assets/monster/images/wiki/棋棋（白子）.png",
@@ -102504,7 +102808,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 297
   },
   "棋棋（黑子）": {
     "image": "assets/monster/images/wiki/棋棋（黑子）.png",
@@ -102747,7 +103052,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 298
   },
   "棋祈督（白子）": {
     "image": "assets/monster/images/wiki/棋祈督（白子）.png",
@@ -103144,7 +103450,8 @@
         "element": "光",
         "desc": "造成物伤，自己脱离。"
       }
-    ]
+    ],
+    "monster_id": 307
   },
   "棋祈督（黑子）": {
     "image": "assets/monster/images/wiki/棋祈督（黑子）.png",
@@ -103541,7 +103848,8 @@
         "element": "光",
         "desc": "造成物伤，自己脱离。"
       }
-    ]
+    ],
+    "monster_id": 308
   },
   "棋绮后（白子）": {
     "image": "assets/monster/images/wiki/棋绮后（白子）.png",
@@ -103938,7 +104246,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 311
   },
   "棋绮后（黑子）": {
     "image": "assets/monster/images/wiki/棋绮后（黑子）.png",
@@ -104335,7 +104644,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 312
   },
   "棋骑士（白子）": {
     "image": "assets/monster/images/wiki/棋骑士（白子）.png",
@@ -104732,7 +105042,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 299
   },
   "棋骑士（黑子）": {
     "image": "assets/monster/images/wiki/棋骑士（黑子）.png",
@@ -105129,7 +105440,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 300
   },
   "棋齐垒（白子）": {
     "image": "assets/monster/images/wiki/棋齐垒（白子）.png",
@@ -105512,7 +105824,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 303
   },
   "棋齐垒（黑子）": {
     "image": "assets/monster/images/wiki/棋齐垒（黑子）.png",
@@ -105895,7 +106208,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 304
   },
   "森巨人": {
     "image": "assets/monster/images/wiki/森巨人.png",
@@ -106236,7 +106550,8 @@
         "element": "草",
         "desc": "造成物伤，若上回合双方有精灵使用萌系技能，自己回复7能量。"
       }
-    ]
+    ],
+    "monster_id": 538
   },
   "森蛮人": {
     "image": "assets/monster/images/wiki/森蛮人.png",
@@ -106563,7 +106878,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 537
   },
   "森豆丁": {
     "image": "assets/monster/images/wiki/森豆丁.png",
@@ -106890,7 +107206,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 536
   },
   "椰浆布丁": {
     "image": "assets/monster/images/wiki/椰浆布丁.png",
@@ -107238,7 +107555,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 465
   },
   "武斗酷猫": {
     "image": "assets/monster/images/wiki/武斗酷猫.png",
@@ -107600,7 +107918,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 10
   },
   "武者鸡": {
     "image": "assets/monster/images/wiki/武者鸡.png",
@@ -107934,7 +108253,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 414
   },
   "毛头小蛛": {
     "image": "assets/monster/images/wiki/毛头小蛛.png",
@@ -108268,7 +108588,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 446
   },
   "毛毛": {
     "image": "assets/monster/images/wiki/毛毛.png",
@@ -108616,7 +108937,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 72
   },
   "气球猫": {
     "image": "assets/monster/images/wiki/气球猫.png",
@@ -108978,7 +109300,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 321
   },
   "水泡壳": {
     "image": "assets/monster/images/wiki/水泡壳.png",
@@ -109298,7 +109621,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 35
   },
   "水泡壳（蜕皮时的样子）": {
     "image": "assets/monster/images/wiki/水泡壳（蜕皮时的样子）.png",
@@ -109618,7 +109942,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 36
   },
   "水滴蛇": {
     "image": "assets/monster/images/wiki/水滴蛇.png",
@@ -109973,7 +110298,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 262
   },
   "水灵": {
     "image": "assets/monster/images/wiki/水灵.png",
@@ -110293,7 +110619,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 17
   },
   "水蓝蓝": {
     "image": "assets/monster/images/wiki/水蓝蓝.png",
@@ -110613,7 +110940,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 15
   },
   "水蛇锁": {
     "image": "assets/monster/images/wiki/水蛇锁.png",
@@ -110968,7 +111296,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 263
   },
   "治愈兔": {
     "image": "assets/monster/images/wiki/治愈兔.png",
@@ -111323,7 +111652,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 397
   },
   "波多西": {
     "image": "assets/monster/images/wiki/波多西.png",
@@ -111657,7 +111987,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 351
   },
   "波普鹿": {
     "image": "assets/monster/images/wiki/波普鹿.png",
@@ -112012,7 +112343,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 357
   },
   "波波拉": {
     "image": "assets/monster/images/wiki/波波拉.png",
@@ -112332,7 +112664,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 16
   },
   "波波螺": {
     "image": "assets/monster/images/wiki/波波螺.png",
@@ -112701,7 +113034,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 277
   },
   "波波螺（被污染的样子）": {
     "image": "assets/monster/images/wiki/波波螺（被污染的样子）.png",
@@ -113070,7 +113404,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 278
   },
   "泥吼牙": {
     "image": "assets/monster/images/wiki/泥吼牙.png",
@@ -113397,7 +113732,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 438
   },
   "流明坎德拉": {
     "image": "assets/monster/images/wiki/流明坎德拉.png",
@@ -113745,7 +114081,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 585
   },
   "流浪鼠": {
     "image": "assets/monster/images/wiki/流浪鼠.png",
@@ -114086,7 +114423,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 316
   },
   "海枝枝（杏黄百合）": {
     "image": "assets/monster/images/wiki/海枝枝（杏黄百合）.png",
@@ -114427,7 +114765,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 346
   },
   "海枝枝（洋红沙丁）": {
     "image": "assets/monster/images/wiki/海枝枝（洋红沙丁）.png",
@@ -114768,7 +115107,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 347
   },
   "海枝枝（碧蓝珊瑚）": {
     "image": "assets/monster/images/wiki/海枝枝（碧蓝珊瑚）.png",
@@ -115109,7 +115449,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 345
   },
   "海枝枝（翠绿纶布）": {
     "image": "assets/monster/images/wiki/海枝枝（翠绿纶布）.png",
@@ -115450,7 +115791,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 348
   },
   "海盔虫": {
     "image": "assets/monster/images/wiki/海盔虫.png",
@@ -115777,7 +116119,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 159
   },
   "海盔虫（磨损的样子）": {
     "image": "assets/monster/images/wiki/海盔虫（磨损的样子）.png",
@@ -116104,7 +116447,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 160
   },
   "海豹战士": {
     "image": "assets/monster/images/wiki/海豹战士.png",
@@ -116452,7 +116796,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 290
   },
   "海豹船长": {
     "image": "assets/monster/images/wiki/海豹船长.png",
@@ -116800,7 +117145,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 291
   },
   "消波螺": {
     "image": "assets/monster/images/wiki/消波螺.png",
@@ -117169,7 +117515,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 279
   },
   "消波螺（被污染的样子）": {
     "image": "assets/monster/images/wiki/消波螺（被污染的样子）.png",
@@ -117538,7 +117885,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 280
   },
   "淤泥乌泽": {
     "image": "assets/monster/images/wiki/淤泥乌泽.png",
@@ -117865,7 +118213,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 437
   },
   "深渊罗隐": {
     "image": "assets/monster/images/wiki/深渊罗隐.png",
@@ -118213,7 +118562,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 198
   },
   "深渊蛙": {
     "image": "assets/monster/images/wiki/深渊蛙.png",
@@ -118533,7 +118883,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 581
   },
   "深蓝鲸": {
     "image": "assets/monster/images/wiki/深蓝鲸.png",
@@ -118874,7 +119225,8 @@
         "element": "水",
         "desc": "驱散自己的减益，并获得全技能能耗-1。"
       }
-    ]
+    ],
+    "monster_id": 418
   },
   "混乱鱿彩": {
     "image": "assets/monster/images/wiki/混乱鱿彩.png",
@@ -119230,7 +119582,7 @@
         "type": "物攻"
       },
       {
-        "name": "擦影",
+        "name": "掠影",
         "source": "技能石",
         "type": "物攻",
         "element": "幽",
@@ -119243,7 +119595,8 @@
         "element": "幽",
         "desc": "偷取敌方2能量，脱离。"
       }
-    ]
+    ],
+    "monster_id": 429
   },
   "游蛇魔使": {
     "image": "assets/monster/images/wiki/游蛇魔使.png",
@@ -119605,7 +119958,8 @@
         "element": "水",
         "desc": "雨天的回合数延长4回合，应对防御：改为延长8回合。"
       }
-    ]
+    ],
+    "monster_id": 264
   },
   "溯源钟": {
     "image": "assets/monster/images/wiki/溯源钟.png",
@@ -119967,7 +120321,8 @@
         "element": "幻",
         "desc": "造成物伤，若敌方没有星陨印记，则敌方获得3层星陨印记。"
       }
-    ]
+    ],
+    "monster_id": 565
   },
   "火尾战士": {
     "image": "assets/monster/images/wiki/火尾战士.png",
@@ -120294,7 +120649,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 342
   },
   "火尾瓦特": {
     "image": "assets/monster/images/wiki/火尾瓦特.png",
@@ -120621,7 +120977,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 341
   },
   "火巨人": {
     "image": "assets/monster/images/wiki/火巨人.png",
@@ -120955,7 +121312,8 @@
         "element": "火",
         "desc": "造成物伤，每使用1次其他火系技能，威力永久+40，使用本技能后重置。"
       }
-    ]
+    ],
+    "monster_id": 547
   },
   "火焰猿": {
     "image": "assets/monster/images/wiki/火焰猿.png",
@@ -121296,7 +121654,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 393
   },
   "火神": {
     "image": "assets/monster/images/wiki/火神.png",
@@ -121616,7 +121975,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 13
   },
   "火红尾": {
     "image": "assets/monster/images/wiki/火红尾.png",
@@ -121936,7 +122296,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 491
   },
   "火羽": {
     "image": "assets/monster/images/wiki/火羽.png",
@@ -122291,7 +122652,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 530
   },
   "火花": {
     "image": "assets/monster/images/wiki/火花.png",
@@ -122611,7 +122973,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 11
   },
   "火蛮人": {
     "image": "assets/monster/images/wiki/火蛮人.png",
@@ -122938,7 +123301,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 546
   },
   "火豆丁": {
     "image": "assets/monster/images/wiki/火豆丁.png",
@@ -123265,7 +123629,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 545
   },
   "灵狐": {
     "image": "assets/monster/images/wiki/灵狐.png",
@@ -123620,7 +123985,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 250
   },
   "灵羽勇士": {
     "image": "assets/monster/images/wiki/灵羽勇士.png",
@@ -123989,7 +124355,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 254
   },
   "炫光迪迪": {
     "image": "assets/monster/images/wiki/炫光迪迪.png",
@@ -124302,7 +124669,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 521
   },
   "炮米花": {
     "image": "assets/monster/images/wiki/炮米花.png",
@@ -124657,7 +125025,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 578
   },
   "点点": {
     "image": "assets/monster/images/wiki/点点.png",
@@ -124984,7 +125353,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 562
   },
   "炽心勇狮": {
     "image": "assets/monster/images/wiki/炽心勇狮.png",
@@ -125325,7 +125695,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 261
   },
   "炽热猿": {
     "image": "assets/monster/images/wiki/炽热猿.png",
@@ -125666,7 +126037,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 392
   },
   "炽焰狮": {
     "image": "assets/monster/images/wiki/炽焰狮.png",
@@ -126007,7 +126379,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 260
   },
   "烈火守护": {
     "image": "assets/monster/images/wiki/烈火守护.png",
@@ -126334,7 +126707,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 343
   },
   "烈火战神": {
     "image": "assets/monster/images/wiki/烈火战神.png",
@@ -126654,7 +127028,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 14
   },
   "烈钻鸟": {
     "image": "assets/monster/images/wiki/烈钻鸟.png",
@@ -127009,7 +127384,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 528
   },
   "烟花伯爵": {
     "image": "assets/monster/images/wiki/烟花伯爵.png",
@@ -127343,7 +127719,8 @@
         "element": "火",
         "desc": "敌方获得8层灼烧，若上回合双方有精灵使用光系技能，敌方额外获得12层灼烧。"
       }
-    ]
+    ],
+    "monster_id": 518
   },
   "烟花团": {
     "image": "assets/monster/images/wiki/烟花团.png",
@@ -127670,7 +128047,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 517
   },
   "焰火": {
     "image": "assets/monster/images/wiki/焰火.png",
@@ -127990,7 +128368,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 12
   },
   "熔岩布丁": {
     "image": "assets/monster/images/wiki/熔岩布丁.png",
@@ -128345,7 +128724,8 @@
         "element": "火",
         "desc": "造成物伤，每使用1次其他火系技能，威力永久+40，使用本技能后重置。"
       }
-    ]
+    ],
+    "monster_id": 466
   },
   "燃薪虫": {
     "image": "assets/monster/images/wiki/燃薪虫.png",
@@ -128672,7 +129052,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 476
   },
   "燕尾獭": {
     "image": "assets/monster/images/wiki/燕尾獭.png",
@@ -129034,7 +129415,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 81
   },
   "爆焰仔": {
     "image": "assets/monster/images/wiki/爆焰仔.png",
@@ -129347,7 +129729,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 507
   },
   "爆焰喷喷": {
     "image": "assets/monster/images/wiki/爆焰喷喷.png",
@@ -129660,7 +130043,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 508
   },
   "爬爬": {
     "image": "assets/monster/images/wiki/爬爬.png",
@@ -130008,7 +130392,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 73
   },
   "爵士鹿": {
     "image": "assets/monster/images/wiki/爵士鹿.png",
@@ -130363,7 +130748,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 356
   },
   "牵线木偶": {
     "image": "assets/monster/images/wiki/牵线木偶.png",
@@ -130774,7 +131160,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 525
   },
   "犀角鸟": {
     "image": "assets/monster/images/wiki/犀角鸟.png",
@@ -131094,7 +131481,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 460
   },
   "猴麦仔": {
     "image": "assets/monster/images/wiki/猴麦仔.png",
@@ -131442,7 +131830,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 509
   },
   "獠牙猪": {
     "image": "assets/monster/images/wiki/獠牙猪.png",
@@ -131769,7 +132158,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 240
   },
   "珀尔鼬": {
     "image": "assets/monster/images/wiki/珀尔鼬.png",
@@ -132103,7 +132493,8 @@
         "element": "萌",
         "desc": "自己获得1层萌芽印记。"
       }
-    ]
+    ],
+    "monster_id": 563
   },
   "琉璃水母": {
     "image": "assets/monster/images/wiki/琉璃水母.png",
@@ -132416,7 +132807,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 387
   },
   "瑰眼仔": {
     "image": "assets/monster/images/wiki/瑰眼仔.png",
@@ -132778,7 +133170,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 552
   },
   "甜田螺": {
     "image": "assets/monster/images/wiki/甜田螺.png",
@@ -133147,7 +133540,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 294
   },
   "电企鹅": {
     "image": "assets/monster/images/wiki/电企鹅.png",
@@ -133488,7 +133882,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 235
   },
   "电动长颈鹿": {
     "image": "assets/monster/images/wiki/电动长颈鹿.png",
@@ -133843,7 +134238,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 354
   },
   "电咩咩": {
     "image": "assets/monster/images/wiki/电咩咩.png",
@@ -134198,7 +134594,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 149
   },
   "电球咩咩": {
     "image": "assets/monster/images/wiki/电球咩咩.png",
@@ -134553,7 +134950,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 151
   },
   "画像守护": {
     "image": "assets/monster/images/wiki/画像守护.png",
@@ -134873,7 +135271,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 450
   },
   "画精灵": {
     "image": "assets/monster/images/wiki/画精灵.png",
@@ -135193,7 +135592,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 449
   },
   "画间沉铁兽": {
     "image": "assets/monster/images/wiki/画间沉铁兽.png",
@@ -135604,7 +136004,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 452
   },
   "画间法师手": {
     "image": "assets/monster/images/wiki/画间法师手.png",
@@ -136015,7 +136416,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 451
   },
   "疾光千兽": {
     "image": "assets/monster/images/wiki/疾光千兽.png",
@@ -136342,7 +136744,8 @@
         "element": "光",
         "desc": "造成物伤，自己脱离。"
       }
-    ]
+    ],
+    "monster_id": 462
   },
   "白发懒人": {
     "image": "assets/monster/images/wiki/白发懒人.png",
@@ -136683,7 +137086,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 156
   },
   "白发路路": {
     "image": "assets/monster/images/wiki/白发路路.png",
@@ -137045,7 +137449,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 319
   },
   "白金独角兽": {
     "image": "assets/monster/images/wiki/白金独角兽.png",
@@ -137393,7 +137798,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 211
   },
   "皇家狮鹫（崖间地的样子）": {
     "image": "assets/monster/images/wiki/皇家狮鹫（崖间地的样子）.png",
@@ -137734,7 +138140,8 @@
         "element": "翼",
         "desc": "造成物伤，2连击，若上回合双方有精灵使用幻系技能，本技能获得迅捷。"
       }
-    ]
+    ],
+    "monster_id": 272
   },
   "皇家狮鹫（高山地的样子）": {
     "image": "assets/monster/images/wiki/皇家狮鹫（高山地的样子）.png",
@@ -138075,7 +138482,8 @@
         "element": "翼",
         "desc": "造成物伤，2连击，若上回合双方有精灵使用幻系技能，本技能获得迅捷。"
       }
-    ]
+    ],
+    "monster_id": 273
   },
   "睡铃雪影娃娃": {
     "image": "assets/monster/images/wiki/睡铃雪影娃娃.png",
@@ -138388,7 +138796,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 592
   },
   "瞌睡王": {
     "image": "assets/monster/images/wiki/瞌睡王.png",
@@ -138729,7 +139138,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 158
   },
   "矮脚爬爬": {
     "image": "assets/monster/images/wiki/矮脚爬爬.png",
@@ -139077,7 +139487,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 339
   },
   "石冠王蜥": {
     "image": "assets/monster/images/wiki/石冠王蜥.png",
@@ -139432,7 +139843,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 63
   },
   "石冠王蜥（球球尾巴的样子）": {
     "image": "assets/monster/images/wiki/石冠王蜥（球球尾巴的样子）.png",
@@ -139787,7 +140199,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 64
   },
   "石刺蜥": {
     "image": "assets/monster/images/wiki/石刺蜥.png",
@@ -140142,7 +140555,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 61
   },
   "石刺蜥（球球尾巴的样子）": {
     "image": "assets/monster/images/wiki/石刺蜥（球球尾巴的样子）.png",
@@ -140497,7 +140911,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 62
   },
   "石石": {
     "image": "assets/monster/images/wiki/石石.png",
@@ -140859,7 +141274,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 204
   },
   "石肤蜥": {
     "image": "assets/monster/images/wiki/石肤蜥.png",
@@ -141214,7 +141630,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 59
   },
   "石肤蜥（球球尾巴的样子）": {
     "image": "assets/monster/images/wiki/石肤蜥（球球尾巴的样子）.png",
@@ -141569,7 +141986,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 60
   },
   "矿晶虫": {
     "image": "assets/monster/images/wiki/矿晶虫.png",
@@ -141882,7 +142300,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 83
   },
   "碎晶蝎": {
     "image": "assets/monster/images/wiki/碎晶蝎.png",
@@ -142244,7 +142663,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 533
   },
   "神圣狮鹫（崖间地的样子）": {
     "image": "assets/monster/images/wiki/神圣狮鹫（崖间地的样子）.png",
@@ -142578,7 +142998,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 270
   },
   "神圣狮鹫（高山地的样子）": {
     "image": "assets/monster/images/wiki/神圣狮鹫（高山地的样子）.png",
@@ -142912,7 +143333,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 271
   },
   "神谕鲨": {
     "image": "assets/monster/images/wiki/神谕鲨.png",
@@ -143232,7 +143654,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 203
   },
   "祭礼巨像": {
     "image": "assets/monster/images/wiki/祭礼巨像.png",
@@ -143601,7 +144024,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 209
   },
   "离心舞者": {
     "image": "assets/monster/images/wiki/离心舞者.png",
@@ -143928,7 +144352,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 573
   },
   "秩序鱿墨": {
     "image": "assets/monster/images/wiki/秩序鱿墨.png",
@@ -144277,7 +144702,7 @@
         "type": "物攻"
       },
       {
-        "name": "擦影",
+        "name": "掠影",
         "source": "技能石",
         "type": "物攻",
         "element": "幽",
@@ -144290,7 +144715,8 @@
         "element": "幽",
         "desc": "偷取敌方2能量，脱离。"
       }
-    ]
+    ],
+    "monster_id": 430
   },
   "稻草人": {
     "image": "assets/monster/images/wiki/稻草人.png",
@@ -144645,7 +145071,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 588
   },
   "稻草守护者": {
     "image": "assets/monster/images/wiki/稻草守护者.png",
@@ -145000,7 +145427,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 589
   },
   "空空颅": {
     "image": "assets/monster/images/wiki/空空颅.png",
@@ -145341,7 +145769,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 477
   },
   "窃光蚊": {
     "image": "assets/monster/images/wiki/窃光蚊.png",
@@ -145724,7 +146153,8 @@
         "element": "光",
         "desc": "自己获得魔攻+20%，己方队伍中精灵每有1个不同的系别，额外获得魔攻+10%。"
       }
-    ]
+    ],
+    "monster_id": 474
   },
   "立方人": {
     "image": "assets/monster/images/wiki/立方人.png",
@@ -146072,7 +146502,8 @@
         "element": "机械",
         "desc": "造成物伤，位于1号位时，先手+1。传动1。"
       }
-    ]
+    ],
+    "monster_id": 410
   },
   "粉咩咩": {
     "image": "assets/monster/images/wiki/粉咩咩.png",
@@ -146427,7 +146858,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 150
   },
   "粉星仔": {
     "image": "assets/monster/images/wiki/粉星仔.png",
@@ -146684,7 +147116,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 486
   },
   "粉粉星": {
     "image": "assets/monster/images/wiki/粉粉星.png",
@@ -147011,7 +147444,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 481
   },
   "粉耳星兔": {
     "image": "assets/monster/images/wiki/粉耳星兔.png",
@@ -147345,7 +147779,8 @@
         "source": "技能石",
         "desc": "下一次攻击时，额外造成100%幻系伤害，应对防御：改为额外造成300%幻系伤害。"
       }
-    ]
+    ],
+    "monster_id": 487
   },
   "紫夜": {
     "image": "assets/monster/images/wiki/紫夜.png",
@@ -147707,7 +148142,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 177
   },
   "紫翎鹰": {
     "image": "assets/monster/images/wiki/紫翎鹰.png",
@@ -148069,7 +148505,8 @@
         "source": "传说",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 503
   },
   "红丝绒": {
     "image": "assets/monster/images/wiki/红丝绒.png",
@@ -148424,7 +148861,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 398
   },
   "红绒十字": {
     "image": "assets/monster/images/wiki/红绒十字.png",
@@ -148793,7 +149231,8 @@
         "element": "火",
         "desc": "敌方获得8层灼烧，若上回合双方有精灵使用光系技能，敌方额外获得12层灼烧。"
       }
-    ]
+    ],
+    "monster_id": 399
   },
   "绅士鸡": {
     "image": "assets/monster/images/wiki/绅士鸡.png",
@@ -149169,7 +149608,8 @@
         "element": "武",
         "desc": "造成魔伤，2连击，每成功应对1次，本技能连击数永久+2。"
       }
-    ]
+    ],
+    "monster_id": 413
   },
   "绒仙子": {
     "image": "assets/monster/images/wiki/绒仙子.png",
@@ -149538,7 +149978,8 @@
         "element": "光",
         "desc": "自己获得魔攻+20%，己方队伍中精灵每有1个不同的系别，额外获得魔攻+10%。"
       }
-    ]
+    ],
+    "monster_id": 459
   },
   "绒光优优": {
     "image": "assets/monster/images/wiki/绒光优优.png",
@@ -149851,7 +150292,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 416
   },
   "绒绒": {
     "image": "assets/monster/images/wiki/绒绒.png",
@@ -150213,7 +150655,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 457
   },
   "绿翼鸟": {
     "image": "assets/monster/images/wiki/绿翼鸟.png",
@@ -150554,7 +150997,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 193
   },
   "绿耳松鼠": {
     "image": "assets/monster/images/wiki/绿耳松鼠.png",
@@ -150909,7 +151353,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 115
   },
   "绿草精灵": {
     "image": "assets/monster/images/wiki/绿草精灵.png",
@@ -151243,7 +151688,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 184
   },
   "缇塔": {
     "image": "assets/monster/images/wiki/缇塔.png",
@@ -151577,7 +152023,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 358
   },
   "罗隐": {
     "image": "assets/monster/images/wiki/罗隐.png",
@@ -151925,7 +152372,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 199
   },
   "翠顶夫人": {
     "image": "assets/monster/images/wiki/翠顶夫人.png",
@@ -152294,7 +152742,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 181
   },
   "翡翠水母": {
     "image": "assets/monster/images/wiki/翡翠水母.png",
@@ -152607,7 +153056,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 386
   },
   "翻翻蝠": {
     "image": "assets/monster/images/wiki/翻翻蝠.png",
@@ -152955,7 +153405,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 556
   },
   "翼龙": {
     "image": "assets/monster/images/wiki/翼龙.png",
@@ -153282,7 +153733,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 353
   },
   "耳翎瑰魅": {
     "image": "assets/monster/images/wiki/耳翎瑰魅.png",
@@ -153644,7 +154096,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 553
   },
   "胆小鳗鱼": {
     "image": "assets/monster/images/wiki/胆小鳗鱼.png",
@@ -154006,7 +154459,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 384
   },
   "胡桃王子": {
     "image": "assets/monster/images/wiki/胡桃王子.png",
@@ -154326,7 +154780,8 @@
         "element": "机械",
         "desc": "造成物伤，位于1号位时，先手+1。传动1。"
       }
-    ]
+    ],
+    "monster_id": 571
   },
   "脆筒甜甜": {
     "image": "assets/monster/images/wiki/脆筒甜甜.png",
@@ -154702,7 +155157,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 364
   },
   "舞动路路": {
     "image": "assets/monster/images/wiki/舞动路路.png",
@@ -155064,7 +155520,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 318
   },
   "芋香巨角蛛": {
     "image": "assets/monster/images/wiki/芋香巨角蛛.png",
@@ -155419,7 +155876,8 @@
         "element": "虫",
         "desc": "造成物伤，若敌方本回合更换精灵，己方队伍随机获得3次随机奉献。"
       }
-    ]
+    ],
+    "monster_id": 276
   },
   "花影羚羊": {
     "image": "assets/monster/images/wiki/花影羚羊.png",
@@ -155753,7 +156211,8 @@
         "element": "幽",
         "desc": "敌方队伍中所有精灵失去1能量。"
       }
-    ]
+    ],
+    "monster_id": 39
   },
   "花怨鳗": {
     "image": "assets/monster/images/wiki/花怨鳗.png",
@@ -156101,7 +156560,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 324
   },
   "花衣蝶": {
     "image": "assets/monster/images/wiki/花衣蝶.png",
@@ -156463,7 +156923,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 192
   },
   "花魁蜂后": {
     "image": "assets/monster/images/wiki/花魁蜂后.png",
@@ -156839,7 +157300,8 @@
         "element": "虫",
         "desc": "己方队伍随机获得1次随机奉献；若上回合双方有精灵使用地系技能，额外3次。"
       }
-    ]
+    ],
+    "monster_id": 174
   },
   "芽眼魔": {
     "image": "assets/monster/images/wiki/芽眼魔.png",
@@ -157194,7 +157656,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 558
   },
   "苞米仔": {
     "image": "assets/monster/images/wiki/苞米仔.png",
@@ -157549,7 +158012,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 577
   },
   "荆棘电环": {
     "image": "assets/monster/images/wiki/荆棘电环.png",
@@ -157919,13 +158383,14 @@
         "desc": "将天气改为雷鸣，持续8回合。"
       },
       {
-        "name": "擦影",
+        "name": "掠影",
         "source": "技能石",
         "type": "物攻",
         "element": "幽",
         "desc": "造成物伤，若上回合双方有精灵使用火系技能，偷取敌方3能量。"
       }
-    ]
+    ],
+    "monster_id": 334
   },
   "草头鸭": {
     "image": "assets/monster/images/wiki/草头鸭.png",
@@ -158273,7 +158738,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 288
   },
   "草衣虫": {
     "image": "assets/monster/images/wiki/草衣虫.png",
@@ -158635,7 +159101,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 191
   },
   "莫比乌乌": {
     "image": "assets/monster/images/wiki/莫比乌乌.png",
@@ -158955,7 +159422,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 550
   },
   "菇菇丁": {
     "image": "assets/monster/images/wiki/菇菇丁.png",
@@ -159324,7 +159792,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 283
   },
   "菊花梨": {
     "image": "assets/monster/images/wiki/菊花梨.png",
@@ -159672,7 +160141,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 167
   },
   "落星虫": {
     "image": "assets/monster/images/wiki/落星虫.png",
@@ -160027,7 +160497,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 468
   },
   "落陨星兔": {
     "image": "assets/monster/images/wiki/落陨星兔.png",
@@ -160368,7 +160839,8 @@
         "element": "幻",
         "desc": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。"
       }
-    ]
+    ],
+    "monster_id": 488
   },
   "蒲公英": {
     "image": "assets/monster/images/wiki/蒲公英.png",
@@ -160744,7 +161216,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 152
   },
   "蒲公英娃娃": {
     "image": "assets/monster/images/wiki/蒲公英娃娃.png",
@@ -161127,7 +161600,8 @@
         "element": "草",
         "desc": "造成魔伤，选择：自己生命大于80%时威力+50或应对状态时自己回复35%生命。"
       }
-    ]
+    ],
+    "monster_id": 153
   },
   "蓝珠天鹅": {
     "image": "assets/monster/images/wiki/蓝珠天鹅.png",
@@ -161391,7 +161865,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 180
   },
   "蓝蝶鲨": {
     "image": "assets/monster/images/wiki/蓝蝶鲨.png",
@@ -161711,7 +162186,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 201
   },
   "蓬叶虫（枯叶的样子）": {
     "image": "assets/monster/images/wiki/蓬叶虫（枯叶的样子）.png",
@@ -162038,7 +162514,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 216
   },
   "蓬叶虫（金黄的样子）": {
     "image": "assets/monster/images/wiki/蓬叶虫（金黄的样子）.png",
@@ -162365,7 +162842,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 215
   },
   "蜜果骸": {
     "image": "assets/monster/images/wiki/蜜果骸.png",
@@ -162678,7 +163156,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 586
   },
   "蝎子王": {
     "image": "assets/monster/images/wiki/蝎子王.png",
@@ -163054,7 +163533,8 @@
         "element": "恶",
         "desc": "对敌方精灵造成魔法伤害。"
       }
-    ]
+    ],
+    "monster_id": 535
   },
   "蝴蝶陶陶": {
     "image": "assets/monster/images/wiki/蝴蝶陶陶.png",
@@ -163374,7 +163854,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 574
   },
   "螺旋帕帕": {
     "image": "assets/monster/images/wiki/螺旋帕帕.png",
@@ -163694,7 +164175,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 406
   },
   "裘力": {
     "image": "assets/monster/images/wiki/裘力.png",
@@ -164042,7 +164524,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 389
   },
   "裘卡": {
     "image": "assets/monster/images/wiki/裘卡.png",
@@ -164390,7 +164873,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 390
   },
   "裘洛": {
     "image": "assets/monster/images/wiki/裘洛.png",
@@ -164738,7 +165222,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 388
   },
   "觅觅蝠": {
     "image": "assets/monster/images/wiki/觅觅蝠.png",
@@ -165086,7 +165571,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 555
   },
   "记忆石": {
     "image": "assets/monster/images/wiki/记忆石.png",
@@ -165427,7 +165913,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 186
   },
   "豆丁鱼": {
     "image": "assets/monster/images/wiki/豆丁鱼.png",
@@ -165789,7 +166276,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 381
   },
   "贝加尔": {
     "image": "assets/monster/images/wiki/贝加尔.png",
@@ -166123,7 +166611,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 484
   },
   "贝古斯": {
     "image": "assets/monster/images/wiki/贝古斯.png",
@@ -166457,7 +166946,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 485
   },
   "贝瑟": {
     "image": "assets/monster/images/wiki/贝瑟.png",
@@ -166791,7 +167281,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 483
   },
   "贪食鼹": {
     "image": "assets/monster/images/wiki/贪食鼹.png",
@@ -167111,7 +167602,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 131
   },
   "足尖元件": {
     "image": "assets/monster/images/wiki/足尖元件.png",
@@ -167438,7 +167930,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 572
   },
   "蹦床松鼠": {
     "image": "assets/monster/images/wiki/蹦床松鼠.png",
@@ -167793,7 +168286,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 117
   },
   "蹦蹦果（彩玉球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦果（彩玉球形态）.png",
@@ -168183,7 +168677,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 146
   },
   "蹦蹦果（海神球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦果（海神球形态）.png",
@@ -168573,7 +169068,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 145
   },
   "蹦蹦果（短毛球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦果（短毛球形态）.png",
@@ -168963,7 +169459,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 147
   },
   "蹦蹦果（象牙球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦果（象牙球形态）.png",
@@ -169353,7 +169850,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 148
   },
   "蹦蹦种子（彩玉球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦种子（彩玉球形态）.png",
@@ -169743,7 +170241,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 134
   },
   "蹦蹦种子（海神球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦种子（海神球形态）.png",
@@ -170133,7 +170632,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 133
   },
   "蹦蹦种子（短毛球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦种子（短毛球形态）.png",
@@ -170523,7 +171023,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 135
   },
   "蹦蹦种子（象牙球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦种子（象牙球形态）.png",
@@ -170913,7 +171414,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 136
   },
   "蹦蹦花（彩玉球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦花（彩玉球形态）.png",
@@ -171303,7 +171805,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 142
   },
   "蹦蹦花（海神球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦花（海神球形态）.png",
@@ -171693,7 +172196,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 141
   },
   "蹦蹦花（短毛球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦花（短毛球形态）.png",
@@ -172083,7 +172587,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 143
   },
   "蹦蹦花（象牙球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦花（象牙球形态）.png",
@@ -172473,7 +172978,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 144
   },
   "蹦蹦草（彩玉球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦草（彩玉球形态）.png",
@@ -172863,7 +173369,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 138
   },
   "蹦蹦草（海神球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦草（海神球形态）.png",
@@ -173253,7 +173760,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 137
   },
   "蹦蹦草（短毛球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦草（短毛球形态）.png",
@@ -173643,7 +174151,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 139
   },
   "蹦蹦草（象牙球形态）": {
     "image": "assets/monster/images/wiki/蹦蹦草（象牙球形态）.png",
@@ -174033,7 +174542,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 140
   },
   "辉光幕机": {
     "image": "assets/monster/images/wiki/辉光幕机.png",
@@ -174395,7 +174905,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 500
   },
   "迪莫": {
     "image": "assets/monster/images/wiki/迪莫.png",
@@ -174771,7 +175282,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 1
   },
   "迷你乌（极夜的样子）": {
     "image": "assets/monster/images/wiki/迷你乌（极夜的样子）.png",
@@ -175119,7 +175631,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 403
   },
   "迷你乌（极昼的样子）": {
     "image": "assets/monster/images/wiki/迷你乌（极昼的样子）.png",
@@ -175460,7 +175973,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 402
   },
   "迷嶂布莱克": {
     "image": "assets/monster/images/wiki/迷嶂布莱克.png",
@@ -175794,7 +176308,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 68
   },
   "迷迷箱怪": {
     "image": "assets/monster/images/wiki/迷迷箱怪.png",
@@ -176177,7 +176692,8 @@
         "element": "幻",
         "desc": "造成物伤，若敌方没有星陨印记，则敌方获得3层星陨印记。"
       }
-    ]
+    ],
+    "monster_id": 336
   },
   "逗逗": {
     "image": "assets/monster/images/wiki/逗逗.png",
@@ -176539,7 +177055,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 320
   },
   "遁地鼠（储水时的样子）": {
     "image": "assets/monster/images/wiki/遁地鼠（储水时的样子）.png",
@@ -176887,7 +177404,8 @@
         "element": "虫",
         "desc": "造成物伤，若敌方本回合更换精灵，己方队伍随机获得3次随机奉献。"
       }
-    ]
+    ],
+    "monster_id": 427
   },
   "遁地鼠（枯水期的样子）": {
     "image": "assets/monster/images/wiki/遁地鼠（枯水期的样子）.png",
@@ -177235,7 +177753,8 @@
         "element": "虫",
         "desc": "造成物伤，若敌方本回合更换精灵，己方队伍随机获得3次随机奉献。"
       }
-    ]
+    ],
+    "monster_id": 426
   },
   "遁鼠（储水时的样子）": {
     "image": "assets/monster/images/wiki/遁鼠（储水时的样子）.png",
@@ -177576,7 +178095,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 425
   },
   "遁鼠（枯水期的样子）": {
     "image": "assets/monster/images/wiki/遁鼠（枯水期的样子）.png",
@@ -177917,7 +178437,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 424
   },
   "邪眼巨魔": {
     "image": "assets/monster/images/wiki/邪眼巨魔.png",
@@ -178286,7 +178807,8 @@
         "element": "恶",
         "desc": "对敌方精灵造成魔法伤害。"
       }
-    ]
+    ],
+    "monster_id": 554
   },
   "鄙目鹬": {
     "image": "assets/monster/images/wiki/鄙目鹬.png",
@@ -178662,7 +179184,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 361
   },
   "酷拉": {
     "image": "assets/monster/images/wiki/酷拉.png",
@@ -179024,7 +179547,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 331
   },
   "里奥": {
     "image": "assets/monster/images/wiki/里奥.png",
@@ -179393,7 +179917,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 253
   },
   "里拉鳐": {
     "image": "assets/monster/images/wiki/里拉鳐.png",
@@ -179776,7 +180301,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 344
   },
   "针叶巡林": {
     "image": "assets/monster/images/wiki/针叶巡林.png",
@@ -180117,7 +180643,8 @@
         "element": "武",
         "desc": "造成物伤，若敌方本回合更换精灵，本次技能威力翻倍。"
       }
-    ]
+    ],
+    "monster_id": 258
   },
   "钨丝贝贝": {
     "image": "assets/monster/images/wiki/钨丝贝贝.png",
@@ -180479,7 +181006,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 499
   },
   "钻石蜗（星彩榴石的样子）": {
     "image": "assets/monster/images/wiki/钻石蜗（星彩榴石的样子）.png",
@@ -180848,7 +181376,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 92
   },
   "钻石蜗（火山琉璃的样子）": {
     "image": "assets/monster/images/wiki/钻石蜗（火山琉璃的样子）.png",
@@ -181217,7 +181746,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 93
   },
   "钻石蜗（烧蓝黄金的样子）": {
     "image": "assets/monster/images/wiki/钻石蜗（烧蓝黄金的样子）.png",
@@ -181586,7 +182116,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 95
   },
   "钻石蜗（莲花刚玉的样子）": {
     "image": "assets/monster/images/wiki/钻石蜗（莲花刚玉的样子）.png",
@@ -181955,7 +182486,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 91
   },
   "钻石蜗（蓝锥矿的样子）": {
     "image": "assets/monster/images/wiki/钻石蜗（蓝锥矿的样子）.png",
@@ -182324,7 +182856,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 94
   },
   "钻石蜗（西瓜碧玺的样子）": {
     "image": "assets/monster/images/wiki/钻石蜗（西瓜碧玺的样子）.png",
@@ -182693,7 +183226,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 90
   },
   "铃兰羊": {
     "image": "assets/monster/images/wiki/铃兰羊.png",
@@ -183013,7 +183547,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 38
   },
   "铆钉毛毛": {
     "image": "assets/monster/images/wiki/铆钉毛毛.png",
@@ -183333,7 +183868,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 575
   },
   "铠甲虫": {
     "image": "assets/monster/images/wiki/铠甲虫.png",
@@ -183674,7 +184210,8 @@
         "element": "虫",
         "desc": "造成物伤，若敌方本回合更换精灵，己方队伍随机获得3次随机奉献。"
       }
-    ]
+    ],
+    "monster_id": 432
   },
   "锤头鹳": {
     "image": "assets/monster/images/wiki/锤头鹳.png",
@@ -184029,7 +184566,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 183
   },
   "锥尾羊": {
     "image": "assets/monster/images/wiki/锥尾羊.png",
@@ -184349,7 +184887,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 37
   },
   "长尾火鸟": {
     "image": "assets/monster/images/wiki/长尾火鸟.png",
@@ -184704,7 +185243,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 529
   },
   "闪电环": {
     "image": "assets/monster/images/wiki/闪电环.png",
@@ -185066,7 +185606,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 332
   },
   "闪电鳗鱼": {
     "image": "assets/monster/images/wiki/闪电鳗鱼.png",
@@ -185428,7 +185969,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 385
   },
   "阿米亚特": {
     "image": "assets/monster/images/wiki/阿米亚特.png",
@@ -185776,7 +186318,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 196
   },
   "阿米樱": {
     "image": "assets/monster/images/wiki/阿米樱.png",
@@ -186124,7 +186667,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 197
   },
   "陨星虫": {
     "image": "assets/monster/images/wiki/陨星虫.png",
@@ -186486,7 +187030,8 @@
         "element": "幻",
         "desc": "造成魔伤，若上回合双方有精灵使用水系技能，敌方获得4层星陨印记。"
       }
-    ]
+    ],
+    "monster_id": 469
   },
   "障眼魔": {
     "image": "assets/monster/images/wiki/障眼魔.png",
@@ -186855,7 +187400,8 @@
         "element": "恶",
         "desc": "对敌方精灵造成魔法伤害。"
       }
-    ]
+    ],
+    "monster_id": 560
   },
   "雅丹鬃": {
     "image": "assets/monster/images/wiki/雅丹鬃.png",
@@ -187175,7 +187721,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 492
   },
   "雪娃娃": {
     "image": "assets/monster/images/wiki/雪娃娃.png",
@@ -187551,7 +188098,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 241
   },
   "雪巨人": {
     "image": "assets/monster/images/wiki/雪巨人.png",
@@ -187892,7 +188440,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 238
   },
   "雪影冰灵": {
     "image": "assets/monster/images/wiki/雪影冰灵.png",
@@ -188247,7 +188796,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 247
   },
   "雪影娃娃": {
     "image": "assets/monster/images/wiki/雪影娃娃.png",
@@ -188602,7 +189152,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 246
   },
   "雪怪": {
     "image": "assets/monster/images/wiki/雪怪.png",
@@ -188957,7 +189508,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 506
   },
   "雪灵": {
     "image": "assets/monster/images/wiki/雪灵.png",
@@ -189333,7 +189885,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 243
   },
   "雪灵兽": {
     "image": "assets/monster/images/wiki/雪灵兽.png",
@@ -189660,7 +190213,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 542
   },
   "雪绒鸟": {
     "image": "assets/monster/images/wiki/雪绒鸟.png",
@@ -190328,7 +190882,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 42
   },
   "雪绒鸟（春天的样子）": {
     "image": "assets/monster/images/wiki/雪绒鸟（春天的样子）.png",
@@ -190662,7 +191217,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 41
   },
   "雪绒鸟（秋天的样子）": {
     "image": "assets/monster/images/wiki/雪绒鸟（秋天的样子）.png",
@@ -190996,7 +191552,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 43
   },
   "雪蛮人": {
     "image": "assets/monster/images/wiki/雪蛮人.png",
@@ -191337,7 +191894,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 237
   },
   "雪豆丁": {
     "image": "assets/monster/images/wiki/雪豆丁.png",
@@ -191678,7 +192236,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 236
   },
   "雪顶布鲁斯": {
     "image": "assets/monster/images/wiki/雪顶布鲁斯.png",
@@ -192012,7 +192571,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 395
   },
   "雷神之子": {
     "image": "assets/monster/images/wiki/雷神之子.png",
@@ -192325,7 +192885,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 541
   },
   "雷鸣小子": {
     "image": "assets/monster/images/wiki/雷鸣小子.png",
@@ -192638,7 +193199,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 540
   },
   "霜翼领主": {
     "image": "assets/monster/images/wiki/霜翼领主.png",
@@ -193306,7 +193868,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 54
   },
   "霜翼领主（春天的样子）": {
     "image": "assets/monster/images/wiki/霜翼领主（春天的样子）.png",
@@ -193640,7 +194203,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 53
   },
   "霜翼领主（秋天的样子）": {
     "image": "assets/monster/images/wiki/霜翼领主（秋天的样子）.png",
@@ -193974,7 +194538,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 55
   },
   "霹雳宝宝": {
     "image": "assets/monster/images/wiki/霹雳宝宝.png",
@@ -194287,7 +194852,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 539
   },
   "霹雳迪迪": {
     "image": "assets/monster/images/wiki/霹雳迪迪.png",
@@ -194600,7 +195166,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 522
   },
   "音碟吼": {
     "image": "assets/monster/images/wiki/音碟吼.png",
@@ -194955,7 +195522,8 @@
         "element": "机械",
         "desc": "对敌方精灵造成魔法伤害。"
       }
-    ]
+    ],
+    "monster_id": 510
   },
   "音速犬": {
     "image": "assets/monster/images/wiki/音速犬.png",
@@ -195268,7 +195836,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 113
   },
   "风暴战犬": {
     "image": "assets/monster/images/wiki/风暴战犬.png",
@@ -195581,7 +196150,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 114
   },
   "风暴酷拉": {
     "image": "assets/monster/images/wiki/风暴酷拉.png",
@@ -195943,7 +196513,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 330
   },
   "风滚暮虫（枯叶的样子）": {
     "image": "assets/monster/images/wiki/风滚暮虫（枯叶的样子）.png",
@@ -196284,7 +196855,8 @@
         "element": "虫",
         "desc": "己方队伍随机获得1次随机奉献；若上回合双方有精灵使用地系技能，额外3次。"
       }
-    ]
+    ],
+    "monster_id": 218
   },
   "风滚暮虫（金黄的样子）": {
     "image": "assets/monster/images/wiki/风滚暮虫（金黄的样子）.png",
@@ -196625,7 +197197,8 @@
         "element": "虫",
         "desc": "己方队伍随机获得1次随机奉献；若上回合双方有精灵使用地系技能，额外3次。"
       }
-    ]
+    ],
+    "monster_id": 217
   },
   "风铃鲨": {
     "image": "assets/monster/images/wiki/风铃鲨.png",
@@ -196945,7 +197518,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 200
   },
   "飞飞钥": {
     "image": "assets/monster/images/wiki/飞飞钥.png",
@@ -197272,7 +197846,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 532
   },
   "食尘短绒": {
     "image": "assets/monster/images/wiki/食尘短绒.png",
@@ -197606,7 +198181,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 448
   },
   "饮雪狂兽": {
     "image": "assets/monster/images/wiki/饮雪狂兽.png",
@@ -197933,7 +198509,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 544
   },
   "香草甜甜": {
     "image": "assets/monster/images/wiki/香草甜甜.png",
@@ -198309,7 +198886,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 365
   },
   "香草甜甜（杨桃饰品）": {
     "image": "assets/monster/images/wiki/香草甜甜（杨桃饰品）.png",
@@ -198685,7 +199263,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 366
   },
   "香草甜甜（蓝莓饰品）": {
     "image": "assets/monster/images/wiki/香草甜甜（蓝莓饰品）.png",
@@ -199061,7 +199640,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 367
   },
   "高帽鹬者": {
     "image": "assets/monster/images/wiki/高帽鹬者.png",
@@ -199437,7 +200017,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 362
   },
   "高脚鹬": {
     "image": "assets/monster/images/wiki/高脚鹬.png",
@@ -199813,7 +200394,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 363
   },
   "魔力猫": {
     "image": "assets/monster/images/wiki/魔力猫.png",
@@ -200175,7 +200757,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
+    ],
+    "monster_id": 8
   },
   "魔眷鸟": {
     "image": "assets/monster/images/wiki/魔眷鸟.png",
@@ -200516,7 +201099,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 195
   },
   "魔翼鸟": {
     "image": "assets/monster/images/wiki/魔翼鸟.png",
@@ -200857,7 +201441,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 194
   },
   "魔草巫灵": {
     "image": "assets/monster/images/wiki/魔草巫灵.png",
@@ -201191,7 +201776,8 @@
         "source": "技能石",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 185
   },
   "鳗尾兽": {
     "image": "assets/monster/images/wiki/鳗尾兽.png",
@@ -201546,7 +202132,8 @@
         "element": "草",
         "desc": "造成物伤，若上回合双方有精灵使用萌系技能，自己回复7能量。"
       }
-    ]
+    ],
+    "monster_id": 325
   },
   "鸭吉吉国王（急急急鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉国王（急急急鸭）.png",
@@ -201880,7 +202467,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 27
   },
   "鸭吉吉国王（燃了鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉国王（燃了鸭）.png",
@@ -202214,7 +202802,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 29
   },
   "鸭吉吉国王（等一等鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉国王（等一等鸭）.png",
@@ -202548,7 +203137,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 28
   },
   "鸭吉吉国王（紧实的样子）": {
     "image": "assets/monster/images/wiki/鸭吉吉国王（紧实的样子）.png",
@@ -202882,7 +203472,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 26
   },
   "鸭吉吉国王（蓬松的样子）": {
     "image": "assets/monster/images/wiki/鸭吉吉国王（蓬松的样子）.png",
@@ -203216,7 +203807,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 25
   },
   "鸭吉吉国王（起来鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉国王（起来鸭）.png",
@@ -203550,7 +204142,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 30
   },
   "鸭吉吉（急急急鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉（急急急鸭）.png",
@@ -203891,7 +204484,8 @@
         "element": "普通",
         "desc": "自己获得物防+140%。"
       }
-    ]
+    ],
+    "monster_id": 22
   },
   "鸭吉吉（燃了鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉（燃了鸭）.png",
@@ -204232,7 +204826,8 @@
         "element": "普通",
         "desc": "自己获得物防+140%。"
       }
-    ]
+    ],
+    "monster_id": 24
   },
   "鸭吉吉（等一等鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉（等一等鸭）.png",
@@ -204573,7 +205168,8 @@
         "element": "普通",
         "desc": "自己获得连击数+3。"
       }
-    ]
+    ],
+    "monster_id": 23
   },
   "鸭吉吉（紧实的样子）": {
     "image": "assets/monster/images/wiki/鸭吉吉（紧实的样子）.png",
@@ -204914,7 +205510,8 @@
         "element": "普通",
         "desc": "自己获得连击数+3。"
       }
-    ]
+    ],
+    "monster_id": 20
   },
   "鸭吉吉（蓬松的样子）": {
     "image": "assets/monster/images/wiki/鸭吉吉（蓬松的样子）.png",
@@ -205255,7 +205852,8 @@
         "element": "普通",
         "desc": "自己获得物防+140%。"
       }
-    ]
+    ],
+    "monster_id": 19
   },
   "鸭吉吉（起来鸭）": {
     "image": "assets/monster/images/wiki/鸭吉吉（起来鸭）.png",
@@ -205596,7 +206194,8 @@
         "element": "普通",
         "desc": "自己获得连击数+3。"
       }
-    ]
+    ],
+    "monster_id": 21
   },
   "黄蜂后": {
     "image": "assets/monster/images/wiki/黄蜂后.png",
@@ -205958,7 +206557,8 @@
         "source": "技能石",
         "type": "防御"
       }
-    ]
+    ],
+    "monster_id": 173
   },
   "黑化加尔": {
     "image": "assets/monster/images/wiki/黑化加尔.png",
@@ -206348,7 +206948,8 @@
         "source": "传说",
         "type": "魔攻"
       }
-    ]
+    ],
+    "monster_id": 569
   },
   "黑猫密探": {
     "image": "assets/monster/images/wiki/黑猫密探.png",
@@ -206668,7 +207269,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 223
   },
   "黑猫巫师": {
     "image": "assets/monster/images/wiki/黑猫巫师.png",
@@ -206988,7 +207590,8 @@
         "source": "技能石",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 222
   },
   "黑羽夫人": {
     "image": "assets/monster/images/wiki/黑羽夫人.png",
@@ -207364,7 +207967,8 @@
         "element": "恶",
         "desc": "敌方的属性增益变为对应的属性减益。"
       }
-    ]
+    ],
+    "monster_id": 182
   },
   "龙息帕尔": {
     "image": "assets/monster/images/wiki/龙息帕尔.png",
@@ -207698,7 +208302,8 @@
         "source": "传说",
         "type": "状态"
       }
-    ]
+    ],
+    "monster_id": 445
   },
   "龙鱼": {
     "image": "assets/monster/images/wiki/龙鱼.png",
@@ -208060,23 +208665,8 @@
         "source": "技能石",
         "type": "物攻"
       }
-    ]
-  },
-  "圣剑-X": {
-    "image": "assets/monster/images/wiki/圣剑_X.png",
-    "skills": [
-      {
-        "name": "拖拉机",
-        "source": "技能石",
-        "type": "物攻",
-        "element": "机械",
-        "desc": "造成物伤，位于1号位时，先手+1。传动1。"
-      }
-    ]
-  },
-  "权杖-V": {
-    "image": "assets/monster/images/wiki/权杖_V.png",
-    "skills": []
+    ],
+    "monster_id": 383
   },
   "银月狼王": {
     "image": "assets/monster/images/wiki/银月狼王.png",
@@ -208369,7 +208959,7 @@
         "desc": "造成物伤，应对状态：使敌方失去6能量。"
       },
       {
-        "name": "擦影",
+        "name": "掠影",
         "element": "幽",
         "type": "物攻",
         "source": "默认",
@@ -208410,7 +209000,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 595
   },
   "布灵布灵": {
     "image": "assets/monster/images/wiki/布灵布灵.png",
@@ -208723,7 +209314,8 @@
         "source": "技能石",
         "desc": "驱散敌方所有增益。"
       }
-    ]
+    ],
+    "monster_id": 596
   },
   "摇铃魔偶": {
     "image": "assets/monster/images/wiki/摇铃魔偶.png",
@@ -209043,7 +209635,8 @@
         "source": "技能石",
         "desc": "减伤100%，应对攻击：减免的伤害变为回复自己生命，且本技能能耗永久+2。"
       }
-    ]
+    ],
+    "monster_id": 597
   },
   "黑手浣熊": {
     "image": "assets/monster/images/wiki/黑手浣熊.png",
@@ -209391,7 +209984,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 598
   },
   "测风蝉": {
     "image": "assets/monster/images/wiki/测风蝉.png",
@@ -209739,7 +210333,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 599
   },
   "玳塔": {
     "image": "assets/monster/images/wiki/玳塔.png",
@@ -210052,7 +210647,8 @@
         "source": "默认",
         "desc": "减伤60%，应对攻击：本回合受到致命伤害时，保留1生命值。"
       }
-    ]
+    ],
+    "monster_id": 600
   },
   "未完虫": {
     "image": "assets/monster/images/wiki/未完虫.png",
@@ -210393,7 +210989,8 @@
         "source": "技能石",
         "desc": "敌方获得物攻-60%，速度-60。"
       }
-    ]
+    ],
+    "monster_id": 601
   },
   "智辉章脑": {
     "image": "assets/monster/images/wiki/智辉章脑.png",
@@ -210706,7 +211303,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 602
   },
   "圣凯布米龙": {
     "image": "assets/monster/images/wiki/圣凯布米龙.png",
@@ -211019,7 +211617,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 603
   },
   "月使鸷纳": {
     "image": "assets/monster/images/wiki/月使鸷纳.png",
@@ -211367,7 +211966,8 @@
         "source": "技能石",
         "desc": "减伤80%，应对攻击：期间自己每次受到伤害，获得双攻+40%。"
       }
-    ]
+    ],
+    "monster_id": 604
   },
   "星星眼": {
     "image": "assets/monster/images/wiki/星星眼.png",
@@ -211680,7 +212280,8 @@
         "element": "普通",
         "desc": "减伤100%，应对攻击：减免的伤害变为回复自己生命，且本技能能耗永久+2。"
       }
-    ]
+    ],
+    "monster_id": 605
   },
   "月辉鸠": {
     "image": "assets/monster/images/wiki/月辉鸠.png",
@@ -212028,7 +212629,8 @@
         "source": "技能石",
         "desc": "减伤80%，应对攻击：期间自己每次受到伤害，获得双攻+40%。"
       }
-    ]
+    ],
+    "monster_id": 606
   },
   "热团团": {
     "image": "assets/monster/images/wiki/热团团.png",
@@ -212341,7 +212943,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 607
   },
   "焰米龙": {
     "image": "assets/monster/images/wiki/焰米龙.png",
@@ -212654,7 +213257,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 608
   },
   "章脑丸": {
     "image": "assets/monster/images/wiki/章脑丸.png",
@@ -212967,7 +213571,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 609
   },
   "斑鱼": {
     "image": "assets/monster/images/wiki/斑鱼.png",
@@ -213280,7 +213885,8 @@
         "source": "默认",
         "desc": "减伤60%，应对攻击：本回合受到致命伤害时，保留1生命值。"
       }
-    ]
+    ],
+    "monster_id": 610
   },
   "量风碗": {
     "image": "assets/monster/images/wiki/量风碗.png",
@@ -213628,7 +214234,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 611
   },
   "小浣蛋": {
     "image": "assets/monster/images/wiki/小浣蛋.png",
@@ -213976,7 +214583,8 @@
         "source": "默认",
         "desc": "减伤70%，应对攻击。"
       }
-    ]
+    ],
+    "monster_id": 612
   },
   "幽铃": {
     "image": "assets/monster/images/wiki/幽铃.png",
@@ -214296,7 +214904,8 @@
         "source": "技能石",
         "desc": "减伤100%，应对攻击：减免的伤害变为回复自己生命，且本技能能耗永久+2。"
       }
-    ]
+    ],
+    "monster_id": 613
   },
   "布灵": {
     "image": "assets/monster/images/wiki/布灵.png",
@@ -214609,7 +215218,8 @@
         "source": "技能石",
         "desc": "驱散敌方所有增益。"
       }
-    ]
+    ],
+    "monster_id": 614
   },
   "新月鸷": {
     "image": "assets/monster/images/wiki/新月鸷.png",
@@ -214957,11 +215567,13 @@
         "source": "技能石",
         "desc": "减伤80%，应对攻击：期间自己每次受到伤害，获得双攻+40%。"
       }
-    ]
+    ],
+    "monster_id": 615
   },
   "诅咒狼灵": {
     "image": "assets/monster/images/wiki/诅咒狼灵.png",
-    "skills": []
+    "skills": [],
+    "monster_id": 616
   },
   "果实立方人": {
     "image": "assets/monster/images/wiki/果实立方人.png",
@@ -215267,10 +215879,12 @@
         "element": "地",
         "desc": "减伤80%，应对攻击：敌方获得连击数-3。"
       }
-    ]
+    ],
+    "monster_id": 618
   },
   "新月狼灵": {
     "image": "assets/monster/images/wiki/新月狼灵.png",
-    "skills": []
+    "skills": [],
+    "monster_id": 617
   }
 }

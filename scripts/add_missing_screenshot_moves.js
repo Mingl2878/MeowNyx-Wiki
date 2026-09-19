@@ -1,6 +1,7 @@
+import { readWiki, writeWiki } from './lib/wiki-data.js';
 const root = 'D:/echoagent/MeowNyx Wiki';
 const moves = await Bun.file(`${root}/data/moves.json`).json();
-const wiki = await Bun.file(`${root}/data/wiki_monster_data.json`).json();
+const wiki = readWiki(root);
 const types = await Bun.file(`${root}/data/types.json`).json();
 const typeByName = new Map(types.map(type => [type.localized.zh, type]));
 const known = new Set(moves.map(move => move.localized?.zh?.name));
@@ -44,5 +45,5 @@ for (const monster of Object.values(wiki)) {
   }
 }
 await Bun.write(`${root}/data/moves.json`, `${JSON.stringify(moves, null, 2)}\n`);
-await Bun.write(`${root}/data/wiki_monster_data.json`, `${JSON.stringify(wiki, null, 2)}\n`);
+writeWiki(root, wiki);
 console.log(`已补充 ${newMoves.filter(([name]) => !known.has(name)).length} 个截图可确认的技能基础条目。`);

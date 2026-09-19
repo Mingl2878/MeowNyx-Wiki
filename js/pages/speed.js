@@ -10,12 +10,14 @@ const SpeedPage = (function () {
   // 结构: { "speed值": [monsterId, monsterId, ...] }
   let petPriority = {};
   function loadPetPriority() {
+    if (window.UserConfig) { petPriority = window.UserConfig.getObject(PET_PRIORITY_KEY, {}); return; }
     try {
       const raw = localStorage.getItem(PET_PRIORITY_KEY);
       petPriority = raw ? JSON.parse(raw) : {};
     } catch (e) { petPriority = {}; }
   }
-  function savePetPriority() {
+  function savePetPriority(speed) {
+    if (window.UserConfig) { void window.UserConfig.patch(PET_PRIORITY_KEY, { [speed]: petPriority[speed] }); return; }
     try { localStorage.setItem(PET_PRIORITY_KEY, JSON.stringify(petPriority)); } catch (e) {}
   }
   function recordPetSearch(monster) {
@@ -28,7 +30,7 @@ const SpeedPage = (function () {
     petPriority[spd].unshift(monster.id);
     // 限制每行最多记录 20 条
     if (petPriority[spd].length > 20) petPriority[spd].length = 20;
-    savePetPriority();
+    savePetPriority(spd);
   }
   function getPetPriority(spd) {
     return petPriority[spd] || [];
@@ -38,12 +40,14 @@ const SpeedPage = (function () {
   /* ===== 形态覆盖持久化（localStorage） ===== */
   const FORM_OVERRIDE_KEY = 'rk_speed_form_overrides';
   function loadFormOverrides() {
+    if (window.UserConfig) { tierState.formOverrides = window.UserConfig.getObject(FORM_OVERRIDE_KEY, {}); return; }
     try {
       const raw = localStorage.getItem(FORM_OVERRIDE_KEY);
       tierState.formOverrides = raw ? JSON.parse(raw) : {};
     } catch (e) { tierState.formOverrides = {}; }
   }
-  function saveFormOverrides() {
+  function saveFormOverrides(key) {
+    if (window.UserConfig) { void window.UserConfig.patch(FORM_OVERRIDE_KEY, { [key]: tierState.formOverrides[key] ?? null }); return; }
     try { localStorage.setItem(FORM_OVERRIDE_KEY, JSON.stringify(tierState.formOverrides)); } catch (e) {}
   }
   function getFormGroupKey(m) {
@@ -61,9 +65,13 @@ const SpeedPage = (function () {
       // 选子形态：设置覆盖
       tierState.formOverrides[key] = m.id;
     }
-    saveFormOverrides();
+    saveFormOverrides(key);
   }
   loadFormOverrides();
+
+  // Current controls/search/selection are intentionally process-memory only.
+  // Page navigation keeps tierState; a fresh WebView starts from the defaults above.
+  // Historical persisted view values are neither imported nor read/written here.
 
   /* ===== 属性计算公式（与 data.js getPetStat 一致，非HP） ===== */
   function calcSpeedStat(base, iv, nature) {
@@ -77,8 +85,10 @@ const SpeedPage = (function () {
   }
 
   function render(container) {
+    onLeave();
+    loadPetPriority(); loadFormOverrides();
     container.innerHTML = `
-      <div class="speed-tier-box scroll-container">
+      <div class="speed-tier-box speed-responsive scroll-container">
         <div class="speed-tier-controls" style="flex-direction:column; align-items:center; gap:12px;">
           <div class="tier-ctrl-group" style="display:flex; justify-content:center;">
             <div id="tier-search-slot"></div>
@@ -148,6 +158,7 @@ const SpeedPage = (function () {
     }
     document.getElementById('tier-search-slot').appendChild(acSearch.wrapper);
     renderTierTable();
+    bindResponsiveLayout();
   }
 
   /* ===== 形态组索引（用于多形态精灵去重） ===== */
@@ -316,10 +327,11 @@ const SpeedPage = (function () {
       ...(tierState.showMonsters ? [{ key: 'monsters', label: '精灵' }] : [])
     ];
 
+    const rowPets = [];
     let html = '<colgroup>';
-    cols.forEach(c => { html += `<col${c.key === 'monsters' ? ' style="width:auto;"' : ' style="width:185px;"'}>`; });
+    cols.forEach(c => { html += `<col data-col-key="${c.key}">`; });
     html += '</colgroup><thead><tr>';
-    cols.forEach(c => { html += `<th${c.key === 'monsters' ? ' class="th-monsters"' : ''}>${c.label}</th>`; });
+    cols.forEach(c => { html += `<th${c.key === 'monsters' ? ' class="th-monsters"' : ''}><span class="speed-column-label">${c.label}</span></th>`; });
     html += '</tr></thead><tbody>';
 
     // 计算高亮行各列的值（用于比较）
@@ -349,7 +361,7 @@ const SpeedPage = (function () {
       const hasSelection = isHighlight && tierState.selectedCol;
       const rowClass = isHighlight ? 'tier-highlight' : '';
       html += `<tr class="${rowClass}">`;
-      html += `<td class="td-speed">${base}</td>`;
+      html += `<td class="td-speed"><span class="speed-column-label">${base}</span></td>`;
 
       // 构建列数据（根据开关动态插入）
       const colOrder = [];
@@ -391,7 +403,7 @@ const SpeedPage = (function () {
             cellClass += ' tier-grayed';
           }
         }
-        html += `<td class="${cellClass.trim()}" data-col="${colKey}" data-speed="${base}" style="cursor:pointer;">${val}</td>`;
+        html += `<td class="${cellClass.trim()}" data-col="${colKey}" data-speed="${base}" style="cursor:pointer;"><span class="speed-column-label">${val}</span></td>`;
       });
       // 精灵列
       if (tierState.showMonsters) {
@@ -428,28 +440,10 @@ const SpeedPage = (function () {
           if (bi === -1) return -1;
           return ai - bi;
         });
-        const petsSliced = pets.slice(0, 13);
-        // 搜索精灵：如果该精灵属于当前行速度且不在列表中，插入到首位
-        if (highlightMonster && highlightMonster.base_spd === base) {
-          const idx = petsSliced.findIndex(m => m.id === highlightMonster.id);
-          if (idx === -1) {
-            petsSliced.unshift(highlightMonster);
-            if (petsSliced.length > 13) petsSliced.pop();
-          } else if (idx > 0) {
-            petsSliced.unshift(petsSliced.splice(idx, 1)[0]);
-          }
-        }
-        let petImgs = '';
-        const petIds = [];
-        petsSliced.forEach(m => {
-          const name = RKData.getMonsterDisplayName(m);
-          const img = m.image ? `assets/monster/images/${m.image}` : '';
-          if (img) {
-            petImgs += `<img src="${img}" title="${name}" data-pet-id="${m.id}" style="width:32px;height:32px;object-fit:cover;border-radius:3px;margin:0 1px;cursor:pointer;vertical-align:middle;" onerror="this.style.display='none'">`;
-            petIds.push(m.id);
-          }
-        });
-        html += `<td class="td-monsters" style="text-align:left;padding:3px 8px;line-height:0;white-space:nowrap;">${petImgs || ''}</td>`;
+        // Keep the complete eligible pool. Search injection/priority precedes viewport slicing.
+        const orderedPets = prioritizeSearchedPet(pets, highlightMonster?.base_spd === base ? highlightMonster : null);
+        rowPets.push(orderedPets);
+        html += '<td class="td-monsters" style="text-align:left;padding:3px 8px;line-height:0;white-space:nowrap;"><div class="speed-avatar-strip"></div></td>';
       }
       html += '</tr>';
     });
@@ -478,19 +472,120 @@ const SpeedPage = (function () {
       });
     });
 
-    // 绑定精灵头像点击事件 —— 打开精灵详情弹窗
-    table.querySelectorAll('img[data-pet-id]').forEach(img => {
-      img.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const id = parseInt(this.dataset.petId);
-        if (PetDexPage && PetDexPage.showPetDetail) {
-          PetDexPage.showPetDetail(id);
-        }
-      });
-    });
+    // Delegate once: capacity changes replace avatars, never the whole table or numeric handlers.
+    table.onclick = e => {
+      const avatar = e.target.closest('.speed-tier-avatar[data-pet-id]');
+      if (!avatar) return;
+      e.stopPropagation();
+      if (typeof PetDexPage !== 'undefined' && PetDexPage.showPetDetail) PetDexPage.showPetDetail(Number(avatar.dataset.petId));
+    };
+    layoutState = { table, rowPets, hasHighlight: highlightSpeed !== null };
+    updateResponsiveLayout();
+  }
 
-    // 定位 overlay 边框
-    positionOverlay(table, highlightSpeed !== null);
+  // Capacity is a layout-pixel calculation, independent of visual/CSS zoom.
+  function avatarCapacity(width, avatarWidth = 32, margin = 1) {
+    const stride = avatarWidth + 2 * margin;
+    return Number.isFinite(width) && stride > 0 ? Math.max(0, Math.floor(width / stride)) : 0;
+  }
+
+  function prioritizeSearchedPet(pets, searched) {
+    if (!searched) return pets.slice();
+    return [searched, ...pets.filter(pet => pet.id !== searched.id)];
+  }
+
+  let layoutState = null;
+  let layoutFrame = null;
+  let layoutObserver = null;
+  let layoutGeneration = 0;
+  const layoutEvents = ['resize', 'appzoomchange', 'appfontchange'];
+
+  function scheduleResponsiveLayout() {
+    if (!layoutState || layoutFrame !== null) return;
+    layoutFrame = requestAnimationFrame(() => {
+      layoutFrame = null;
+      updateResponsiveLayout();
+    });
+  }
+
+  function bindResponsiveLayout() {
+    const generation = layoutGeneration;
+    layoutEvents.forEach(type => window.addEventListener(type, scheduleResponsiveLayout));
+    document.fonts?.addEventListener('loadingdone', scheduleResponsiveLayout);
+    document.fonts?.ready.then(() => {
+      if (generation === layoutGeneration) scheduleResponsiveLayout();
+    });
+    if (typeof ResizeObserver !== 'undefined' && layoutState) {
+      let lastWidth = -1;
+      layoutObserver = new ResizeObserver(entries => {
+        const width = entries[0]?.contentRect.width;
+        // Height changes (e.g. populated rows) must not drive another layout pass.
+        if (width === lastWidth) return;
+        lastWidth = width;
+        scheduleResponsiveLayout();
+      });
+      layoutObserver.observe(layoutState.table.parentElement);
+    }
+  }
+
+  function onLeave() {
+    layoutGeneration++;
+    layoutEvents.forEach(type => window.removeEventListener(type, scheduleResponsiveLayout));
+    document.fonts?.removeEventListener('loadingdone', scheduleResponsiveLayout);
+    layoutObserver?.disconnect();
+    layoutObserver = null;
+    if (layoutFrame !== null) cancelAnimationFrame(layoutFrame);
+    layoutFrame = null;
+    layoutState = null;
+  }
+
+  function updateResponsiveLayout() {
+    if (!layoutState || !layoutState.table.isConnected) return;
+    const { table, rowPets, hasHighlight } = layoutState;
+    const columns = [...table.querySelectorAll('col')];
+    const headers = [...table.querySelectorAll('thead th')];
+    const numeric = columns.map((col, i) => ({ col, i })).filter(({ col }) => col.dataset.colKey !== 'monsters');
+    const hasAvatars = columns.some(col => col.dataset.colKey === 'monsters');
+    // Keep the former 185px numeric width when there is room. On narrow windows shrink
+    // only to the actual text footprint, then scroll horizontally rather than crushing avatars.
+    const minimums = numeric.map(({ i }) => {
+      const widths = [...table.querySelectorAll(`tr > :nth-child(${i + 1}) .speed-column-label`)].map(label => label.offsetWidth);
+      const style = getComputedStyle(headers[i]);
+      return Math.ceil(Math.max(0, ...widths) + (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0) + 2);
+    });
+    const avatarHeader = headers[columns.findIndex(col => col.dataset.colKey === 'monsters')];
+    const avatarHeaderStyle = avatarHeader && getComputedStyle(avatarHeader);
+    const avatarHeadingWidth = avatarHeader ? (avatarHeader.querySelector('.speed-column-label')?.offsetWidth || 0) +
+      (parseFloat(avatarHeaderStyle.paddingLeft) || 0) + (parseFloat(avatarHeaderStyle.paddingRight) || 0) : 0;
+    const avatarMinimum = hasAvatars ? Math.max(32 + 2 + 16, avatarHeadingWidth) + 2 : 0;
+    const minimumWidth = minimums.reduce((sum, n) => sum + n, 0) + avatarMinimum;
+    const minWidthStyle = `${minimumWidth}px`;
+    if (table.style.minWidth !== minWidthStyle) table.style.minWidth = minWidthStyle;
+    const spare = Math.max(0, table.parentElement.clientWidth - minimumWidth);
+    const preferredExtra = minimums.map(n => Math.max(0, 185 - n));
+    const extraTotal = preferredExtra.reduce((sum, n) => sum + n, 0);
+    const fraction = extraTotal ? Math.min(1, spare / extraTotal) : 0;
+    numeric.forEach(({ col }, i) => {
+      const width = `${minimums[i] + preferredExtra[i] * fraction}px`;
+      if (col.style.width !== width) col.style.width = width;
+    });
+    const strips = [...table.querySelectorAll('.speed-avatar-strip')];
+    // Read every width before writing avatars; fixed layout and the clipped strips make
+    // capacity independent of their contents, so adding/removing avatars cannot feed back.
+    const capacities = strips.map(strip => avatarCapacity(parseFloat(getComputedStyle(strip).width)));
+    strips.forEach((strip, i) => {
+      const capacity = capacities[i];
+      if (strip.dataset.capacity === String(capacity)) return;
+      strip.dataset.capacity = String(capacity);
+      strip.innerHTML = rowPets[i].slice(0, capacity).map(m => {
+        const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const rawName = RKData.getMonsterDisplayName(m);
+        const name = escape(rawName);
+        const image = m.image ? `<img src="${escape('assets/monster/images/' + m.image)}" alt="" loading="lazy">` : escape(rawName.charAt(0));
+        return `<button type="button" class="speed-tier-avatar" title="${name}" aria-label="${name}" data-pet-id="${m.id}">${image}</button>`;
+      }).join('');
+    });
+    positionOverlay(table, hasHighlight);
   }
 
   function positionOverlay(table, hasHighlight) {
@@ -538,5 +633,5 @@ const SpeedPage = (function () {
     }
   }
 
-  return { render };
+  return { render, onLeave };
 })();

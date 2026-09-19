@@ -2,10 +2,10 @@
 ; 用 Inno Setup 6.x 打开本文件，编译生成安装包
 ; 下载地址: https://jrsoftware.org/isdl.php
 
-#define MyAppName "小黑猫 Wiki"
-#ifndef MyAppVersion
-  #define MyAppVersion "1.0.0"
-#endif
+#define MyAppName "小黑猫 wiki"
+#define VersionHandle FileOpen(AddBackslash(SourcePath) + "version.txt")
+#define MyAppVersion Trim(FileRead(VersionHandle))
+#expr FileClose(VersionHandle)
 #define MyAppExeName "小黑猫 Wiki.exe"
 #define MyAppPublisher "akikocc"
 
@@ -13,6 +13,7 @@
 AppId={{B7A5C4E2-9F8D-4A3E-8E6F-2C1D5A9B7E4F}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+AppVerName={#MyAppName} 版本{#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
@@ -21,6 +22,7 @@ OutputDir=dist
 OutputBaseFilename=小黑猫Wiki-Setup-v{#MyAppVersion}
 Compression=lzma2/max
 SolidCompression=yes
+ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=lowest
 ; 如有图标可取消注释
@@ -64,7 +66,7 @@ procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssInstall then
   begin
-    if not WebView2Installed then
+    if WizardIsTaskSelected('webview2') and not WebView2Installed then
     begin
       // 下载 WebView2 安装器到临时目录（参数：URL、文件名、SHA256校验、进度回调）
       DownloadTemporaryFile('https://go.microsoft.com/fwlink/p/?LinkId=2124703', 'MicrosoftEdgeWebview2Setup.exe', '', nil);

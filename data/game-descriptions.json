@@ -1,0 +1,380 @@
+[
+  {
+    "id": "glossary-01",
+    "name": "中毒",
+    "category": "状态",
+    "attribute": "毒系",
+    "description": "回合结束时，造成3%生命的毒系伤害。（毒系精灵免疫此效果）"
+  },
+  {
+    "id": "glossary-02",
+    "name": "灼烧",
+    "category": "状态",
+    "attribute": "火系",
+    "description": "回合结束时，造成2%生命的火系伤害，并衰减一半层数。（火系精灵免疫此效果）"
+  },
+  {
+    "id": "glossary-03",
+    "name": "脱离",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "精灵离场，并选择队伍里一只其他精灵替换入场。本回合入场的精灵免疫此效果。"
+  },
+  {
+    "id": "glossary-04",
+    "name": "冻结",
+    "category": "状态",
+    "attribute": "冰系",
+    "description": "冻结5%生命，若当前生命低于冻结比例，则力竭。（冰系精灵免疫此效果）"
+  },
+  {
+    "id": "glossary-05",
+    "name": "迅捷",
+    "category": "战斗规则",
+    "attribute": null,
+    "description": "通过主动更换精灵的方式入场时，使用第一个能量满足要求，并带有迅捷的技能。"
+  },
+  {
+    "id": "glossary-06",
+    "name": "萌化",
+    "category": "状态",
+    "attribute": "萌系",
+    "description": "退化到上一阶，种族资质相应降低。（可退化的精灵才可以获得萌化，下场不会消失）"
+  },
+  {
+    "id": "glossary-07",
+    "name": "蓄力",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "该技能需要先蓄力1回合，下回合才能释放。蓄力期间免疫所有离场效果。"
+  },
+  {
+    "id": "glossary-08",
+    "name": "寄生",
+    "category": "状态",
+    "attribute": "草系",
+    "description": "回合结束时，从寄生来源吸收2%生命。（草系精灵免疫此效果）"
+  },
+  {
+    "id": "glossary-09",
+    "name": "奉献",
+    "category": "战斗规则",
+    "attribute": "虫系",
+    "description": "使己方队伍中所有的「啃咬」和「虫群」技能获得奉献对应的强化效果。"
+  },
+  {
+    "id": "glossary-10",
+    "name": "迸发",
+    "category": "其他",
+    "attribute": null,
+    "description": "入场后的首次行动，会获得额外效果。"
+  },
+  {
+    "id": "glossary-11",
+    "name": "打断",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "使敌方本次无法释放对应技能。"
+  },
+  {
+    "id": "glossary-12",
+    "name": "增益",
+    "category": "状态",
+    "attribute": null,
+    "description": "增加属性、技能威力、连击数，以及降低能耗、吸血、过载等效果。（不包括类型为“印记”、“特性”、“其他”的效果）"
+  },
+  {
+    "id": "glossary-13",
+    "name": "减益",
+    "category": "状态",
+    "attribute": null,
+    "description": "降低属性、技能威力、连击数，以及增加能耗、中毒、灼烧、寄生、冻结、萌化、引电等效果。（不包括类型为“印记”、“特性”、“其他”的效果）"
+  },
+  {
+    "id": "glossary-14",
+    "name": "中毒印记",
+    "category": "印记",
+    "attribute": "毒系",
+    "description": "印记效果，回合结束造成3%生命的毒系伤害。"
+  },
+  {
+    "id": "glossary-15",
+    "name": "应对状态",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "若敌方使用状态技能，则本技能应对成功，本次行动必定先手，且触发应对效果。"
+  },
+  {
+    "id": "glossary-16",
+    "name": "应对攻击",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "若敌方使用攻击技能，则本技能应对成功，本次行动必定先手，且触发应对效果。使用后，携带的防御技能进入1回合冷却。"
+  },
+  {
+    "id": "glossary-17",
+    "name": "应对防御",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "若敌方使用防御技能，则本技能应对成功，本次行动必定先手，且触发应对效果。"
+  },
+  {
+    "id": "glossary-18",
+    "name": "攻击印记",
+    "category": "印记",
+    "attribute": null,
+    "description": "印记效果，全技能威力+10%。"
+  },
+  {
+    "id": "glossary-19",
+    "name": "棘刺印记",
+    "category": "印记",
+    "attribute": null,
+    "description": "印记效果，场上的精灵离场后，更换入场的精灵失去6%生命。"
+  },
+  {
+    "id": "glossary-20",
+    "name": "先手",
+    "category": "战斗规则",
+    "attribute": null,
+    "description": "技能行动的优先级，先手度更高的技能忽略双方精灵速度差异，优先释放，先手度可叠加。"
+  },
+  {
+    "id": "glossary-21",
+    "name": "光合印记",
+    "category": "印记",
+    "attribute": "草系",
+    "description": "印记效果，回合结束时获得1能量。"
+  },
+  {
+    "id": "glossary-22",
+    "name": "湿润印记",
+    "category": "印记",
+    "attribute": "水系",
+    "description": "印记效果，全技能能耗-1。"
+  },
+  {
+    "id": "glossary-23",
+    "name": "蓄电印记",
+    "category": "印记",
+    "attribute": "电系",
+    "description": "印记效果，攻击技能获得迸发：本次威力+10。"
+  },
+  {
+    "id": "glossary-24",
+    "name": "返场",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "精灵离场，并立即入场。本回合入场的精灵免疫此效果。"
+  },
+  {
+    "id": "glossary-25",
+    "name": "紧急脱离",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "精灵离场，并随机选择队伍里一只其他精灵替换入场。本回合入场的精灵免疫此效果。"
+  },
+  {
+    "id": "glossary-26",
+    "name": "风起印记",
+    "category": "印记",
+    "attribute": "翼系",
+    "description": "印记效果，先手攻击时，本次技能威力+20%。"
+  },
+  {
+    "id": "glossary-27",
+    "name": "降灵印记",
+    "category": "印记",
+    "attribute": "幽系",
+    "description": "印记效果，场上的精灵离场后，更换入场的精灵失去1能量。"
+  },
+  {
+    "id": "glossary-28",
+    "name": "吸血",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "造成伤害时，根据吸血比例和造成伤害值，回复生命。"
+  },
+  {
+    "id": "glossary-29",
+    "name": "蓄势印记",
+    "category": "印记",
+    "attribute": null,
+    "description": "印记效果，全攻击技能威力+30%，且能耗+1。"
+  },
+  {
+    "id": "glossary-30",
+    "name": "龙噬印记",
+    "category": "印记",
+    "attribute": "龙系",
+    "description": "印记效果，释放3能耗技能后，获得双攻+40%。"
+  },
+  {
+    "id": "glossary-31",
+    "name": "减速印记",
+    "category": "印记",
+    "attribute": null,
+    "description": "印记效果，速度-10。"
+  },
+  {
+    "id": "glossary-32",
+    "name": "传动",
+    "category": "战斗规则",
+    "attribute": null,
+    "description": "回合开始时，带有“传动X”的技能会向下移动X个位置，该效果可叠加。"
+  },
+  {
+    "id": "glossary-33",
+    "name": "星陨印记",
+    "category": "印记",
+    "attribute": "幻系",
+    "description": "印记效果，使用非幻系技能攻击拥有此印记的精灵时，会触发星陨印记，消耗全部星陨层数，对其造成额外的幻系伤害。"
+  },
+  {
+    "id": "glossary-34",
+    "name": "中毒效果",
+    "category": "状态",
+    "attribute": "毒系",
+    "description": "包括中毒和中毒印记。"
+  },
+  {
+    "id": "glossary-35",
+    "name": "连击数",
+    "category": "战斗规则",
+    "attribute": null,
+    "description": "改变连击次数，仅对有连击的技能生效。"
+  },
+  {
+    "id": "glossary-36",
+    "name": "沙暴",
+    "category": "天气",
+    "attribute": "地系",
+    "description": "天气为沙暴时，双方的地系技能能耗减半。"
+  },
+  {
+    "id": "glossary-37",
+    "name": "暴风雪",
+    "category": "天气",
+    "attribute": "冰系",
+    "description": "天气为暴风雪时，双方每回合结束获得2层冻结。（冰系精灵免疫此效果）"
+  },
+  {
+    "id": "glossary-38",
+    "name": "雨天",
+    "category": "天气",
+    "attribute": "水系",
+    "description": "天气为雨天时，双方的水系技能威力+75%。"
+  },
+  {
+    "id": "glossary-39",
+    "name": "离场",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "通过主动更换精灵或触发脱离效果的方式下场。（不包括精灵力竭后下场）"
+  },
+  {
+    "id": "glossary-40",
+    "name": "印记",
+    "category": "印记",
+    "attribute": null,
+    "description": "精灵下场后印记不会消失，新入场的精灵会继承印记效果。精灵最多同时拥有1种正面印记和1种负面印记。"
+  },
+  {
+    "id": "glossary-41",
+    "name": "巧变",
+    "category": "战斗规则",
+    "attribute": null,
+    "description": "使用后会变为指定范围内的随机技能，且能耗-1。使用该随机技能后会变回原技能。"
+  },
+  {
+    "id": "glossary-42",
+    "name": "萌芽印记",
+    "category": "印记",
+    "attribute": null,
+    "description": "获得增益时，会额外获得1层。"
+  },
+  {
+    "id": "glossary-43",
+    "name": "附加中毒",
+    "category": "战斗规则",
+    "attribute": "毒系",
+    "description": "使用附加中毒X的技能会使敌方获得X层中毒。"
+  },
+  {
+    "id": "glossary-44",
+    "name": "属性增益",
+    "category": "状态",
+    "attribute": null,
+    "description": "增益的其中一种类型，指提升物攻、魔攻、物防、魔防、速度的增益。"
+  },
+  {
+    "id": "glossary-45",
+    "name": "混血精灵",
+    "category": "其他",
+    "attribute": null,
+    "description": "非本系血脉的精灵，包括非本系的系别血脉、首领血脉、奇异血脉、污染血脉等。"
+  },
+  {
+    "id": "glossary-46",
+    "name": "属性减益",
+    "category": "状态",
+    "attribute": null,
+    "description": "减益的其中一种类型，指降低物攻、魔攻、物防、魔防、速度的减益。"
+  },
+  {
+    "id": "glossary-47",
+    "name": "选择",
+    "category": "战斗动作",
+    "attribute": null,
+    "description": "可以从2个效果中选择1个使用。（2个效果视为相同技能，分别记为「明」和「暗」）"
+  },
+  {
+    "id": "glossary-48",
+    "name": "暗涌印记",
+    "category": "印记",
+    "attribute": null,
+    "description": "印记效果，场上的精灵离场后，更换入场的精灵获得随机5层属性减益。"
+  },
+  {
+    "id": "glossary-49",
+    "name": "雷鸣",
+    "category": "天气",
+    "attribute": "电系",
+    "description": "天气为雷鸣时，双方每回合结束获得1层引电。（电系精灵免疫此效果）"
+  },
+  {
+    "id": "glossary-50",
+    "name": "引电",
+    "category": "状态",
+    "attribute": "电系",
+    "description": "获得2层引电时，立即受到25%生命的电系伤害，并失去2层引电。（电系精灵免疫此效果）"
+  },
+  {
+    "id": "glossary-51",
+    "name": "禁足",
+    "category": "状态",
+    "attribute": null,
+    "description": "处于禁足状态时，精灵无法离场，且无法获得新的禁足状态。"
+  },
+  {
+    "id": "glossary-52",
+    "name": "木桶状态",
+    "category": "状态",
+    "attribute": null,
+    "description": "该状态下会隐藏精灵的信息，自己行动或被敌方攻击时解除。"
+  },
+  {
+    "id": "glossary-53",
+    "name": "月陨星状态",
+    "category": "状态",
+    "attribute": null,
+    "description": "该状态下会隐藏精灵的信息，自己行动或被敌方攻击时解除。"
+  },
+  {
+    "id": "glossary-54",
+    "name": "透射",
+    "category": "其他",
+    "attribute": "光系",
+    "description": "光系技能，1能耗，对敌方造成60威力物伤。"
+  }
+]

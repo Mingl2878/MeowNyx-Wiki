@@ -4,13 +4,13 @@
  */
 const MovesPage = (function () {
   let currentFilter = { keyword: '' };
-  let activeType = '';      // 类型仍保持单选
-  let activeElem = new Set();   // 属性改为多选并集
-  let activeEnergy = new Set(); // 能耗改为多选并集
-  let activePower = new Set();  // 威力改为多选并集
-  let activeSeasons = new Set();
+  // Kept only in this page module: navigating away/back retains filters, reload resets.
+  const valueFilters = CommonUI.FilterExclusion.create();
   let activeSortKey = '';
   let activeSortState = 0; // 0=default, 1=desc, 2=asc
+  let detailStyle = 'default';
+  let learnerSort = { key: null, asc: false, priorityType: '' };
+  let currentDetail = null;
   let multiSkillSelected = []; // 交集筛选：额外选中的技能名
 
   const CATEGORY_MAP = {
@@ -81,6 +81,7 @@ const MovesPage = (function () {
   }
 
   function render(container) {
+    CommonUI.destroyWithin(container);
     const allMoves = RKData.getMoves().filter(mv => {
       const name = RKData.getMoveName(mv);
       return !EXCLUDED_MOVES.includes(name);
@@ -145,6 +146,8 @@ const MovesPage = (function () {
     document.getElementById('move-search-slot').appendChild(searchBox);
     // 恢复筛选区域的选中状态
     restoreFilterState();
+    ListingUI.mountFilters(container.querySelector('#move-filter'), 'moves');
+    ListingUI.onStatsChange(container.querySelector('.moves-page-layout'), renderList);
     renderList();
     // 回到顶部 + 滑到底部 + 右键拖拽手势
     CommonUI.bindScrollControls('.move-scroll-wrapper');
@@ -154,25 +157,8 @@ const MovesPage = (function () {
   function restoreFilterState() {
     const filterContainer = document.getElementById('move-filter');
     if (!filterContainer) return;
-    if (activeType) {
-      const el = filterContainer.querySelector(`[data-filter-type="${activeType}"]`);
-      if (el) el.classList.add('active');
-    }
-    activeElem.forEach(val => {
-      const el = filterContainer.querySelector(`[data-filter-elem="${val}"]`);
-      if (el) el.classList.add('active');
-    });
-    activeEnergy.forEach(val => {
-      const el = filterContainer.querySelector(`[data-filter-energy="${val}"]`);
-      if (el) el.classList.add('active');
-    });
-    activePower.forEach(val => {
-      const el = filterContainer.querySelector(`[data-filter-power="${val}"]`);
-      if (el) el.classList.add('active');
-    });
-    activeSeasons.forEach(season => {
-      const el = filterContainer.querySelector(`[data-filter-season="${season}"]`);
-      if (el) el.classList.add('active');
+    filterContainer.querySelectorAll(CommonUI.FilterExclusion.selector).forEach(button => {
+      CommonUI.FilterExclusion.sync(button, valueFilters);
     });
     if (activeSortKey && activeSortState > 0) {
       const el = filterContainer.querySelector(`[data-sort-key="${activeSortKey}"]`);
@@ -247,42 +233,25 @@ const MovesPage = (function () {
         renderList();
         return;
       }
-      const btn = e.target.closest('.type-pill[data-filter-type], .type-pill[data-filter-elem], .type-pill[data-filter-energy], .type-pill[data-filter-power], .type-pill[data-filter-season]');
-      if (!btn) return;
 
-      if (btn.dataset.filterType) {
-        if (activeType === btn.dataset.filterType) {
-          activeType = '';
-          btn.classList.remove('active');
-        } else {
-          activeType = btn.dataset.filterType;
-          filterContainer.querySelectorAll('[data-filter-type]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-        }
-      }
-      if (btn.dataset.filterElem) {
-        const val = btn.dataset.filterElem;
-        if (activeElem.has(val)) { activeElem.delete(val); btn.classList.remove('active'); }
-        else { activeElem.add(val); btn.classList.add('active'); }
-      }
-      if (btn.dataset.filterSeason) {
-        const season = btn.dataset.filterSeason;
-        if (activeSeasons.has(season)) activeSeasons.delete(season);
-        else activeSeasons.add(season);
-        btn.classList.toggle('active', activeSeasons.has(season));
-      }
-      if (btn.dataset.filterEnergy) {
-        const val = btn.dataset.filterEnergy;
-        if (activeEnergy.has(val)) { activeEnergy.delete(val); btn.classList.remove('active'); }
-        else { activeEnergy.add(val); btn.classList.add('active'); }
-      }
-      if (btn.dataset.filterPower) {
-        const val = btn.dataset.filterPower;
-        if (activePower.has(val)) { activePower.delete(val); btn.classList.remove('active'); }
-        else { activePower.add(val); btn.classList.add('active'); }
-      }
-      renderList();
     });
+
+    const destroyFilters = CommonUI.FilterExclusion.bind(filterContainer, valueFilters, () => {
+      const scrollBody = document.querySelector('.move-scroll-wrapper');
+      const savedScrollTop = scrollBody ? scrollBody.scrollTop : 0;
+      renderList();
+      if (scrollBody && savedScrollTop > 0 && CommonUI.FilterExclusion.hasSelection(valueFilters)) {
+        const missingHeight = savedScrollTop + scrollBody.clientHeight - scrollBody.scrollHeight;
+        if (missingHeight > 0) {
+          const spacer = document.createElement('div');
+          spacer.className = 'skill-filter-scroll-spacer';
+          spacer.style.height = missingHeight + 'px';
+          document.getElementById('move-list-container').appendChild(spacer);
+        }
+        scrollBody.scrollTop = savedScrollTop;
+      }
+    });
+    CommonUI.registerCleanup(filterContainer, destroyFilters);
 
     // 技能卡片点击 → 弹出详情
     const listContainer = document.getElementById('move-list-container');
@@ -323,21 +292,7 @@ const MovesPage = (function () {
         </div>`;
   }
 
-  function showMoveDetail(mv) {
-    multiSkillSelected = [];
-    const modal = document.getElementById('move-modal');
-    const body = document.getElementById('move-modal-body');
-    const name = RKData.getMoveName(mv);
-    const desc = RKData.getMoveDesc(mv);
-    const typeZh = getMoveTypeZh(mv);
-    const elemZh = getMoveElemZh(mv);
-    const energy = mv.energy_cost;
-    const power = mv.power;
-    const elemIcon = RKData.getTypeIcon(elemZh);
-    const elemIconHtml = elemZh ? `<img src="${elemIcon}" class="move-detail-elem-icon" alt="${elemZh}">` : '';
-    const typeIconName = TYPE_ICON_MAP[typeZh] || '';
-    const typeIconHtml = typeIconName ? `<img src="assets/icons/move-sub/${typeIconName}.png" class="move-detail-type-icon" alt="${typeZh}">` : '';
-
+  function getMoveLearners(name) {
     // 查找能学习该技能的精灵
     const allMonsters = RKData.getMonsters();
     const selfLearn = []; // 默认
@@ -375,6 +330,58 @@ const MovesPage = (function () {
     const bloodlineLearnDedup = deduplicateByEvolution(bloodlineLearn);
     const skillStoneDedup = deduplicateByEvolution(skillStone);
 
+    return { selfLearnDedup, legendLearnDedup, bloodlineLearnDedup, skillStoneDedup };
+  }
+
+  function renderLearnerViews() {
+    if (!currentDetail) return;
+    const defaultView = document.getElementById('move-learners-default');
+    const tableView = document.getElementById('move-learners-table');
+    if (!defaultView || !tableView) return;
+    defaultView.hidden = detailStyle === 'table';
+    tableView.hidden = detailStyle !== 'table';
+    const monsters = ListingUI.uniqueMonsters(currentDetail.monsters);
+    const title = document.getElementById('move-learners-title');
+    if (title) title.textContent = `可学习该技能的精灵 (${detailStyle === 'table' ? monsters.length : currentDetail.monsters.length})`;
+    CommonUI.destroyWithin(tableView);
+    tableView.innerHTML = detailStyle === 'table'
+      ? (monsters.length ? ListingUI.monsterTable(monsters, learnerSort) : '<div class="move-detail-empty">暂无精灵数据</div>')
+      : '';
+    mountLearnerPriority(tableView);
+    updateMultiSkillResult(currentDetail.name);
+  }
+
+  // ATTRIBUTE PRIORITY (non-layout): both tables share this detail's pin and
+  // learnerSort. Default source-group cards never pass through priority sorting.
+  function mountLearnerPriority(host) {
+    ListingUI.mountAttributePriority(host, learnerSort.priorityType || '', value => {
+      if (!currentDetail) return;
+      learnerSort = { ...learnerSort, priorityType: value };
+      renderLearnerViews();
+      host.querySelector('[data-listing-priority]')?.focus({ preventScroll: true });
+    });
+  }
+
+  function showMoveDetail(mv) {
+    multiSkillSelected = [];
+    const modal = document.getElementById('move-modal');
+    const body = document.getElementById('move-modal-body');
+    if (!modal || !body) return;
+    const name = RKData.getMoveName(mv);
+    const desc = RKData.getMoveDesc(mv);
+    const typeZh = getMoveTypeZh(mv);
+    const elemZh = getMoveElemZh(mv);
+    const energy = mv.energy_cost;
+    const power = RKData.isVariablePowerMove(mv) ? '?' : mv.power;
+    const elemIcon = RKData.getTypeIcon(elemZh);
+    const elemIconHtml = elemZh ? `<img src="${elemIcon}" class="move-detail-elem-icon" alt="${elemZh}">` : '';
+    const typeIconName = TYPE_ICON_MAP[typeZh] || '';
+    const typeIconHtml = typeIconName ? `<img src="assets/icons/move-sub/${typeIconName}.png" class="move-detail-type-icon" alt="${typeZh}">` : '';
+
+    const { selfLearnDedup, legendLearnDedup, bloodlineLearnDedup, skillStoneDedup } = getMoveLearners(name);
+    learnerSort = { ...learnerSort, priorityType: '' }; // Pin belongs to this detail, never petdex/team.
+    currentDetail = { name, monsters: [...selfLearnDedup, ...legendLearnDedup, ...bloodlineLearnDedup, ...skillStoneDedup].map(info => info.monster) };
+
 
     const total = selfLearnDedup.length + legendLearnDedup.length + bloodlineLearnDedup.length + skillStoneDedup.length;
     const selfLearnHtml = selfLearnDedup.length > 0
@@ -390,6 +397,7 @@ const MovesPage = (function () {
       ? `<div class="move-detail-section"><div class="move-detail-section-title">技能石 (${skillStoneDedup.length})</div><div class="move-detail-monster-grid">${skillStoneDedup.map(monsterCardHtml).join('')}</div></div>`
       : '';
 
+    CommonUI.destroyWithin(body);
     body.innerHTML = `
       <span class="modal-close" onclick="document.getElementById('move-modal').style.display='none'">&times;</span>
       <div class="move-detail-card">
@@ -399,7 +407,7 @@ const MovesPage = (function () {
           <div class="move-detail-skill-info">
             <span class="move-detail-skill-tag">${typeIconHtml}${typeZh}</span>
             ${energy != null ? `<span class="move-detail-skill-tag"><img src="assets/icons/move-sub/energy.png" class="move-detail-type-icon" alt="能耗">${energy}</span>` : ''}
-            ${power != null && power > 0 ? `<span class="move-detail-skill-tag">${typeIconHtml}${power}</span>` : ''}
+            ${power === '?' || (power != null && power > 0) ? `<span class="move-detail-skill-tag">${typeIconHtml}${power}</span>` : ''}
           </div>
           ${desc ? `<div class="move-detail-skill-desc">${desc}</div>` : ''}
           ${name === '折射' ? buildRefractionHtml() : ''}
@@ -414,8 +422,14 @@ const MovesPage = (function () {
         </div>
       </div>
       <div id="multi-skill-result"></div>
-      <div class="move-detail-monsters-title">可学习该技能的精灵 (${total})</div>
-      ${total > 0 ? selfLearnHtml + legendLearnHtml + bloodlineLearnHtml + skillStoneHtml : '<div class="move-detail-empty">暂无精灵数据</div>'}
+      <div class="move-detail-monsters-title listing-learner-heading">
+        <span id="move-learners-title">可学习该技能的精灵 (${total})</span>
+        <span class="listing-style-host" id="move-detail-style"></span>
+      </div>
+      <div id="move-learners-default" class="listing-learner-view">
+        ${total > 0 ? selfLearnHtml + legendLearnHtml + bloodlineLearnHtml + skillStoneHtml : '<div class="move-detail-empty">暂无精灵数据</div>'}
+      </div>
+      <div id="move-learners-table" class="listing-learner-view" hidden></div>
     `;
     modal.style.display = 'flex';
     // 动态调整 z-index，确保显示在精灵弹窗之上
@@ -432,6 +446,29 @@ const MovesPage = (function () {
       }
     };
 
+    ListingUI.mountStyleSwitch(body.querySelector('#move-detail-style'), detailStyle, value => {
+      detailStyle = value;
+      renderLearnerViews();
+    });
+    const onTableClick = event => {
+      const sortButton = event.target.closest('[data-listing-sort]');
+      if (sortButton) {
+        learnerSort = ListingUI.nextSort(learnerSort, sortButton.dataset.listingSort);
+        renderLearnerViews();
+        return;
+      }
+      const row = event.target.closest('[data-monster-id]');
+      if (row) PetDexPage.showPetDetail(Number(row.dataset.monsterId));
+    };
+    body.addEventListener('click', onTableClick);
+    const detailOwner = body.querySelector('.move-detail-card');
+    const unregisterClick = CommonUI.registerCleanup(detailOwner, () => {
+      body.removeEventListener('click', onTableClick); unregisterClick();
+    });
+    ListingUI.onStatsChange(detailOwner, () => {
+      if (modal.style.display !== 'none') renderLearnerViews();
+    });
+    renderLearnerViews();
     // 绑定多技能交集筛选事件
     bindMultiSkillEvents(name);
   }
@@ -520,12 +557,15 @@ const MovesPage = (function () {
       });
     }
 
-    // 点击 dropdown 外部关闭 dropdown
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.multi-skill-search-wrap')) {
-        dropdown.style.display = 'none';
-      }
-    }, true);
+    // Modal-local listener: disposed on redraw, never accumulate document listeners.
+    const modal = document.getElementById('move-modal');
+    const outsideClick = event => {
+      if (!event.target.closest('.multi-skill-search-wrap')) dropdown.style.display = 'none';
+    };
+    modal.addEventListener('click', outsideClick, true);
+    const unregister = CommonUI.registerCleanup(input, () => {
+      modal.removeEventListener('click', outsideClick, true); unregister();
+    });
   }
 
   function renderSelectedSkills() {
@@ -536,12 +576,8 @@ const MovesPage = (function () {
       return;
     }
     listEl.innerHTML = multiSkillSelected.map((n, i) => {
-      const mv = RKData.getMoves().find(m => RKData.getMoveName(m) === n);
-      const elemZh = mv ? getMoveElemZh(mv) : '';
-      const elemIcon = elemZh ? RKData.getTypeIcon(elemZh) : '';
-      const elemIconHtml = elemIcon ? `<img src="${elemIcon}" class="multi-skill-selected-elem-icon" alt="${elemZh}">` : '';
-      const skillIconHtml = `<img src="assets/monster/skill/${n}.png" class="multi-skill-selected-skill-img" alt="${n}" onerror="this.style.display='none'">`;
-      return `<div class="multi-skill-selected-item">${skillIconHtml}<div class="multi-skill-selected-info">${elemIconHtml}<span class="multi-skill-selected-name">${n}</span><span class="multi-skill-selected-remove" onclick="MovesPage.removeMultiSkill(${i})">&times;</span></div></div>`;
+      const skillIconHtml = `<img src="assets/monster/skill/${n}.png" class="multi-skill-selected-skill-img" alt="" onerror="this.style.display='none'">`;
+      return `<button type="button" class="multi-skill-selected-item" title="移除此技能" onclick="MovesPage.removeMultiSkill(${i})">${skillIconHtml}<span class="multi-skill-selected-name">${n}</span></button>`;
     }).join('');
   }
 
@@ -566,6 +602,8 @@ const MovesPage = (function () {
   }
 
   function removeMultiSkill(index) {
+    const list = document.getElementById('multi-skill-selected-list');
+    const restoreFocus = list?.contains(document.activeElement);
     multiSkillSelected.splice(index, 1);
     const input = document.getElementById('multi-skill-search');
     if (input) {
@@ -573,15 +611,14 @@ const MovesPage = (function () {
       input.placeholder = '添加技能...';
     }
     renderSelectedSkills();
-    // 需要拿到当前技能名
-    const titleEl = document.querySelector('.move-detail-skill-name');
-    const currentSkillName = titleEl ? titleEl.textContent.trim() : '';
-    updateMultiSkillResult(currentSkillName);
+    if (restoreFocus) (list.children[Math.min(index, list.children.length - 1)] || input)?.focus();
+    updateMultiSkillResult(currentDetail?.name || '');
   }
 
   function updateMultiSkillResult(currentSkillName) {
     const resultEl = document.getElementById('multi-skill-result');
     if (!resultEl) return;
+    CommonUI.destroyWithin(resultEl);
 
     if (multiSkillSelected.length === 0) {
       resultEl.innerHTML = '';
@@ -610,7 +647,7 @@ const MovesPage = (function () {
       resultEl.innerHTML = `
         <div class="move-detail-section multi-skill-result-section">
           <div class="move-detail-section-title multi-skill-result-title">同时拥有「${skillNamesStr}」的精灵 (${dedupResults.length})</div>
-          <div class="move-detail-monster-grid">${dedupResults.map(monsterCardHtml).join('')}</div>
+          ${detailStyle === 'table' ? ListingUI.monsterTable(dedupResults.map(info => info.monster), learnerSort) : `<div class="move-detail-monster-grid">${dedupResults.map(monsterCardHtml).join('')}</div>`}
         </div>`;
     } else {
       resultEl.innerHTML = `
@@ -619,6 +656,7 @@ const MovesPage = (function () {
           <div class="move-detail-empty">没有精灵同时拥有这些技能</div>
         </div>`;
     }
+    mountLearnerPriority(resultEl);
   }
 
   function renderList() {
@@ -640,41 +678,12 @@ const MovesPage = (function () {
       );
     }
 
-    // 类型筛选
-    if (activeType) {
-      list = list.filter(mv => getMoveTypeZh(mv) === activeType);
-    }
-    // 属性筛选
-    // 属性筛选（多选并集）
-    if (activeElem.size > 0) {
-      list = list.filter(mv => activeElem.has(getMoveElemZh(mv)));
-    }
-    // 威力筛选（多选并集）
-    if (activePower.size > 0) {
-      list = list.filter(mv => {
-        if (mv.power == null) return false;
-        return [...activePower].some(p => {
-          if (p === '140+') return mv.power >= 140;
-          const max = parseInt(p);
-          const min = max - 19;
-          return mv.power >= min && mv.power <= max;
-        });
-      });
-    }
-    // 赛季筛选：多选并集；未选任何赛季时显示全部。
-    if (activeSeasons.size > 0) {
-      list = list.filter(mv => activeSeasons.has(mv.season || 'S1'));
-    }
-    // 能耗筛选（多选并集）
-    if (activeEnergy.size > 0) {
-      list = list.filter(mv => {
-        if (mv.energy_cost == null) return false;
-        return [...activeEnergy].some(e => {
-          if (e === '10+') return mv.energy_cost >= 10;
-          return String(mv.energy_cost) === e;
-        });
-      });
-    }
+    // OR within each include dimension, AND across dimensions; exclusions remove
+    // the union of matching values without mutating the master skill list.
+    list = list.filter(mv => CommonUI.FilterExclusion.matches(valueFilters, {
+      type: getMoveTypeZh(mv), elem: getMoveElemZh(mv),
+      energy: mv.energy_cost, power: mv.power, season: mv.season || 'S1'
+    }));
 
     // 排序
     if (activeSortKey && activeSortState > 0) {
@@ -695,7 +704,7 @@ const MovesPage = (function () {
       const elemZh = getMoveElemZh(mv);
       return RKData.buildSkillCardHtml({
         name, desc, type: typeZh, element: elemZh,
-        energy: mv.energy_cost, power: mv.power,
+        energy: mv.energy_cost, power: mv.power, moveId: mv.id,
         extraAttrs: `data-move-id="${mv.id}" style="cursor:pointer;"`,
         extraHtml: name === '折射' ? buildRefractionHtml() : ''
       });

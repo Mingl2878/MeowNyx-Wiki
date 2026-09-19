@@ -9,8 +9,11 @@ const crypto = require('crypto');
 const ROOT = path.join(__dirname, '..');
 const monsters = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/monsters.json'), 'utf8'));
 const moves = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/moves.json'), 'utf8'));
-const wiki = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/wiki_monster_data.json'), 'utf8'));
+const { readWikiIndex } = require('./lib/wiki-data.js');
+const wikiIndex = readWikiIndex(ROOT);
+const wiki = wikiIndex.wiki;
 const byId = new Map(monsters.map(monster => [monster.id, monster]));
+const moveNames = new Set(moves.map(move => move.localized?.zh?.name));
 const errors = [];
 let inheritCount = 0;
 let ownCount = 0;
@@ -22,6 +25,20 @@ function displayName(monster) {
   return monster.form && monster.form !== 'default' && monster.form !== 'Original' ? `${nameOf(monster)}（${monster.form}）` : nameOf(monster);
 }
 
+function checkLearnset(monster, owner) {
+  // Keep the same exact-ID-first / legacy winter base-name fallback as RKData.
+  const entry = wikiIndex.getByMonster(owner) || wikiIndex.getByName(nameOf(owner));
+  if (!entry?.skills?.length) {
+    errors.push(`${displayName(monster)} 的学习面来源 ${displayName(owner)} 缺少学习面`);
+    return;
+  }
+  for (const skill of entry.skills) {
+    if (!skill || typeof skill.name !== 'string' || !moveNames.has(skill.name)) {
+      errors.push(`${displayName(monster)} 的学习面引用不存在或无效技能：${skill?.name}`);
+    }
+  }
+}
+
 for (const monster of monsters) {
   if (!['own', 'inherit'].includes(monster.learnset_mode)) {
     errors.push(`${displayName(monster)} 缺少合法 learnset_mode`);
@@ -29,6 +46,7 @@ for (const monster of monsters) {
   }
   if (monster.learnset_mode === 'own') {
     ownCount++;
+    checkLearnset(monster, monster);
     continue;
   }
   inheritCount++;
@@ -47,9 +65,8 @@ for (const monster of monsters) {
     seen.add(source.id);
     current = source;
   }
-  const exactWiki = wiki[displayName(current)];
-  const sourceWiki = exactWiki || wiki[nameOf(current)];
-  if (!sourceWiki?.skills?.length) errors.push(`${displayName(monster)} 的最终来源 ${displayName(current)} 缺少学习面`);
+  if (current.learnset_mode !== 'own') errors.push(`${displayName(monster)} 的继承链未终止于 own 学习面`);
+  else checkLearnset(monster, current);
 }
 
 const newMoon = monsters.find(monster => nameOf(monster) === '新月鸷');

@@ -6,7 +6,8 @@ const RKData = (function () {
   let monsters = [];
   let moves = [];
   let types = [];
-  let wikiData = {};    // wiki monster name -> { image, skills }
+  let wikiData = {};    // canonical display name -> { monster_id, image, skills }
+  let wikiIndex = null; // stable ID + validated legacy-name index
   let typeMap = {};      // name -> type object
   let typeZhMap = {};    // zh name -> type object
   let monsterById = new Map();
@@ -86,6 +87,16 @@ const RKData = (function () {
     return mv.localized?.zh?.name || '';
   }
 
+  /** 主技能类别的唯一中文映射；不能把状态/防御或未知技能当成物攻。 */
+  function getMoveCategoryZh(move) {
+    return ({ 'Physical Attack': '物攻', 'Magic Attack': '魔攻', Status: '状态',
+      Defense: '防御', 'Conditional Attack': '条件攻击', Energy: '能量' })[move?.move_category] || null;
+  }
+
+  function isAttackMove(move) {
+    return move?.move_category === 'Physical Attack' || move?.move_category === 'Magic Attack';
+  }
+
   /** 获取技能中文描述 */
   function getMoveDesc(mv) {
     if (mv.localized && mv.localized.zh && mv.localized.zh.description) return mv.localized.zh.description;
@@ -145,7 +156,7 @@ const RKData = (function () {
     let m2 = getEffectiveness(atkEn, def2En);
     const product = m1 * m2;
     if (Math.abs(product - 4.0) < 0.01) return 3.0;
-    if (Math.abs(product - 0.25) < 0.01) return 1/3;
+    // 双重抵抗为四分之一；不再转换成三分之一。
     return product;
   }
 
@@ -158,13 +169,7 @@ const RKData = (function () {
   /** 计算精灵最终属性值 */
   function getPetStat(pet, stat, nature, iv) {
     if (!pet) return 0;
-    const base = getBaseStat(pet, stat);
-    const ivVal = iv ? 10 : 0;
-    const natureMod = nature === 1 ? 1.2 : nature === 2 ? 0.9 : 1.0;
-    if (stat === 'hp') {
-      return Math.round(Math.round(Math.round(1.7 * (base + 3 * ivVal)) + 70) * natureMod) + 100;
-    }
-    return Math.round(Math.round(Math.round(1.1 * (base + 3 * ivVal)) + 10) * natureMod) + 50;
+    return BattleMath.statFromBase(getBaseStat(pet, stat), stat, nature, iv);
   }
 
   /** 初始化：加载所有数据 */
@@ -175,12 +180,16 @@ const RKData = (function () {
         fetch('data/monsters.json').then(r => r.json()),
         fetch('data/moves.json').then(r => r.json()),
         fetch('data/types.json').then(r => r.json()),
-        fetch('data/wiki_monster_data.json').then(r => r.json()).catch(() => ({}))
+        fetch('data/wiki_monster_data.json').then(r => {
+          if (r.ok === false) throw new Error('无法读取图鉴技能数据，已停止加载以避免保存空技能');
+          return r.json();
+        })
       ]);
       monsters = Array.isArray(monRes) ? monRes : (monRes.data || []);
       moves = Array.isArray(moveRes) ? moveRes : (moveRes.data || []);
       types = Array.isArray(typeRes) ? typeRes : (typeRes.data || []);
-      wikiData = wikiRes || {};
+      wikiIndex = MonsterIdentity.createIndex(monsters, wikiRes);
+      wikiData = wikiIndex.wiki;
 
       // 图片缓存击穿：为所有精灵图片 URL 附加会话级版本参数。
       // 即使 WebView2 残留旧缓存（如头像替换前的旧图），URL 变化后也会强制重新加载。
@@ -296,16 +305,24 @@ const RKData = (function () {
            (m.base_phy_def || 0) + (m.base_mag_def || 0) + (m.base_spd || 0);
   }
 
-  /** 计算有效种族值 = 总种族值 - min(物攻, 魔攻) */
+  /** 有效种族值统一入口：HP + 较高攻击 + 双防 + 可选速度。 */
   function getEffectiveStats(m) {
-    return getTotalStats(m) - Math.min(m.base_phy_atk || 0, m.base_mag_atk || 0);
+    const preferences = typeof AppPreferences === 'undefined' ? null : AppPreferences;
+    const policy = preferences?.getEffectiveSpeedPolicy?.() || {
+      mode: preferences?.getEffectiveIncludeSpeed?.() === false ? 'exclude' : 'include', threshold: 80
+    };
+    const speed = m.base_spd || 0;
+    const includeSpeed = policy.mode === 'include' || (policy.mode === 'threshold' && speed >= policy.threshold);
+    return (m.base_hp || 0) + Math.max(m.base_phy_atk || 0, m.base_mag_atk || 0) +
+      (m.base_phy_def || 0) + (m.base_mag_def || 0) + (includeSpeed ? speed : 0);
   }
 
   /** 获取wiki精灵数据（图片+技能） */
   function getWikiData(name) {
     if (!name) return null;
-    // 直接查找
-    if (wikiData[name]) return wikiData[name];
+    // ID 索引兼容历史别名；空壳条目不会遮蔽别名中的完整技能。
+    const exact = wikiIndex?.getByName(name);
+    if (exact) return exact;
     // 回退：去掉形态后缀（如"霜翼领主（冬天的样子）"→"霜翼领主"）
     const parenIdx = name.search(/[（(]/);
     if (parenIdx > 0) {
@@ -321,7 +338,7 @@ const RKData = (function () {
    */
   function getExactWikiData(monster) {
     if (!monster) return null;
-    return wikiData[getMonsterDisplayName(monster)] || null;
+    return wikiIndex?.getByMonster(monster) || null;
   }
 
   function findReachableHighForms(monster) {
@@ -345,6 +362,9 @@ const RKData = (function () {
     if (!monster) return { monster: null, sourceMonster: null, wiki: null, reason: 'missing-monster' };
     // 精确键优先；历史冬季形态缺少精确键时保留既有基础名回退兼容性。
     const ownWiki = getExactWikiData(monster) || getWikiData(getMonsterDisplayName(monster));
+    if (monster.learnset_mode === 'own') {
+      return { monster, sourceMonster: monster, wiki: ownWiki, reason: 'explicit-own' };
+    }
     const explicitId = monster.learnset_mode === 'inherit' ? monster.learnset_inherits_from_id : null;
     if (explicitId != null) {
       const sourceMonster = monsterById.get(explicitId);
@@ -412,6 +432,13 @@ const RKData = (function () {
    * @param {string} opts.extraHtml    额外 HTML（如折射说明）
    * @returns {string} HTML
    */
+  // Formula-dependent power remains unknown in encyclopaedia cards. Simulation
+  // presets are explicit user shortcuts, not replacement canonical move data.
+  function isVariablePowerMove(moveOrName) {
+    const move = typeof moveOrName === 'string' ? moves.find(m => getMoveName(m) === moveOrName) : moveOrName;
+    return !!move && [10, 35, 70, 376].includes(move.id);
+  }
+
   function buildSkillCardHtml(opts) {
     const { name, desc, type, element, energy, power, extraClass, extraAttrs, extraHtml } = opts;
     const elemIcon = element ? getTypeIcon(element) : '';
@@ -419,10 +446,11 @@ const RKData = (function () {
     const typeIconName = SKILL_TYPE_ICON_MAP[type] || '';
     const typeIconHtml = typeIconName ? `<img src="assets/icons/move-sub/${typeIconName}.png" class="detail-skill-type-icon" alt="${type}">` : '';
 
-    // 右侧标签：有威力显示威力，否则显示类型
-    const hasPower = power != null && power > 0;
+    // These four formula skills display '?' even if their source holds 0 or 1.
+    const unknownPower = isVariablePowerMove(opts.move || name);
+    const hasPower = unknownPower || (power != null && power > 0);
     const rightBadge = hasPower
-      ? `<span class="detail-skill-tag detail-skill-power">${typeIconHtml}${power}</span>`
+      ? `<span class="detail-skill-tag detail-skill-power">${typeIconHtml}${unknownPower ? '?' : power}</span>`
       : `<span class="detail-skill-tag type-${type || ''}">${typeIconHtml}${type || ''}</span>`;
 
     return `
@@ -498,10 +526,11 @@ const RKData = (function () {
     getEffectiveness, getTypeEff, getTotalStats, getEffectiveStats,
     getBaseStat, getPetStat,
     getMonsterName, getMonsterDisplayName, getMonsterDisplayNameHtml, getMoveName, getMoveDesc,
+    getMoveCategoryZh, isAttackMove,
     getTypeZh, getTypeShortZh, getTypeEn, getTypeZhFull, getTypeObjZh,
     getTypeIcon, typeBadgeHtml,
     getWikiData, getExactWikiData, resolveSkillSource, getResolvedWikiData,
-    buildSkillCardHtml,
+    buildSkillCardHtml, isVariablePowerMove,
     getTraitInfo, traitIconHtml, buildTraitDetailHtml,
     TYPE_ZH, TYPE_SHORT_ZH, ZH_TO_EN, ALL_TYPES, TYPE_ZH_FULL, PILL_ORDER,
     get isLoaded() { return loaded; }

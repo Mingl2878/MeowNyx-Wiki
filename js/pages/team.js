@@ -510,6 +510,7 @@ const TeamPage = (function () {
   loadConfig();
 
   function render(container) {
+    window.addEventListener('appstatspreferenceschange', refreshStatsPreferences);
     container.innerHTML = `
       <div class="scroll-container">
       <div class="team-layout">
@@ -1238,23 +1239,14 @@ const TeamPage = (function () {
   };
 
   function getDefensiveMatchups(mainType, subType) {
-    const allTypes = RKData.getTypes();
-    const types = [mainType, subType].filter(Boolean)
-      .map(n => allTypes.find(x => x.name === n))
-      .filter(Boolean);
-    if (types.length === 0) return { weak2: [], weak3: [], resist05: [], resist025: [] };
-    const multipliers = {};
-    types.forEach(t => {
-      (t.vulnerable_to || []).forEach(v => { multipliers[v] = (multipliers[v] || 1) * 2; });
-      (t.resistant_to || []).forEach(r => { multipliers[r] = (multipliers[r] || 1) * 0.5; });
-    });
     const weak2 = [], weak3 = [], resist05 = [], resist025 = [];
-    for (const [atk, mult] of Object.entries(multipliers)) {
+    RKData.PILL_ORDER.forEach(atk => {
+      const mult = RKData.getTypeEff(atk, mainType, subType);
       if (mult >= 3) weak3.push(atk);
       else if (mult >= 2) weak2.push(atk);
       else if (mult <= 0.25) resist025.push(atk);
       else if (mult <= 0.5) resist05.push(atk);
-    }
+    });
     return { weak2, weak3, resist05, resist025 };
   }
 
@@ -1386,6 +1378,7 @@ const TeamPage = (function () {
     if (modal) modal.remove();
     modal = document.createElement('div');
     modal.id = 'team-skill-picker-modal';
+    modal.dataset.petId = m.id;
     modal.className = 'team-skill-picker-modal';
     modal.innerHTML = `
       <div class="team-skill-picker-overlay"></div>
@@ -1541,6 +1534,8 @@ const TeamPage = (function () {
             petSkills[petId].push(skillName);
           }
         }
+        refreshTeamCard();
+        saveConfig();
         const equippedRaw = petSkills[petId] || [];
         const equipped = equippedRaw.filter(s => s);
         // 判断是否已有血脉技能被选中
@@ -1586,6 +1581,8 @@ const TeamPage = (function () {
             if (it && it.dataset.skillSource === '血脉') petSkills[petId][i] = null;
           });
         }
+        refreshTeamCard();
+        saveConfig();
         // 更新技能槽位显示
         const slotsEl = document.getElementById('detail-skill-slots');
         if (slotsEl) slotsEl.innerHTML = renderSkillSlots(petId);
@@ -2020,19 +2017,18 @@ const TeamPage = (function () {
       ? `<div class="tc-magic"><img src="${magicItem.icon}" alt="${magicItem.name}" loading="lazy"><span>${magicItem.name}</span></div>`
       : '';
 
-    // 5h: 弱点汇总
-    const weaknessHtml = renderTeamWeakness();
-    // 抵抗汇总
-    const resistanceHtml = renderTeamResistance();
-    // 联防汇总
-    const defenseHtml = renderTeamDefenseSummary();
-
-    return `<div class="tc-grid">${cards}</div>${magicHtml}${weaknessHtml}${resistanceHtml}${defenseHtml}`;
+    const defense = calcTeamTypeSummary();
+    const offense = calcTeamAttackSummary(
+      [...new Set(team.filter(Boolean))].map(id => ({ id, monster: getTeamDisplayMonster(id) })).filter(p => p.monster),
+      petSkills, RKData.getMoves(), RKData.PILL_ORDER, RKData.getTypeEff, RKData.isAttackMove
+    );
+    return `<div class="tc-grid">${cards}</div>${magicHtml}` +
+      renderTeamWeakness(defense) + renderTeamResistance(defense) + renderTeamDefenseSummary(defense) +
+      renderTeamAttackSummary(offense);
   }
 
   // 5h: 计算队伍弱点汇总
-  function renderTeamWeakness() {
-    const { weaknesses } = calcTeamTypeSummary();
+  function renderTeamWeakness({ weaknesses }) {
     const itemsHtml = RKData.PILL_ORDER.map(atk => {
       const count = weaknesses[atk] || 0;
       const zh = RKData.getTypeShortZh(atk) || RKData.getTypeZh(atk) || atk;
@@ -2048,8 +2044,7 @@ const TeamPage = (function () {
   }
 
   // 抵抗汇总
-  function renderTeamResistance() {
-    const { resistances } = calcTeamTypeSummary();
+  function renderTeamResistance({ resistances }) {
     const itemsHtml = RKData.PILL_ORDER.map(atk => {
       const count = resistances[atk] || 0;
       const zh = RKData.getTypeShortZh(atk) || RKData.getTypeZh(atk) || atk;
@@ -2065,60 +2060,126 @@ const TeamPage = (function () {
   }
 
   // 联防汇总：弱点数 - 抵抗数 = 净分
-  function renderTeamDefenseSummary() {
-    const { weaknesses, resistances } = calcTeamTypeSummary();
-    const itemsHtml = RKData.PILL_ORDER.map(atk => {
-      const weak = weaknesses[atk] || 0;
-      const res = resistances[atk] || 0;
-      const net = weak - res;
-      const zh = RKData.getTypeShortZh(atk) || RKData.getTypeZh(atk) || atk;
-      const icon = `assets/icons/type/${atk.toLowerCase()}.png`;
-      let cls, sign;
-      if (net > 0) { cls = 'weak'; sign = `+${net}`; }
-      else if (net < 0) { cls = 'strong'; sign = `${net}`; }
-      else { cls = 'neutral'; sign = '0'; }
-      return `<span class="team-defense-item ${cls}"><img src="${icon}" class="team-defense-icon" alt="${zh}">${zh} <span class="team-defense-score">${sign}</span></span>`;
-    }).join('');
+  function renderTeamDefenseSummary({ weaknesses, resistances }) {
+    return renderTypeSummary('队伍联防汇总', type => {
+      const net = (weaknesses[type] || 0) - (resistances[type] || 0);
+      return { cls: net > 0 ? 'weak' : net < 0 ? 'strong' : 'neutral', value: net > 0 ? `+${net}` : `${net}` };
+    });
+  }
 
-    return `<div class="team-defense-panel">
-      <div class="team-defense-title">队伍联防汇总</div>
-      <div class="team-defense-grid">${itemsHtml}</div>
-    </div>`;
+  function escapeSummaryText(value) {
+    return String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // Defense and offense share the existing 18-type structure, but NOT the sign/color semantics.
+  function renderTypeSummary(title, describe, feature = '') {
+    const items = RKData.PILL_ORDER.map(type => {
+      const { cls, value, tooltip = '' } = describe(type);
+      const zh = RKData.getTypeShortZh(type) || RKData.getTypeZh(type) || type;
+      return `<span class="team-defense-item ${cls}" data-type="${type}" title="${escapeSummaryText(tooltip)}"><img src="assets/icons/type/${type.toLowerCase()}.png" class="team-defense-icon" alt="${zh}">${zh} <span class="team-defense-score">${value}</span></span>`;
+    }).join('');
+    return `<div class="team-defense-panel${feature ? ' team-attack-summary' : ''}"${feature ? ` data-summary="${feature}"` : ''}>
+      <div class="team-defense-title">${title}</div><div class="team-defense-grid">${items}</div></div>`;
   }
 
   // 统一计算队伍弱点和抵抗
   function calcTeamTypeSummary() {
-    const allTypes = RKData.getTypes();
-    const weaknesses = {};
-    const resistances = {};
-
-    team.forEach(petId => {
-      if (!petId) return;
-      const p = RKData.getMonsterById(petId);
+    const weaknesses = {}, resistances = {};
+    team.forEach(id => {
+      const p = id && getTeamDisplayMonster(id);
       if (!p) return;
-      const mainType = p.main_type ? p.main_type.name : '';
-      const subType = p.sub_type ? p.sub_type.name : '';
-      const defTypes = [mainType, subType].filter(Boolean)
-        .map(n => allTypes.find(x => x.name === n))
-        .filter(Boolean);
-      if (defTypes.length === 0) return;
-
-      const multipliers = {};
-      defTypes.forEach(t => {
-        (t.vulnerable_to || []).forEach(v => { multipliers[v] = (multipliers[v] || 1) * 2; });
-        (t.resistant_to || []).forEach(r => { multipliers[r] = (multipliers[r] || 1) * 0.5; });
+      RKData.PILL_ORDER.forEach(atk => {
+        const mult = RKData.getTypeEff(atk, p.main_type?.name, p.sub_type?.name);
+        if (mult >= 2) weaknesses[atk] = (weaknesses[atk] || 0) + 1;
+        else if (mult <= 0.5) resistances[atk] = (resistances[atk] || 0) + 1;
       });
-
-      for (const [atk, mult] of Object.entries(multipliers)) {
-        if (mult >= 2) {
-          weaknesses[atk] = (weaknesses[atk] || 0) + 1;
-        } else if (mult <= 0.5) {
-          resistances[atk] = (resistances[atk] || 0) + 1;
-        }
-      }
     });
 
     return { weaknesses, resistances };
+  }
+
+  function getTeamDisplayMonster(id) {
+    const base = RKData.getMonsterById(id);
+    return (detailBloodline[id] === 'Leader' && leaderFormId[id] && RKData.getMonsterById(leaderFormId[id])) || base;
+  }
+
+  // Pure calculation. Only master-table attacks count; no Wiki/category/type fallback.
+  function calcTeamAttackSummary(members, equipped, moves, types, getTypeEff, isAttackMove) {
+    const byName = new Map(moves.map(move => [move.localized?.zh?.name, move]));
+    const result = Object.fromEntries(types.map(type => [type, { strong: [], resisted: [] }]));
+    const seenMembers = new Set();
+    members.forEach(({ id, monster }) => {
+      if (seenMembers.has(String(id))) return;
+      seenMembers.add(String(id));
+      const attacks = new Map();
+      (Array.isArray(equipped[id]) ? equipped[id] : []).forEach(name => {
+        const move = name && byName.get(name);
+        if (!isAttackMove(move)) return;
+        const type = move.move_type?.name;
+        if (!types.includes(type)) return;
+        if (!attacks.has(type)) attacks.set(type, new Set());
+        attacks.get(type).add(name);
+      });
+      types.forEach(target => {
+        const strong = [], resisted = [];
+        attacks.forEach((names, attackType) => {
+          const eff = getTypeEff(attackType, target);
+          if (eff >= 2) strong.push({ attackType, names });
+          else if (eff <= 0.5) resisted.push({ attackType, names });
+        });
+        // One contribution per pet/target. A strong move wins over every resisted
+        // move; without a strong move, resistance still counts alongside neutrals.
+        const contributing = strong.length ? strong : resisted;
+        if (!contributing.length) return;
+        result[target][strong.length ? 'strong' : 'resisted'].push({
+          petId: id, monster, attackTypes: contributing.map(item => item.attackType),
+          skills: contributing.flatMap(item => [...item.names])
+        });
+      });
+    });
+    return result;
+  }
+
+  function renderTeamAttackSummary(summary) {
+    const sourceText = sources => sources.map(s =>
+      `${RKData.getMonsterDisplayName(s.monster)} · ${s.attackTypes.map(type => RKData.getTypeShortZh(type)).join('、')}：${s.skills.join('、')}`
+    ).join('；') || '无';
+    const panels = [
+      ['attack-strong', '队伍攻击克制汇总'], ['attack-resisted', '队伍攻击抵抗汇总'], ['attack-net', '队伍联攻汇总']
+    ];
+    return panels.map(([mode, title]) => renderTypeSummary(title, type => {
+      const { strong, resisted } = summary[type];
+      const net = strong.length - resisted.length;
+      if (mode === 'attack-strong') return { cls: strong.length ? 'attack-positive' : 'attack-neutral', value: `×${strong.length}`, tooltip: sourceText(strong) };
+      if (mode === 'attack-resisted') return { cls: resisted.length ? 'attack-risk' : 'attack-neutral', value: `×${resisted.length}`, tooltip: sourceText(resisted) };
+      return {
+        cls: net > 0 ? 'attack-positive' : net < 0 ? 'attack-risk' : 'attack-neutral',
+        value: net > 0 ? `+${net}` : `${net}`,
+        tooltip: `克制 ${strong.length}：${sourceText(strong)}\n抵抗 ${resisted.length}：${sourceText(resisted)}`
+      };
+    }, mode)).join('');
+  }
+
+  function refreshStatsPreferences() {
+    // Preserve current filters/scroll. Modal rankings deliberately retain their original all-monster pool.
+    const candidates = document.getElementById('team-candidate-list');
+    const scrollTop = candidates?.scrollTop;
+    renderCandidateList();
+    if (candidates) candidates.scrollTop = scrollTop;
+    renderDetail();
+    const modal = document.getElementById('team-skill-picker-modal');
+    const m = modal && RKData.getMonsterById(Number(modal.dataset.petId));
+    const total = modal && modal.querySelector('.detail-stats-total');
+    if (!m || !total) return;
+    const pool = RKData.getMonsters();
+    const rank = pool.map(mm => ({ id: mm.id, value: RKData.getEffectiveStats(mm) }))
+      .sort((a, b) => b.value - a.value).findIndex(mm => mm.id === m.id) + 1;
+    total.innerHTML = `${RKData.getEffectiveStats(m)}<span class="detail-stats-rank">#${rank}/${pool.length}</span>`;
+  }
+
+  function onLeave() {
+    window.removeEventListener('appstatspreferenceschange', refreshStatsPreferences);
+    document.getElementById('team-skill-picker-modal')?.remove();
   }
 
   function refreshTeamCard() {
@@ -2147,5 +2208,5 @@ const TeamPage = (function () {
     // TODO: 可集成 html2canvas 实现真正的截图
   }
 
-  return { render, togglePet };
+  return { render, togglePet, onLeave };
 })();

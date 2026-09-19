@@ -14,8 +14,9 @@ const WRITE = process.argv.includes('--write');
 const DEXES = Array.from({ length: 21 }, (_, index) => index + 444);
 const PRESERVED = new Set([443, 465]);
 
-function readJSON(file) { return JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8')); }
-function writeJSON(file, value) { fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value, null, 2) + '\n', 'utf8'); }
+const { readWiki, writeWiki } = require('./lib/wiki-data.js');
+function readJSON(file) { return path.basename(file) === 'wiki_monster_data.json' ? readWiki(ROOT) : JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8')); }
+function writeJSON(file, value) { if (path.basename(file) === 'wiki_monster_data.json') return writeWiki(ROOT, value); fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value, null, 2) + '\n', 'utf8'); }
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function nameOf(monster) { return monster.localized?.zh?.name || ''; }
 function displayName(monster) { return monster.form && monster.form !== 'default' && monster.form !== 'Original' ? `${nameOf(monster)}（${monster.form}）` : nameOf(monster); }
