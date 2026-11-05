@@ -9,35 +9,30 @@ const source = fs.readFileSync(require.resolve('../js/pages/chart.js'), 'utf8');
 const math = vm.runInNewContext(source.split('const ChartPage =')[0] + '\nChartFavoriteMath;');
 const plain = value => JSON.parse(JSON.stringify(value));
 
-test('ceil-after-effect threshold: resistance differs from naive HP/E by one; neutral is identity', () => {
-  assert.equal(math.equivalentLife(455, 0.5).y, 909);
-  assert.equal(Math.ceil(909 * 0.5), 455);
-  assert.equal(Math.ceil(908 * 0.5), 454);
+test('equivalent life is a continuous type-only reference; neutral HP is unchanged', () => {
+  assert.equal(math.equivalentLife(455, .5).y, 910);
   assert.equal(math.equivalentLife(455, 1).y, 455);
-  assert.equal(math.equivalentLife(455, 2).y, 228);
-  for (const hp of [1, 2, 3, 100, 101, 360, 455, 601]) {
-    for (const effect of [0.1, 0.25, 0.5, 1, 2, 3]) {
-      const t = math.equivalentLife(hp, effect).y;
-      assert.equal(t, Math.floor((hp - 1) / effect) + 1);
-      assert.ok(Math.ceil(t * effect) >= hp);
-      assert.ok(t === 0 || Math.ceil((t - 1) * effect) < hp);
-      for (const combo of [1, 2, 3, 7]) for (let hit = 0; hit <= t + 2; hit++) {
-        const neutral = hit * combo;
-        assert.equal(neutral < t, Math.ceil(neutral * effect) < hp);
-      }
-    }
+  assert.equal(math.equivalentLife(455, 2).y, 227.5);
+  for (const hp of [1, 2, 100, 101, 360, 455, 601]) for (const effect of [.25, .5, 1, 2, 3]) {
+    assert.equal(math.equivalentLife(hp, effect).y, hp / effect);
   }
 });
 
-test('equivalent-life inequality respects every shared step-rounding operation, not a continuous inverse', () => {
-  for (const effect of [0.25, 0.5, 1, 2, 3]) for (const combo of [1, 3]) {
-    for (const hp of [101, 360, 455]) for (const nature of [0, 1, 2]) {
-      const threshold = math.equivalentLife(hp, effect).y;
-      for (let x = 80; x <= 200; x++) {
-        const defense = BattleMath.statFromBase(x, 'defense', nature, true);
-        const neutral = BattleMath.normalDamage(253, 317, defense, 1, combo);
-        assert.equal(neutral < threshold, Math.ceil(neutral * effect) < hp);
-      }
+test('actual damage includes type before final floor; integer neutral output is not a survival oracle', () => {
+  // Raw neutral 1.8: type2 gives floor(3.6)=3, not floor(1.8)*2=2.
+  const attack = 41, power = 1, defense = 37 / 1.8;
+  const neutral = BattleMath.normalDamage(attack, power, defense);
+  assert.equal(neutral, 1);
+  assert.equal(BattleMath.normalDamage(attack, power, defense, 1, 1, 60, 2), 3);
+  assert.notEqual(neutral * 2, 3);
+  // Combos floor each hit first, not the total. HP/E alone cannot capture this.
+  assert.equal(BattleMath.normalDamage(41, 1, 20, 1, 3, 60, .5), 0);
+  assert.equal(Math.floor(BattleMath.normalDamageRaw(41, 1, 20, 1, 60, .5) * 3), 2);
+  for (const effect of [.25, .5, 1, 2, 3]) for (const combo of [1, 3]) {
+    for (let q = 80; q <= 200; q++) {
+      const d = BattleMath.statFromBase(q, 'defense', 0, true);
+      const expected = Number(BigInt(253 * 317 * 37 * (effect * 4)) / BigInt(41 * d * 4)) * combo;
+      assert.equal(BattleMath.normalDamage(253, 317, d, 1, combo, 60, effect), expected);
     }
   }
 });
@@ -52,7 +47,7 @@ test('curve configuration ignores automatic, manual and active-slot personal rec
   const shared={iv:{defense:true,hp:false},nature:{hp:0}};
   const poison=new Proxy({}, {get(){throw Error('personal read');}});
   const result=math.configuration({id:327,fromDamage:true},poison,poison,shared,poison,()=>{throw Error('resolver');});
-  assert.deepEqual(plain(result.iv),shared.iv);assert.deepEqual(plain(result.nature),shared.nature);
+  assert.deepEqual(plain(result.iv),{...shared.iv,hp:true});assert.deepEqual(plain(result.nature),shared.nature);
 });
 
 test('adaptive nice ticks follow available plot height and maximum, with display-only headroom', () => {
@@ -72,12 +67,12 @@ test('adaptive nice ticks follow available plot height and maximum, with display
 });
 
 function fixture() {
-  const data = JSON.parse(fs.readFileSync(require.resolve('../data/monsters.json'), 'utf8'));
+  const data = require('./catalog-read-fixture.cjs').readProjectData('monsters.json');
   const pets = [202, 327].map(id => data.find(p => p.id === id));
   const s = { atkPet: pets[0], defPet: pets[1], atkIV: {}, atkNature: {}, defIV: {}, defNature: {},
     skillType: 'attack', skillAttr: 'Water', basePower: 400, fixedBonus: 0, percentBonus: 0, buff: 0, comboCount: 1 };
   const field = { hp: 'base_hp', attack: 'base_phy_atk', magic_attack: 'base_mag_atk', defense: 'base_phy_def', magic_defense: 'base_mag_def' };
-  const RKData = { getBaseStat: (p, stat) => p[field[stat]], getMonsterById: id => pets.find(p => p.id === id), getMonsterDisplayName: p => p.name,
+  const RKData = { getPetLevel: () => 60, getBaseStat: (p, stat) => p[field[stat]], getMonsterById: id => pets.find(p => p.id === id), getMonsterDisplayName: p => p.name,
     getPetStat: (p, stat, nature, iv) => BattleMath.statFromBase(p[field[stat]], stat, nature, iv), getTypeEff: () => 0.5 };
   const context = { RKData, BattleMath, PetConfiguration, localStorage: { getItem: () => '{}' },
     ChartWorkspace: { getEntries: () => [{ id: 327, key: 'chart:327' }] },
@@ -88,19 +83,20 @@ function fixture() {
 }
 
 test('Water202 vs Dragon327 uses curve-only configuration and exact type-equivalent life', () => {
-  const {t,s}=fixture(); const [b]=t.favoriteMarkers(s);
+  const {t,s,RKData}=fixture(); const [b]=t.favoriteMarkers(s);
   assert.equal(t.favoriteMarkers(s).length,1);assert.equal(b.effect,.5);assert.equal(b.x,69);
-  assert.equal(b.hp,BattleMath.statFromBase(112,'hp'));assert.equal(b.y,b.hp*2-1);
+  assert.equal(b.hp,BattleMath.statFromBase(112,'hp',0,true));assert.equal(b.y,b.hp*2);
   assert.equal(b.defenseMismatch,false);assert.equal(math.defenseMinimum([b]),68);
   const old=plain(b);
   s.defIV={defense:false,hp:true};s.defNature={hp:2,defense:2};s.atkIV={};s.atkNature={attack:2};
   assert.deepEqual(plain(t.favoriteMarkers(s)[0]),old);
   for(const enabled of [true,false]) {
-    t.view.doubleLife=enabled;t.view.overrides.defIV.defense=enabled;
-    const m=t.favoriteMarkers(s)[0],tip=t.markerTooltip(m).join(String.fromCharCode(10));
-    assert.equal(m.defenseMismatch,false);assert.equal(m.hp,BattleMath.statFromBase(112,'hp',enabled?1:0,enabled));
-    assert.match(tip,new RegExp('HP：'+m.hp));assert.match(tip,new RegExp('伤害：'+m.damage));
-    assert.match(tip,new RegExp('剩余HP：'+Math.max(0,m.hp-m.damage)));
+    t.view.hpNature=enabled;t.view.overrides.defIV.defense=enabled;
+    const m=t.favoriteMarkers(s)[0];
+    const tip=math.tooltipLines({mode:'defense',atkPet:s.atkPet,attackType:s.skillType,skillAttr:s.skillAttr,basePower:s.basePower,fixedBonus:0,percentBonus:0,buff:0,comboCount:1,sameType:1.25},m.pet,[{damageConfig:{atkIV:true,atkNature:0,defIV:enabled,defNature:0,hpNature:enabled}}],RKData,BattleMath).join(String.fromCharCode(10));
+    assert.equal(m.defenseMismatch,false);assert.equal(m.hp,BattleMath.statFromBase(112,'hp',enabled?1:0,true));
+    assert.match(tip,new RegExp('÷ '+m.hp+' '));assert.match(tip,new RegExp('⑥ 伤害占比 = '+m.damage));
+    assert.doesNotMatch(tip,/剩余HP|能否扛住|配置来源/);
   }
 });
 

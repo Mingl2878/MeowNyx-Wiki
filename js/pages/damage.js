@@ -1,4 +1,4 @@
-﻿/**
+/**
  * damage.js — 伤害计算器页面（重构版）
  * 模块化架构：状态管理 / 计算引擎 / UI渲染 / 事件处理 / 扩展模块占位
  * 核心计算公式与原版完全一致
@@ -11,7 +11,7 @@ const DamagePage = (function () {
    * ============================================================ */
   const SKILL_DEFAULTS = Object.freeze({
     skillType: 'attack', skillAttr: '普', basePower: 100, basePowerExpression: '', fixedBonus: 0,
-    percentBonus: 0, buff: 0, comboCount: 1, debuffPercent: '0',
+    percentBonus: 0, buff: 0, comboCount: 1, skillInputKind: 'power', skillInputValue: '', debuffPercent: '0',
     defenseMod: '0', starMeteor: 0, finalPowerManual: '', currentSkillName: ''
   });
   const state = {
@@ -23,32 +23,534 @@ const DamagePage = (function () {
     searchedPets: []       // 搜索过的精灵ID列表（历史）
   };
 
-  /* 安全表达式求值：支持 + - * / ( )，如 "30+40+50" → 120。
-     非法字符或除零等异常时返回 fallback */
-  function evalExpr(str, fallback) {
-    const s = String(str == null ? '' : str).trim();
-    if (s === '') return fallback;
-    if (/^[+-]?\d+(\.\d+)?$/.test(s)) return parseFloat(s);
-    if (!/^[0-9+\-*/().\s]+$/.test(s)) return fallback;
-    try {
-      const val = Function('"use strict"; return (' + s + ')')();
-      return (typeof val === 'number' && isFinite(val)) ? val : fallback;
-    } catch (e) { return fallback; }
+  // A battle handoff is a session-only overlay, never a personal/team record.
+  const battleSides = { attacker: null, defender: null };
+  let battleReturn = null, battleRevision = -1;
+  let battleSkillMemory = {};
+  let battleLooseLevels = { attacker: null, defender: null };
+  // Derived species growth is displayed in buff, but never baked into saved manual buff.
+  let appliedFireAttackBonus = 0;
+  let appliedAbuAttackBonus = 0, nativeAbuBuffOverridden = false, battleAbuBuffOverridden = false;
+  let abuBlankSuspended = false; // A blank read drops tracking without writing an override marker.
+  const ABU_DESCRIPTIONS = Object.freeze([
+    '己方精灵每使用1次能耗为3的技能，自己入场前等级+2。在战斗中每提升1级，获得物攻+5%，低于80级时受到伤害+30%。',
+    '在战斗中每提升1级，获得物攻+5%，低于80级时受到伤害+30%。'
+  ]);
+  function nativeAbu(pet) {
+    const trait = pet?.trait?.localized?.zh;
+    return pet?.id === 623 && trait?.name === '圣龙的守护' &&
+      ABU_DESCRIPTIONS.includes(String(trait.description || '').replace(/\s/g, ''));
   }
-  // Display companion only: numerical basePower remains the single-release sum.
-  // Recompute from the actual input on each calculation; never reuse a stale expression.
+  function levelEffectMode(side) {
+    const pet = levelPet(side);
+    if (nativeAbu(pet)) return 'abu';
+    if (pet?.id === 619) return 'ming';
+    // Snapshot wolves keep their own species, never borrow the personal menu's mode.
+    return !battleSides[side] && [595, 616, 617].includes(pet?.id) && isWolf(pet) ? wolfRecord(side).mode : '';
+  }
+  function abuOverridden() {
+    if (isBattleSimulation()) return battleAbuBuffOverridden;
+    return nativeAbu(state.atkPet) ? nativeAbuBuffOverridden : isWolf(state.atkPet) && wolfRecord('attacker').abuBuffOverridden === true;
+  }
+  function setAbuOverridden(value) {
+    if (isBattleSimulation()) battleAbuBuffOverridden = value;
+    else if (nativeAbu(state.atkPet)) nativeAbuBuffOverridden = value;
+    else if (isWolf(state.atkPet)) wolfRecord('attacker').abuBuffOverridden = value;
+  }
+  function prepareAbuBuff({ mode = levelEffectMode('attacker'), level = effectiveLevel('attacker'), type = state.skillType, resume = false, fromState = false } = {}) {
+    if (mode !== 'abu' && levelEffectMode('attacker') !== 'abu' && !appliedAbuAttackBonus) return null;
+    const input = document.getElementById('buff');
+    const text = String(!fromState && input ? input.value : state.buff), blank = text.trim() === '';
+    const current = SkillSimulation.evaluate(buffInputExpression(text));
+    const previousBonus = blank ? 0 : appliedAbuAttackBonus;
+    const suspended = blank || abuBlankSuspended;
+    const bonus = mode === 'abu' && type === 'attack' && (resume || (!suspended && !abuOverridden())) ? Math.max(0, level - 60) * 5 : 0;
+    const total = buffWithFireAttack(bonus, current, previousBonus);
+    return { total, bonus, suspended, resume };
+  }
+  function commitAbuBuff(plan) {
+    if (!plan) return;
+    if (plan.resume) setAbuOverridden(false);
+    else if (plan.suspended) setAbuOverridden(true); // Explicit action, not an ordinary calculation read.
+    abuBlankSuspended = false;
+    state.buff = plan.total; appliedAbuAttackBonus = plan.bonus;
+    const input = document.getElementById('buff'); if (input) input.value = state.buff;
+  }
+  function preflightAbuBuff(options) {
+    try { return { ok: true, plan: prepareAbuBuff(options) }; }
+    catch (error) {
+      const input = document.getElementById('buff');
+      if (input) { input.setAttribute('aria-invalid', 'true'); input.title = error.message; }
+      return { ok: false };
+    }
+  }
+  const isBattleSimulation = () => !!(battleSides.attacker || battleSides.defender);
+  function battleStat(side, stat) {
+    const prefix = side === 'attacker' ? 'atk' : 'def', pet = state[prefix + 'Pet'];
+    const overlay = battleSides[side], nature = state[prefix + 'Nature'][stat] || 0;
+    if (overlay) {
+      const iv = Object.hasOwn(overlay.iv, stat) ? overlay.iv[stat] : state[prefix + 'IV'][stat] ? 60 : 0;
+      return BattleMath.statFromEffectiveIV(getBaseStat(pet, stat), stat, nature, iv, effectiveLevel(side));
+    }
+    return getPetStat(pet, stat, nature, !!state[prefix + 'IV'][stat], effectiveLevel(side));
+  }
+  function battleIVText(side, stat) {
+    const overlay = battleSides[side], prefix = side === 'attacker' ? 'atk' : 'def';
+    if (overlay && Object.hasOwn(overlay.iv, stat)) return `个体${overlay.iv[stat]}（${overlay.manualIV[stat] ? '临时' : '快照'}）`;
+    return (state[prefix + 'IV'][stat] ? '✓个体' : '×个体') + (overlay ? '（手动假设）' : '');
+  }
+  function beginBattleSimulation() {
+    if (battleReturn) return;
+    const keys = [...Object.keys(SKILL_DEFAULTS), 'atkPet', 'defPet', 'atkNature', 'defNature', 'atkIV', 'defIV', 'atkStatMode', 'defStatMode'];
+    battleReturn = { state: Object.fromEntries(keys.map(k => [k, /(?:Nature|IV)$/.test(k) ? { ...state[k] } : state[k]])),
+      teams: { ...selectionTeams }, bonuses: JSON.parse(JSON.stringify(bonusOverrides)), jmfz: jmfzActive,
+      fireAttackBonus: appliedFireAttackBonus, abuAttackBonus: appliedAbuAttackBonus,
+      nativeAbuBuffOverridden, battleAbuBuffOverridden, abuBlankSuspended,
+      wolves: Object.fromEntries(['attacker', 'defender'].map(side => [side, new Map([...wolfLevels[side]].map(([id, record]) => [id, { ...record }]))])) };
+    battleSkillMemory = {}; battleLooseLevels = { attacker: null, defender: null };
+    battleAbuBuffOverridden = false; abuBlankSuspended = false;
+    if (appliedFireAttackBonus) setFireAttackBonus(0); // Personal growth is not a battle-record fact or a temporary counter.
+  }
+  function endBattleSimulation() {
+    closeLevelMenu?.();
+    const previous = battleReturn;
+    battleSides.attacker = null; battleSides.defender = null; battleReturn = null; battleSkillMemory = {};
+    battleLooseLevels = { attacker: null, defender: null };
+    if (previous) {
+      wolfLevels.attacker = previous.wolves.attacker; wolfLevels.defender = previous.wolves.defender;
+      Object.assign(state, previous.state); selectionTeams = previous.teams;
+      Object.assign(bonusOverrides, previous.bonuses); jmfzActive = previous.jmfz;
+      appliedFireAttackBonus = previous.fireAttackBonus; appliedAbuAttackBonus = previous.abuAttackBonus;
+      nativeAbuBuffOverridden = previous.nativeAbuBuffOverridden; battleAbuBuffOverridden = previous.battleAbuBuffOverridden;
+      abuBlankSuspended = previous.abuBlankSuspended;
+      if (document.getElementById('basePower')) restoreFromState(false);
+    }
+  }
+  function applyBattlePet(side, battleSide, instanceId) {
+    const api = window.BattleRecordsClient, record = api?.getRecord();
+    const source = record?.sides?.[battleSide]?.pets?.find(p => p.instanceId === instanceId);
+    const pet = source && RKData.getMonsterById(source.monsterId);
+    if (!['attacker', 'defender'].includes(side) || !pet) return false;
+    closeReductionPicker?.(); closeLevelMenu?.();
+    if (battleRevision !== api.getRevision()) { endBattleSimulation(); battleRevision = api.getRevision(); }
+    beginBattleSimulation();
+    const config = petConfiguration(pet.id), values = api.snapshotValues(source), prefix = side === 'attacker' ? 'atk' : 'def';
+    state[prefix + 'Pet'] = pet; state[prefix + 'IV'] = { ...config.iv }; state[prefix + 'Nature'] = { ...config.nature, ...values.nature };
+    for (const [stat, value] of Object.entries(values.iv)) state[prefix + 'IV'][stat] = value > 0;
+    battleSides[side] = { source, battleSide, iv: { ...values.iv }, nature: { ...values.nature }, manualIV: {}, manualNature: {},
+      level: { slider: 60, manual: String(values.level ?? (isWolf(pet) ? 60 : speciesLevelConfig(pet).enabled ? speciesLevelConfig(pet).defaultLevel : 60)) }, unknownLevel: values.level === null };
+    selectionTeams[side] = null;
+    if (side === 'attacker') { battleAbuBuffOverridden = false; applySkillMemory(pet.id); applyTraitPowerDefaults(true); onAttackerSelected('battle'); }
+    else onDefenderSelected('battle');
+    checkJmfzBonus(); searchBoxes[side]?.setValue(getPetName(pet), pet);
+    syncModifierButtons(side); updateFinalStats(side); renderSkillIcons(); calculate(); renderBattleSnapshotPanel();
+    return true;
+  }
+  function setBattleValue(side, kind, stat, value) {
+    const overlay = battleSides[side], api = window.BattleRecordsClient;
+    if (!overlay || !STAT_KEYS.includes(stat) || !['iv','nature'].includes(kind) || !api?.validValue(kind, value)) return false;
+    const prefix = side === 'attacker' ? 'atk' : 'def';
+    if (kind === 'iv') { overlay.iv[stat] = value; overlay.manualIV[stat] = true; state[prefix + 'IV'][stat] = value > 0; }
+    else { overlay.nature[stat] = value; overlay.manualNature[stat] = true; state[prefix + 'Nature'][stat] = value; }
+    syncModifierButtons(side); updateFinalStats(side); calculate(); return true;
+  }
+  function renderBattleSnapshotPanel() {
+    const api = window.BattleRecordsClient, host = document.getElementById('battle-snapshot-panel');
+    if (!host || !api) return;
+    if (battleRevision !== api.getRevision()) { endBattleSimulation(); battleRevision = api.getRevision(); }
+    const record = api.getRecord(); host.hidden = !record;
+    if (!record) { host.replaceChildren(); return; }
+    const esc = api.escape, name = pet => { const species = RKData.getMonsterById(pet.monsterId); return species ? getPetName(species) : '未匹配精灵'; };
+    host.innerHTML = `<div class="card-body"><div class="battle-snapshot-heading"><strong>本局阵容 · 临时试算</strong><button type="button" class="btn battle-snapshot-exit">退出试算</button></div>
+      <p class="battle-note">已确认参数单独应用；未知字段使用当前个人设置作手动假设。试算期间个体、等级、技能调整不写回个人/编队，普通搜索或历史选择会退出试算。</p>
+      ${['me','enemy'].map(from => `<div class="battle-roster"><strong>${from === 'me' ? '我方' : '敌方'}</strong>${(record.sides[from]?.pets || []).map((pet,index) => `<div class="battle-roster-pet"><span>${esc(name(pet))}</span><button type="button" class="btn" data-from="${from}" data-index="${index}" data-battle-side="attacker" ${RKData.getMonsterById(pet.monsterId) ? '' : 'disabled'}>攻</button><button type="button" class="btn" data-from="${from}" data-index="${index}" data-battle-side="defender" ${RKData.getMonsterById(pet.monsterId) ? '' : 'disabled'}>守</button></div>`).join('')}</div>`).join('')}
+      <div class="battle-snapshot-status" role="status">${isBattleSimulation() ? '当前为本局临时试算；退出后恢复进入前参数。' : '请选择本局精灵作为攻击方或防守方。'}</div>
+      ${['attacker','defender'].filter(side => battleSides[side]).map(side => {
+        const overlay = battleSides[side], prefix = side === 'attacker' ? 'atk' : 'def';
+        return `<details class="battle-snapshot-values"><summary>${side === 'attacker' ? '攻击方' : '防守方'}：${esc(name(overlay.source))} · 个体/性格${overlay.unknownLevel ? ' · 等级为手动假设' : ''}</summary><p class="battle-note">个体使用有效值0—60（显示+10对应60）；改选候选只作本次手动试算。</p>${STAT_KEYS.map(stat => {
+          const ivKnown = Object.hasOwn(overlay.iv,stat), natKnown = Object.hasOwn(overlay.nature,stat), iv = ivKnown ? overlay.iv[stat] : state[prefix+'IV'][stat] ? 60 : 0;
+          const possibilities = ['iv','nature'].map(kind => { const values = api.candidates(overlay.source,stat,kind); return values.length > 1 ? `${kind==='iv'?'个体':'性格'}候选：${values.map(v=>kind==='iv'?v:['中性','正','负'][v]).join('/')}` : ''; }).filter(Boolean).join('；');
+          return `<div class="battle-snapshot-stat"><label>${api.LABELS[stat]}个体<input type="number" min="0" max="60" step="1" value="${iv}" data-value-side="${side}" data-value-kind="iv" data-stat="${stat}"></label><label>性格<select data-value-side="${side}" data-value-kind="nature" data-stat="${stat}">${[0,1,2].map(v=>`<option value="${v}" ${v===(state[prefix+'Nature'][stat]||0)?'selected':''}>${['中性','正性格','负性格'][v]}</option>`).join('')}</select></label><small>${ivKnown && !overlay.manualIV[stat] ? '个体快照' : '个体手动假设'} / ${natKnown && !overlay.manualNature[stat] ? '性格快照' : '性格手动假设'}${possibilities ? '；'+possibilities : ''}</small></div>`;
+        }).join('')}</details>`;
+      }).join('')}</div>`;
+    host.querySelector('.battle-snapshot-exit').addEventListener('click', () => { endBattleSimulation(); renderBattleSnapshotPanel(); });
+    host.querySelectorAll('[data-battle-side]').forEach(button => button.addEventListener('click', () => {
+      const pet = record.sides[button.dataset.from].pets[Number(button.dataset.index)];
+      applyBattlePet(button.dataset.battleSide, button.dataset.from, pet.instanceId);
+    }));
+    host.querySelectorAll('[data-value-kind]').forEach(input => input.addEventListener('change', () => {
+      if (input.value === '' || !setBattleValue(input.dataset.valueSide,input.dataset.valueKind,input.dataset.stat,Number(input.value))) {
+        input.setAttribute('aria-invalid','true'); host.querySelector('[role="status"]').textContent = '请输入有效个体0—60整数或已列出的性格。';
+      } else { input.removeAttribute('aria-invalid'); host.querySelector('[role="status"]').textContent = '已应用临时手动参数；未修改战报事实或个人配置。'; }
+    }));
+  }
+
+  // Side-specific preferences are separate from personal IV/nature and skill memory.
+  const LEVEL_STEPS = Object.freeze([1, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99]);
+  const levelPet = side => state[side === 'attacker' ? 'atkPet' : 'defPet'];
+  const wolfLevels = { attacker: new Map(), defender: new Map() };
+  const isWolf = pet => typeof PetLevels !== 'undefined' && PetLevels.isWolf(pet, RKData.getMonsters?.() || []);
+  const speciesLevelConfig = pet => typeof PetLevels !== 'undefined' ? PetLevels.config(pet) : { enabled: pet?.level_configurable === true, min: 1, max: 99, step: 10, defaultLevel: pet?.default_level || 99 };
+  const configurableLevel = pet => speciesLevelConfig(pet).enabled || isWolf(pet);
+  function wolfRecord(side, pet = levelPet(side)) {
+    if (!wolfLevels[side].has(pet.id)) wolfLevels[side].set(pet.id, { mode: 'final', slider: 60, manual: '' });
+    return wolfLevels[side].get(pet.id);
+  }
+  function sideLevelConfig(side, pet = levelPet(side)) {
+    if (battleSides[side]) return { enabled: true, min: 1, max: 99, step: 1, defaultLevel: 60 };
+    return isWolf(pet) ? PetLevels.wolfConfig(wolfRecord(side, pet).mode) : speciesLevelConfig(pet);
+  }
+  function levelSteps(side) {
+    return typeof PetLevels !== 'undefined' ? PetLevels.steps(sideLevelConfig(side)) : LEVEL_STEPS;
+  }
+  let closeLevelMenu = null, activeLevelMenu = null;
+  const levelControlDisposers = new Map();
+  const LEVEL_MODES = [['final', '属性值'], ['base', '种族值'], ['ming', '冥古龙'], ['abu', '阿布']];
+  function levelRecord(side, pet = levelPet(side)) {
+    if (battleSides[side]?.level) return { ...battleSides[side].level };
+    if (isBattleSimulation() && battleLooseLevels[side]) return { ...battleLooseLevels[side] };
+    if (isWolf(pet)) return { ...wolfRecord(side, pet) };
+    const policy = sideLevelConfig(side, pet);
+    const raw = window.UserConfig?.getObject('rk_damage_levels', {})?.[pet?.id]?.[side];
+    const manual = String(raw?.manual ?? '');
+    return {
+      ...raw,
+      slider: Number.isInteger(raw?.slider) && raw.slider >= policy.min && raw.slider <= policy.max ? raw.slider : policy.defaultLevel,
+      manual: /^(?:[1-9]|[1-9][0-9])$/.test(manual) && Number(manual) >= policy.min && Number(manual) <= policy.max ? manual : ''
+    };
+  }
+  function effectiveLevel(side) {
+    if (battleSides[side]?.level) { const value = battleSides[side].level; return value.manual === '' ? value.slider : Number(value.manual); }
+    if (!sideLevelConfig(side).enabled) return 60;
+    const value = levelRecord(side);
+    return value.manual === '' ? value.slider : Number(value.manual);
+  }
+  function setWolfMode(side, mode) {
+    if (!['attacker','defender'].includes(side) || !isWolf(levelPet(side)) || battleSides[side] || !['final','base','ming','abu'].includes(mode)) return false;
+    const policy = PetLevels.wolfConfig(mode);
+    const prepared = side === 'attacker' ? preflightAbuBuff({ mode, level: policy.defaultLevel, resume: true }) : { ok: true };
+    if (!prepared.ok) return false;
+    closeLevelMenu?.();
+    wolfLevels[side].set(levelPet(side).id, { mode, slider: policy.defaultLevel, manual: '' });
+    commitAbuBuff(prepared.plan);
+    state[side === 'attacker' ? 'atkStatMode' : 'defStatMode'] = mode === 'base' ? 'base' : 'final';
+    refreshLevelChange();
+    return true;
+  }
+  function refreshLevelChange() {
+    updateFinalStats('attacker'); updateFinalStats('defender');
+    // Target-side level effects follow the active defender, not a saved attacker skill.
+    if (hasLevelDefenderEffect()) checkJmfzBonus();
+    // Recalculate only; never reselect a remembered skill or write personal mode.
+    if (document.getElementById('basePower')) calculate();
+  }
+  function setLevelPreference(side, changes) {
+    const pet = levelPet(side);
+    if (!['attacker', 'defender'].includes(side) || !sideLevelConfig(side).enabled) return Promise.resolve(false);
+    if (Object.hasOwn(changes, 'slider') && !levelSteps(side).includes(changes.slider)) return Promise.resolve(false);
+    const policy = sideLevelConfig(side);
+    if (Object.hasOwn(changes, 'manual') && changes.manual !== '' &&
+        (!/^(?:[1-9]|[1-9][0-9])$/.test(String(changes.manual)) || Number(changes.manual) < policy.min || Number(changes.manual) > policy.max)) return Promise.resolve(false);
+    if (isWolf(pet) && !battleSides[side] && Object.hasOwn(changes, 'manual')) return Promise.resolve(false);
+    const next = { ...levelRecord(side, pet) };
+    // Legacy manual values remain effective until a level control is used. A new
+    // slider choice owns the actual level, including when an old override exists.
+    if (Object.hasOwn(changes, 'manual')) next.manual = String(changes.manual);
+    if (Object.hasOwn(changes, 'slider')) { next.slider = changes.slider; next.manual = ''; }
+    const prepared = side === 'attacker' ? preflightAbuBuff({ level: next.manual === '' ? next.slider : Number(next.manual), resume: true }) : { ok: true };
+    if (!prepared.ok) return Promise.resolve(false);
+    if (battleSides[side]) {
+      battleSides[side].level = next; battleSides[side].unknownLevel = true;
+      commitAbuBuff(prepared.plan); refreshLevelChange(); return Promise.resolve(true);
+    }
+    if (isWolf(pet)) { wolfLevels[side].set(pet.id, next); commitAbuBuff(prepared.plan); refreshLevelChange(); return Promise.resolve(true); }
+    if (isBattleSimulation()) {
+      battleLooseLevels[side] = next; commitAbuBuff(prepared.plan); refreshLevelChange(); return Promise.resolve(true);
+    }
+    const records = window.UserConfig.getObject('rk_damage_levels', {});
+    const record = { ...records[pet.id], [side]: next };
+    // patch queues immediately. getObject includes the pending draft; ONLY the
+    // shared UserConfig queue reports durable success and owns retry/close flush.
+    const saved = window.UserConfig.patch('rk_damage_levels', { [pet.id]: record });
+    commitAbuBuff(prepared.plan);
+    refreshLevelChange();
+    if (side === 'attacker' && nativeAbu(pet)) saveSkillConfig(pet.id);
+    return saved;
+  }
+  function stepLevelPreference(side, direction) {
+    if (!['attacker', 'defender'].includes(side) || !sideLevelConfig(side).enabled || ![-1, 1].includes(direction)) return Promise.resolve(false);
+    const level = effectiveLevel(side), steps = levelSteps(side);
+    const next = direction < 0 ? steps.slice().reverse().find(value => value < level) : steps.find(value => value > level);
+    return next === undefined ? Promise.resolve(false) : setLevelPreference(side, { slider: next });
+  }
+  function buildLevelControls(side) {
+    const label = side === 'attacker' ? '攻击方' : '防守方';
+    return `<button type="button" class="damage-level-mode" id="${side}-level-mode" aria-label="${label}显示与等级模拟" aria-haspopup="listbox" aria-expanded="false" hidden>属性值</button>
+      <div class="damage-level-controls" id="${side}-level-controls" hidden>
+      <output class="damage-level-value" id="${side}-level-value" aria-live="polite"></output>
+      <button type="button" class="damage-level-step" id="${side}-level-decrease" aria-label="${label}降低等级到上一档">&lt;</button>
+      <input class="damage-level-slider" id="${side}-level-slider" type="range" min="0" max="10" step="1" value="10" aria-label="${label}等级快捷档位">
+      <button type="button" class="damage-level-step" id="${side}-level-increase" aria-label="${label}提高等级到下一档">&gt;</button>
+    </div>`;
+  }
+  function syncLevelControls(side) {
+    const wolf = isWolf(levelPet(side)) && !battleSides[side];
+    const special = sideLevelConfig(side).enabled;
+    if (activeLevelMenu?.side === side && (!wolf || activeLevelMenu.petId !== levelPet(side)?.id || activeLevelMenu.mode !== wolfRecord(side).mode)) closeLevelMenu?.();
+    const menu = document.getElementById(`${side}-level-mode`);
+    if (menu) {
+      menu.hidden = !wolf;
+      if (wolf) {
+        menu.textContent = LEVEL_MODES.find(([mode]) => mode === wolfRecord(side).mode)[1];
+        menu.setAttribute('aria-label', `${side === 'attacker' ? '攻击方' : '防守方'}显示与等级模拟：${menu.textContent}`);
+      }
+    }
+    const prefix = side === 'attacker' ? 'atk' : 'def';
+    const radio = document.querySelector(`input[name="${prefix}StatMode"]`);
+    const group = radio?.closest?.('.stat-mode-group');
+    if (group) group.hidden = special || wolf;
+    const controls = document.getElementById(`${side}-level-controls`);
+    if (!controls) return;
+    controls.hidden = !special;
+    if (!special) return;
+    const level = effectiveLevel(side), policy = sideLevelConfig(side), steps = levelSteps(side);
+    const output = document.getElementById(`${side}-level-value`);
+    output.textContent = `lv：${level}`;
+    output.title = levelPet(side)?.data_note || '';
+    output.setAttribute('aria-label', `${side === 'attacker' ? '攻击方' : '防守方'}等级 ${level}`);
+    const slider = document.getElementById(`${side}-level-slider`);
+    // An old off-grid value is preserved, not silently quantized on load. Only
+    // the thumb uses the nearest point; text/AT and +/- use the real level.
+    const nearest = steps.reduce((best, value, index) => Math.abs(value - level) < Math.abs(steps[best] - level) ? index : best, 0);
+    slider.max = steps.length - 1;
+    slider.value = nearest;
+    slider.setAttribute('aria-valuetext', `${level}级${steps.includes(level) ? '' : '（已记忆等级；操作后使用快捷档位）'}`);
+    document.getElementById(`${side}-level-decrease`).disabled = level <= policy.min;
+    document.getElementById(`${side}-level-increase`).disabled = level >= policy.max;
+  }
+  function bindLevelControls(side) {
+    levelControlDisposers.get(side)?.();
+    const owner = document.getElementById(`${side}-level-mode`);
+    const controls = document.getElementById(`${side}-level-controls`);
+    const slider = document.getElementById(`${side}-level-slider`);
+    if (!owner || !controls || !slider) return;
+    let disposed = false, closeOwnedMenu = null, unregister = () => {};
+    const listeners = [];
+    const listen = (node, type, handler) => {
+      node.addEventListener(type, handler);
+      listeners.push(() => node.removeEventListener(type, handler));
+    };
+    const usable = () => !disposed && owner.isConnected && controls.isConnected;
+    const open = (edge) => {
+      if (!usable() || owner.hidden || !isWolf(levelPet(side)) || battleSides[side]) return;
+      if (closeOwnedMenu) { closeOwnedMenu(); return; }
+      closeLevelMenu?.();
+      const petId = levelPet(side).id, mode = wolfRecord(side).mode;
+      const layer = document.createElement('div');
+      layer.id = `${side}-level-options`; layer.className = 'damage-level-options';
+      layer.setAttribute('role', 'listbox'); layer.setAttribute('aria-label', '显示与等级模拟');
+      let closed = false;
+      const choose = value => {
+        if (closed || !usable() || !layer.isConnected || levelPet(side)?.id !== petId || battleSides[side]) return;
+        closeOwnedMenu?.();
+        setWolfMode(side, value);
+      };
+      const choices = LEVEL_MODES.map(([value, label]) => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'damage-level-option'; button.tabIndex = -1;
+        button.dataset.mode = value; button.textContent = label;
+        button.setAttribute('role', 'option'); button.setAttribute('aria-selected', String(value === mode));
+        button.addEventListener('click', () => choose(value));
+        layer.appendChild(button); return button;
+      });
+      layer.addEventListener('keydown', event => {
+        if (event.isComposing || closed) return;
+        const index = choices.indexOf(document.activeElement);
+        let next;
+        if (event.key === 'ArrowDown' || event.key === 'ArrowRight') next = (index + 1) % choices.length;
+        else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') next = (index + choices.length - 1) % choices.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = choices.length - 1;
+        else if ((event.key === 'Enter' || event.key === ' ') && index >= 0) { event.preventDefault(); choose(LEVEL_MODES[index][0]); }
+        // Return focus before the native Tab action so it proceeds from the
+        // trigger, rather than from a detached body-portal option.
+        else if (event.key === 'Tab') closeOwnedMenu?.();
+        if (next !== undefined) { event.preventDefault(); choices[next].focus({ preventScroll: true }); }
+      });
+      document.body.appendChild(layer);
+      owner.setAttribute('aria-expanded', 'true'); owner.setAttribute('aria-controls', layer.id);
+      CommonUI.positionAnchoredLayer(owner, layer);
+      closeOwnedMenu = CommonUI.bindAnchoredLayer(owner, layer, () => {
+        closed = true;
+        const focusOwner = layer.contains(document.activeElement);
+        layer.remove(); owner.setAttribute('aria-expanded', 'false'); owner.removeAttribute('aria-controls');
+        if (closeLevelMenu === closeOwnedMenu) { closeLevelMenu = null; activeLevelMenu = null; }
+        closeOwnedMenu = null;
+        if (focusOwner && usable() && !owner.hidden) owner.focus({ preventScroll: true });
+      });
+      closeLevelMenu = closeOwnedMenu; activeLevelMenu = { side, petId, mode };
+      const index = edge === 'first' ? 0 : edge === 'last' ? choices.length - 1 : LEVEL_MODES.findIndex(([value]) => value === mode);
+      choices[index].focus({ preventScroll: true });
+    };
+    listen(owner, 'click', () => open());
+    listen(owner, 'keydown', event => {
+      if (event.isComposing) return;
+      if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+        event.preventDefault(); open(event.key === 'Home' ? 'first' : event.key === 'End' ? 'last' : undefined);
+      }
+    });
+    listen(slider, 'input', () => {
+      if (!usable() || controls.hidden) return;
+      const index = Number(slider.value), steps = levelSteps(side);
+      if (Number.isInteger(index) && index >= 0 && index < steps.length) void setLevelPreference(side, { slider: steps[index] });
+    });
+    listen(slider, 'keydown', event => {
+      if (!usable() || controls.hidden || event.isComposing) return;
+      const direction = ['ArrowLeft', 'ArrowDown'].includes(event.key) ? -1 : ['ArrowRight', 'ArrowUp'].includes(event.key) ? 1 : 0;
+      if (direction) { event.preventDefault(); void stepLevelPreference(side, direction); }
+      else if (event.key === 'Home' || event.key === 'End') {
+        event.preventDefault(); const steps = levelSteps(side);
+        void setLevelPreference(side, { slider: event.key === 'Home' ? steps[0] : steps[steps.length - 1] });
+      }
+    });
+    for (const [name, direction] of [['decrease', -1], ['increase', 1]]) {
+      const button = document.getElementById(`${side}-level-${name}`);
+      listen(button, 'click', () => { if (usable() && !controls.hidden && !button.disabled) void stepLevelPreference(side, direction); });
+    }
+    const dispose = () => {
+      if (disposed) return;
+      disposed = true; closeOwnedMenu?.(); listeners.forEach(remove => remove()); unregister();
+      if (levelControlDisposers.get(side) === dispose) levelControlDisposers.delete(side);
+    };
+    levelControlDisposers.set(side, dispose);
+    unregister = CommonUI.registerCleanup?.(owner, dispose) || unregister;
+  }
+
+  // Safe parser: ^ means exponentiation; identifiers/calls are never executed.
+  function evalExpr(str, fallback) {
+    const evaluate = SkillSimulation.evaluate; // A missing required module must fail visibly, not erase modifiers.
+    try { return evaluate(str); } catch (_) { return fallback; }
+  }
   function normalizePowerExpression(text, total) {
-    if (typeof text !== 'string' || text.length > 128 || !/^[0-9]+(?:[+][0-9]+)+$/.test(text)) return '';
-    const terms = text.split('+').map(Number), sum = terms.reduce((a,b) => a+b,0);
-    return terms.every(Number.isSafeInteger) && Number.isSafeInteger(sum) && sum === Number(total) ? text : '';
+    if (typeof text !== 'string' || text.length > 128 || !/[+*/()^\-]/.test(text)) return '';
+    try { return Math.round(SkillSimulation.evaluate(text)) === Number(total) ? text : ''; }
+    catch (_) { return ''; }
+  }
+  const simulationMove = () => RKData.getMoves().find(m => RKData.getMoveName(m) === state.currentSkillName);
+  const simulationKey = move => state.atkPet && move ? `${state.atkPet.id}:${move.id}` : null;
+  function simulationRecord(move) {
+    if (isBattleSimulation()) return battleSkillMemory[simulationKey(move)] || {};
+    return window.UserConfig.getObject('rk_skill_simulation', {})[simulationKey(move)] || {};
+  }
+  function rememberedFireAttackBonus() {
+    if (state.atkPet?.id !== 14 || !SkillSimulation.fireAttackEnabled(state.atkPet)) return 0;
+    const move = RKData.getMoves().find(m => m.id === 113);
+    if (!move || !SkillVariants.describe(move).reviewed) return 0;
+    return SkillSimulation.fireAttackBonus(state.atkPet, simulationRecord(move));
+  }
+  function buffInputExpression(value) {
+    const text = String(value);
+    return text.trim() === '' ? '0' : text; // Empty means manual zero only in the BUFF field.
+  }
+  function buffWithFireAttack(bonus, current = state.buff, previousBonus = appliedFireAttackBonus) {
+    const manual = Number(current) - previousBonus, total = manual + bonus;
+    if (![manual, total].every(n => Number.isFinite(n) && Math.abs(n) <= Number.MAX_SAFE_INTEGER)) throw Error('双攻加成超出安全计算范围');
+    return total;
+  }
+  function setFireAttackBonus(bonus, current = state.buff, previousBonus = appliedFireAttackBonus) {
+    state.buff = buffWithFireAttack(bonus, current, previousBonus);
+    appliedFireAttackBonus = bonus;
+    const input = document.getElementById('buff');
+    if (input) input.value = state.buff;
+  }
+  function readBuffInput(manualTakeover = false) {
+    const input = document.getElementById('buff'), text = String(input.value), blank = text.trim() === '';
+    if (state.atkPet?.id !== 14 && !appliedFireAttackBonus && levelEffectMode('attacker') !== 'abu' && !appliedAbuAttackBonus) { state.buff = evalExpr(buffInputExpression(text), 0); return true; }
+    try {
+      const value = SkillSimulation.evaluate(buffInputExpression(text));
+      if (manualTakeover) {
+        const move = RKData.getMoves().find(m => m.id === 113);
+        if (move && SkillSimulation.fireAttackEnabled(state.atkPet) && SkillVariants.describe(move).reviewed) {
+          // Validate the existing pair before any write. Manual input is the new
+          // literal baseline, not a total hiding value-minus-old-growth compensation.
+          SkillSimulation.fireAttackBonus(state.atkPet, simulationRecord(move));
+          saveSimulation(move, { fireBuffOverridden: true });
+        }
+        if (levelEffectMode('attacker') === 'abu') setAbuOverridden(true);
+      } else if (!blank) {
+        buffWithFireAttack(appliedFireAttackBonus + appliedAbuAttackBonus, value, appliedFireAttackBonus + appliedAbuAttackBonus);
+      }
+      // A blank DOM value may arrive without an input event. Its zero baseline
+      // cannot retain old derived tracking; calculation reads never write a marker.
+      if (manualTakeover || blank) { appliedFireAttackBonus = 0; appliedAbuAttackBonus = 0; }
+      if (levelEffectMode('attacker') === 'abu' && (blank || manualTakeover)) abuBlankSuspended = blank && !manualTakeover;
+      state.buff = value;
+      input.setAttribute('aria-invalid', 'false'); input.title = '';
+      return true;
+    } catch (error) {
+      input.setAttribute('aria-invalid', 'true'); input.title = error.message;
+      return false; // Invalid drafts leave the last valid value, tracker and saved pair untouched.
+    }
+  }
+  function saveSimulation(move, record) {
+    const key = simulationKey(move);
+    if (isBattleSimulation()) { if (key) battleSkillMemory[key] = { ...battleSkillMemory[key], ...record }; return; }
+    if (key) void window.UserConfig.patch('rk_skill_simulation', { [key]: { ...simulationRecord(move), ...record } });
+  }
+  function syncPowerInput() {
+    const input = document.getElementById('basePower');
+    if (!input) return;
+    const kind = state.skillInputKind || 'power';
+    const label = document.getElementById('skill-power-input-label');
+    if (label) label.textContent = kind === 'energy' ? '当前能量' : kind === 'hp-ratio' ? '血量比' : '基础威力';
+    input.value = kind === 'power' ? state.basePowerExpression || state.basePower : state.skillInputValue;
+    input.setAttribute('aria-label', kind === 'energy' ? '当前能量（0—10）' : kind === 'hp-ratio' ? '血量比（当前生命/最大生命）' : '基础威力');
+    input.setAttribute('inputmode', kind === 'energy' ? 'numeric' : 'text');
+    input.setAttribute('aria-invalid', 'false');
+  }
+  function readPowerInput() {
+    const input = document.getElementById('basePower');
+    try {
+      const values = SkillSimulation.input(state.skillInputKind || 'power', input.value);
+      Object.assign(state, values); input.setAttribute('aria-invalid', 'false'); input.title = '';
+      return true;
+    } catch (error) {
+      input.setAttribute('aria-invalid', 'true'); input.title = error.message;
+      // Invalid drafts never overwrite the previous valid state or persisted value.
+      return false;
+    }
+  }
+  // Trait/default and defender-derived values are display overlays, not manual memory.
+  const bonusOverrides = { fixedBonus: null, percentBonus: null };
+  let jmfzActive = false;
+  function setAutomaticBonus(field, value, reason) {
+    if (!Number.isFinite(value)) return;
+    const prior = bonusOverrides[field];
+    bonusOverrides[field] = { manual: prior ? prior.manual : Number(isBattleSimulation() ? state[field] : loadSkillConfig(state.atkPet?.id)?.[field] ?? state[field]), value, reason };
+    state[field] = value;
+    const input = document.getElementById(field); if (input) input.value = value;
+  }
+  function releaseAutomaticBonus(field) {
+    const prior = bonusOverrides[field]; if (!prior) return;
+    state[field] = prior.manual; const input = document.getElementById(field); if (input) input.value = prior.manual;
+    bonusOverrides[field] = null;
+  }
+  function applyTraitPowerDefaults(onSelection = false) {
+    const api = typeof TraitPowerDefaults === 'undefined' ? window.TraitPowerDefaults : TraitPowerDefaults;
+    const rule = api?.resolve(state.atkPet, state.currentSkillName, state.skillAttr);
+    if (rule && (onSelection || rule.mode === 'dynamic')) setAutomaticBonus(rule.field, rule.value, 'trait');
+    if (!rule) for (const field of ['fixedBonus', 'percentBonus']) {
+      if (bonusOverrides[field]?.reason === 'trait') releaseAutomaticBonus(field);
+    }
+    return rule;
   }
   function updateSpecialPower() {
     const move = RKData.getMoves().find(m => RKData.getMoveName(m) === state.currentSkillName);
     const stat = move?.power_formula === 'speed_diff' ? 'speed'
       : move?.power_formula === 'phy_def_diff' ? 'defense' : null;
     if (!stat || !state.atkPet || !state.defPet) return;
-    const attackValue = getPetStat(state.atkPet, stat, state.atkNature[stat] || 0, !!state.atkIV[stat]);
-    const defenseValue = getPetStat(state.defPet, stat, state.defNature[stat] || 0, !!state.defIV[stat]);
+    const attackValue = battleStat('attacker', stat);
+    const defenseValue = battleStat('defender', stat);
     const power = BattleMath.differencePower(attackValue - defenseValue);
     state.basePower = power;
     state.basePowerExpression = '';
@@ -85,16 +587,6 @@ const DamagePage = (function () {
     skillNoticeTimer = setTimeout(() => notice.remove(), 5000);
   }
 
-  // 技能使用记忆：最近使用的技能名排在前面
-  let skillUsageOrder = [];
-  try {
-    const saved = localStorage.getItem('rk_skill_usage_order');
-    if (saved) skillUsageOrder = JSON.parse(saved);
-  } catch (e) {}
-  function saveSkillUsageOrder() {
-    try { localStorage.setItem('rk_skill_usage_order', JSON.stringify(skillUsageOrder)); } catch (e) {}
-  }
-
   // 属性显示模式：'final' = 属性值, 'base' = 种族值
   state.atkStatMode = 'final';
   state.defStatMode = 'final';
@@ -112,7 +604,7 @@ const DamagePage = (function () {
   function getPetName(pet) { return RKData.getMonsterDisplayName(pet); }
 
   /* ============================================================
-   * 3. 计算引擎层（公式与原版完全一致，勿改）
+   * 3. 计算引擎层（共用等级公式；每击伤害仅最终向下取整）
    * ============================================================ */
   const CalcEngine = {
     /** 计算技能基础威力 */
@@ -201,18 +693,20 @@ const DamagePage = (function () {
 
       const atkStatKey = skillType;
       const defStatKey = skillType === 'attack' ? 'defense' : 'magic_defense';
-      const atkStat = getPetStat(atk, atkStatKey, state.atkNature[atkStatKey] || 0, state.atkIV[atkStatKey] || false);
-      const defBaseStat = getPetStat(def, defStatKey, state.defNature[defStatKey] || 0, state.defIV[defStatKey] || false);
+      const atkStat = battleStat('attacker', atkStatKey);
+      const defBaseStat = battleStat('defender', defStatKey);
       const defStat = Math.round(defBaseStat * defenseMod);
 
       const isManual = state.finalPowerManual !== '' && state.finalPowerManual !== null;
       const skillFinalPower = this.calcFinalPower(basePower, fixedBonus, percentBonus, atk, def, skillAttr, buffPercent, isManual ? state.finalPowerManual : null);
 
       // 普通伤害计算
-      const singleHit = BattleMath.normalDamage(atkStat, skillFinalPower, defStat, debuffMod);
+      const attackLevel = effectiveLevel('attacker');
+      const factorText = sideLevelConfig('attacker').enabled || attackLevel !== 60 ? BattleMath.damageFactor(attackLevel).toFixed(2) : '0.9';
+      const singleHit = BattleMath.normalDamage(atkStat, skillFinalPower, defStat, debuffMod, 1, attackLevel);
       let totalDamage = singleHit * comboCount;
 
-      // 非幻系攻击触发；追加伤害为幻系，使用相同37/41系数，但不叠本系/普通威力加成/连击。
+      // 非幻系攻击触发；追加伤害为幻系，使用攻击方等级系数，但不叠本系/普通威力加成/连击。
       let starMeteorDamage = 0;
       let starMeteorBase = 0;
       const starMeteorLayers = state.starMeteor || 0;
@@ -220,11 +714,11 @@ const DamagePage = (function () {
       const starMeteorTypeEff = RKData.getTypeEff('Illusion', def.main_type?.name, def.sub_type?.name);
       if (starMeteorTriggered) {
         starMeteorBase = this.calcStarMeteorBase(starMeteorLayers);
-        starMeteorDamage = BattleMath.starMeteorDamage(starMeteorBase, atkStat, defStat, buffMod, starMeteorTypeEff, debuffMod);
+        starMeteorDamage = BattleMath.starMeteorDamage(starMeteorBase, atkStat, defStat, buffMod, starMeteorTypeEff, debuffMod, attackLevel);
         totalDamage += starMeteorDamage;
       }
 
-      const defHP = getPetStat(def, 'hp', state.defNature.hp || 0, state.defIV.hp || false);
+      const defHP = battleStat('defender', 'hp');
       const remainingHP = Math.max(0, defHP - totalDamage);
       const damagePercent = (totalDamage / defHP * 100);
 
@@ -235,14 +729,14 @@ const DamagePage = (function () {
         skillBasePower, skillFinalPower,
         isSameType, sameTypeBonus, typeEff, buffMod,
         debuffMod, defenseMod, hasDefenseMod, hasDebuffMod,
-        singleHit, totalDamage, comboCount,
+        singleHit, totalDamage, comboCount, attackLevel, factorText,
         starMeteorDamage, starMeteorLayers, starMeteorBase, starMeteorTypeEff, starMeteorTriggered,
         defHP, remainingHP, damagePercent,
-        atkIVText: state.atkIV[atkStatKey] ? '✓个体' : '×个体',
+        atkIVText: battleIVText('attacker', atkStatKey),
         atkNatureText: state.atkNature[atkStatKey] === 1 ? '✓性格' : state.atkNature[atkStatKey] === 2 ? '负性格' : '×性格',
-        defIVText: state.defIV[defStatKey] ? '✓个体' : '×个体',
+        defIVText: battleIVText('defender', defStatKey),
         defNatureText: state.defNature[defStatKey] === 1 ? '✓性格' : state.defNature[defStatKey] === 2 ? '负性格' : '×性格',
-        hpIVText: state.defIV.hp ? '✓个体' : '×个体',
+        hpIVText: battleIVText('defender', 'hp'),
         hpNatureText: state.defNature.hp === 1 ? '✓性格' : state.defNature.hp === 2 ? '负性格' : '×性格',
         basePower, basePowerExpression: normalizePowerExpression(state.basePowerExpression, basePower), fixedBonus, percentBonus, buffPercent,
         isManual
@@ -288,13 +782,13 @@ const DamagePage = (function () {
         }
       }
 
-      let dmgParts = [`${r.skillFinalPower} × (${r.atkStat} ÷ ${r.defStat})`, '0.9'];
+      let dmgParts = [`${r.skillFinalPower} × (${r.atkStat} ÷ ${r.defStat})`, r.factorText || '0.9'];
       if (r.hasDebuffMod) dmgParts.push(`减伤${r.debuffMod.toFixed(2)}`);
       if (r.comboCount > 1) dmgParts.push(`${r.comboCount}连击`);
       const normalDamage = r.totalDamage - r.starMeteorDamage;
       if (r.starMeteorDamage > 0) {
         steps.push(`⑤ 普通伤害 = ${dmgParts.join(' × ')} = <span class="danger-text">${normalDamage}</span>`);
-        let starParts = [`${r.starMeteorLayers}层星陨印记（幻系，基础威力${r.starMeteorBase}）`, `(${r.atkStat} ÷ ${r.defStat})`, '0.9'];
+        let starParts = [`${r.starMeteorLayers}层星陨印记（幻系，基础威力${r.starMeteorBase}）`, `(${r.atkStat} ÷ ${r.defStat})`, r.factorText || '0.9'];
         if (r.buffPercent !== 0) {
           if (r.buffPercent >= 0) starParts.push(`BUFF${r.buffMod.toFixed(2)}`);
           else starParts.push(`BUFF÷${(1 / r.buffMod).toFixed(2)}`);
@@ -337,6 +831,7 @@ const DamagePage = (function () {
             <div class="stats-header-with-button">
               <div class="stats-title-row">
                 ${CommonUI.StatBox.buildModeRadio('atk')}
+                ${buildLevelControls('attacker')}
                 <button id="resetAttackerBtn" class="reset-stats-btn" title="重置所有性格和个体">↻</button>
               </div>
               <div class="type-container">
@@ -367,6 +862,7 @@ const DamagePage = (function () {
             <div class="stats-header-with-button">
               <div class="stats-title-row">
                 ${CommonUI.StatBox.buildModeRadio('def')}
+                ${buildLevelControls('defender')}
                 <button id="resetDefenderBtn" class="reset-stats-btn" title="重置所有性格和个体">↻</button>
               </div>
               <div class="type-container">
@@ -404,7 +900,7 @@ const DamagePage = (function () {
           <div class="skill-section">
             <div class="input-row">
               <div class="input-group">
-                <label class="accent-label">基础威力:</label>
+                <label class="accent-label" id="skill-power-input-label" for="basePower">基础威力:</label>
                 <input type="text" id="basePower" autocomplete="off" value="100">
               </div>
               <div class="input-group">
@@ -449,7 +945,7 @@ const DamagePage = (function () {
                 </div>
               </div>
               <div class="input-group">
-                <label class="debuff-percent-label">减伤百分比:</label>
+                <label class="debuff-percent-label" for="debuffPercent">减伤百分比:</label>
                 <div class="input-with-suffix">
                   <input type="text" id="debuffPercent" autocomplete="off" value="0">
                   <span class="suffix">%</span>
@@ -551,13 +1047,10 @@ const DamagePage = (function () {
     // 检查队伍是否携带机幕方舟 (id=501)
     if (!team.includes(501)) return [];
 
-    // 找到当前精灵在编队中的位置（通过 dex_number 匹配，含首领形态）
-    const petDex = pet.dex_number;
-    let idx = -1;
-    for (let i = 0; i < team.length; i++) {
-      const teamPet = RKData.getMonsterById(team[i]);
-      if (teamPet && teamPet.dex_number === petDex) { idx = i; break; }
-    }
+    // 优先本ID；首领只返回明确普通来源，不能把同编号的另一形态当成本精灵。
+    const base = pet.is_leader_form || pet.evolution_stage === '首领形态' ? RKData.getLeaderBase(pet) : null;
+    const ownIndex = team.indexOf(pet.id);
+    const idx = ownIndex >= 0 ? ownIndex : (base ? team.indexOf(base.id) : -1);
     // 编队第一只不受影响
     if (idx <= 0) return [];
 
@@ -593,16 +1086,6 @@ const DamagePage = (function () {
     // 传说攻击技能与普通攻击技能一并显示；仅血脉技能单独分组。
     const baseSkills = attackSkills.filter(s => s.source !== '血脉');
     const bloodlineSkills = attackSkills.filter(s => s.source === '血脉');
-
-    // 按使用记忆排序：最近使用的排最前
-    const sortByUsage = (arr) => arr.slice().sort((a, b) => {
-      const ia = skillUsageOrder.indexOf(a.name);
-      const ib = skillUsageOrder.indexOf(b.name);
-      if (ia === -1 && ib === -1) return 0;
-      if (ia === -1) return 1;
-      if (ib === -1) return -1;
-      return ia - ib;
-    });
 
     // 构建 moves name -> power 映射
     const moveMap = Object.create(null);
@@ -640,10 +1123,10 @@ const DamagePage = (function () {
     }
 
     if (baseSkills.length > 0) {
-      html += `<div class="skill-icon-group"><div class="skill-icon-group-title">基础技能</div><div class="skill-icons-subgrid">${sortByUsage(baseSkills).map(buildSkillIconHtml).join('')}</div></div>`;
+      html += `<div class="skill-icon-group"><div class="skill-icon-group-title">基础技能</div><div class="skill-icons-subgrid">${baseSkills.map(buildSkillIconHtml).join('')}</div></div>`;
     }
     if (bloodlineSkills.length > 0) {
-      html += `<div class="skill-icon-group"><div class="skill-icon-group-title">血脉技能</div><div class="skill-icons-subgrid">${sortByUsage(bloodlineSkills).map(buildSkillIconHtml).join('')}</div></div>`;
+      html += `<div class="skill-icon-group"><div class="skill-icon-group-title">血脉技能</div><div class="skill-icons-subgrid">${bloodlineSkills.map(buildSkillIconHtml).join('')}</div></div>`;
     }
     grid.innerHTML = html || '<p class="ext-placeholder">无攻击技能</p>';
 
@@ -656,39 +1139,43 @@ const DamagePage = (function () {
         const element = SkillVariants.describe(move).element;
         const short = RKData.getTypeShortZh(RKData.getTypeEn(element));
         const previousAttribute = RKData.getTypeEn(state.skillAttr);
-        const result = SkillVariants.select(state, move, side, short);
+        let simulation, fireGrowth, abuGrowth;
+        try {
+          abuGrowth = prepareAbuBuff({ type: SkillVariants.describe(move).skillType });
+          simulation = SkillVariants.describe(move).reviewed ? SkillSimulation.select(move, state.atkPet, side, simulationRecord(move)) : null;
+          if (simulation?.applied && simulation.fireAttackBonus !== undefined) {
+            const text = String(document.getElementById('buff').value);
+            const current = SkillSimulation.evaluate(buffInputExpression(text));
+            const previousBonus = text.trim() === '' ? 0 : appliedFireAttackBonus;
+            // Blank is a fresh manual0, even without an input event. Preflight
+            // with no old derivation, but commit nothing until all guards pass.
+            buffWithFireAttack(simulation.fireAttackBonus, current, previousBonus);
+            fireGrowth = { bonus: simulation.fireAttackBonus, current, previousBonus };
+          }
+        } catch (error) { showSkillNotice(error.message); return; }
+        const result = simulation ? (simulation.applied ? {
+          applied: true, state: { ...state, ...simulation.values, skillType: SkillVariants.describe(move).skillType,
+            skillAttr: short, currentSkillName: RKData.getMoveName(move) }
+        } : { applied: false, notice: '此技能没有中键模拟操作' }) : SkillVariants.select(state, move, side, short);
         if (!result.applied) {
           showSkillNotice(item.dataset.skillName + '：未应用；请查看提示并手动设置。', result.notice);
-          return; // No value, highlight, usage order, snapshot, or profile writes.
+          return; // No value, highlight, snapshot, or profile writes.
         }
         Object.assign(state, result.state);
-        document.getElementById('basePower').value = state.basePowerExpression || state.basePower;
+        commitAbuBuff(abuGrowth);
+        if (fireGrowth) setFireAttackBonus(fireGrowth.bonus, fireGrowth.current, fireGrowth.previousBonus);
+        if (!simulation) { state.skillInputKind = 'power'; state.skillInputValue = ''; }
+        if (simulation?.applied) saveSimulation(move, simulation.record);
+        syncPowerInput();
         document.getElementById('comboCount').value = state.comboCount;
         setSkillType(state.skillType);
         updateSkillAttrButton();
         grid.querySelectorAll('.skill-icon-item').forEach(i => i.classList.toggle('selected', i.dataset.skillName === state.currentSkillName));
 
-        // 更新使用记忆：将此技能移到最前
-        const skillName = item.dataset.skillName;
-        skillUsageOrder = skillUsageOrder.filter(n => n !== skillName);
-        skillUsageOrder.unshift(skillName);
-        saveSkillUsageOrder();
-        // 重新排序 DOM（在各组内排序）
-        document.querySelectorAll('.skill-icons-subgrid').forEach(subGrid => {
-          const items = Array.from(subGrid.querySelectorAll('.skill-icon-item'));
-          items.sort((a, b) => {
-            const ia = skillUsageOrder.indexOf(a.dataset.skillName);
-            const ib = skillUsageOrder.indexOf(b.dataset.skillName);
-            if (ia === -1 && ib === -1) return 0;
-            if (ia === -1) return 1;
-            if (ib === -1) return -1;
-            return ia - ib;
-          });
-          items.forEach(i => subGrid.appendChild(i));
-        });
-
         checkSameType();
-        if (state.defPet?.id === 501 && previousAttribute !== RKData.getTypeEn(state.skillAttr)) checkJmfzBonus();
+        const traitRule = applyTraitPowerDefaults(false);
+        if (hasLevelDefenderEffect() || (state.defPet?.id === 501 && (previousAttribute !== RKData.getTypeEn(state.skillAttr) ||
+            (traitRule?.mode === 'dynamic' && traitRule.field === 'percentBonus')))) checkJmfzBonus();
         updateSpecialPower();
         updateTypeEffectiveness();
         updateFinalPower();
@@ -700,6 +1187,11 @@ const DamagePage = (function () {
         document.getElementById('skill-variant-notice')?.remove();
       };
       item.addEventListener('click', () => select('left'));
+      item.addEventListener('auxclick', event => {
+        if (event.button !== 1) return;
+        event.preventDefault(); select('middle');
+      });
+      item.addEventListener('mousedown', event => { if (event.button === 1) event.preventDefault(); });
       item.addEventListener('contextmenu', event => {
         event.preventDefault();
         select('right');
@@ -721,6 +1213,7 @@ const DamagePage = (function () {
         <div class="container">
           <div class="main-content">
             <div class="calc-col">
+              <div id="battle-snapshot-panel" class="card battle-snapshot-panel" hidden></div>
               ${buildQuickAccessModule()}
               ${buildSkillIconModule()}
             </div>
@@ -751,12 +1244,13 @@ const DamagePage = (function () {
     } else {
       restoreFromState();
     }
+    renderBattleSnapshotPanel();
     const scroller = document.querySelector('.calc-root.scroll-container');
     if (scroller) scroller.scrollTop = pageScrollTop;
   }
 
   /* 从已有 state 恢复 UI（页面切换回来时不重置数据） */
-  function restoreFromState() {
+  function restoreFromState(reapplyTarget = true) {
     // 切页只还原显示，不执行“换精灵”的重置、记忆加载或特性覆盖。
     for (const side of ['attacker', 'defender']) {
       const pet = side === 'attacker' ? state.atkPet : state.defPet;
@@ -767,6 +1261,7 @@ const DamagePage = (function () {
       syncModifierButtons(side);
     }
     writeSkillInputs();
+    if (reapplyTarget && hasLevelDefenderEffect()) checkJmfzBonus();
     checkSameType();
     updateTypeEffectiveness();
     updateFinalPower();
@@ -780,11 +1275,20 @@ const DamagePage = (function () {
    * ============================================================ */
   const searchBoxes = {};
 
+  // Explicit search/quick-avatar choices share display memory. Keep generic
+  // selectPet free of this effect so startup, navigation and battle restores do
+  // not become new choices. Preserve the quick source's team and MRU policy.
+  function selectExplicitPet(side, pet, teamData = null, source = 'selection') {
+    if (!pet) return;
+    selectPet(side, pet, teamData, source);
+    window.SpeedLeaderDisplay?.recordSearch(pet, RKData.getMonsters());
+    window.DamageSpeedPriority?.record(pet, state.searchedPets);
+  }
   function initSearchDropdown(slotId, side) {
     const sb = CommonUI.createSearchBox({
       placeholder: '选择或搜索精灵',
       limit: 10,
-      onSelect: pet => selectPet(side, pet),
+      onSelect: pet => selectExplicitPet(side, pet),
       renderItem: CommonUI.monsterRenderItem()
     });
     searchBoxes[side] = sb;
@@ -794,6 +1298,7 @@ const DamagePage = (function () {
   /* Shared file only: failed writes remain in UserConfig's visible retry/close queue. */
   const STAT_KEYS = ['attack', 'magic_attack', 'defense', 'magic_defense', 'hp', 'speed'];
   function savePetConfig(petId, nature, iv, mode = 1) {
+    if (isBattleSimulation()) return;
     const previous = loadPetConfig(petId) || {};
     const record = { ...previous, mode,
       nature: { ...(previous.nature || {}), ...Object.fromEntries(STAT_KEYS.map(k => [k, nature[k] || 0])) },
@@ -809,6 +1314,7 @@ const DamagePage = (function () {
 
 /* 技能设置记忆入口：有记忆则应用；从未保存过则清空（不沿用上一个精灵的参数） */
   function applySkillMemory(petId) {
+    bonusOverrides.fixedBonus = null; bonusOverrides.percentBonus = null; jmfzActive = false;
     const skillCfg = loadSkillConfig(petId);
     if (skillCfg) {
       applySkillConfig(skillCfg);
@@ -817,19 +1323,30 @@ const DamagePage = (function () {
       renderSkillIcons(); // 清除上个精灵的技能选中高亮
     }
   }
-  const SKILL_CONFIG_KEYS = ['basePower','basePowerExpression','fixedBonus','percentBonus','buff','comboCount',
+  const SKILL_CONFIG_KEYS = ['basePower','basePowerExpression','skillInputKind','skillInputValue','fixedBonus','percentBonus','buff','comboCount',
     'debuffPercent','defenseMod','starMeteor','finalPowerManual'];
   function skillSnapshot() {
-    return Object.fromEntries(Object.keys(SKILL_DEFAULTS).map(key => [key, state[key]]));
+    const snapshot = Object.fromEntries(Object.keys(SKILL_DEFAULTS).map(key => [key, state[key]]));
+    // The pair's powerCount is the shared use count (an explicit manual-power
+    // detach may retain growth). Save only independent manual buff, never bake in growth twice.
+    snapshot.buff = buffWithFireAttack(0, state.buff, appliedFireAttackBonus + appliedAbuAttackBonus);
+    // Temporary target percentages are not attacker manual memory.
+    if (isLevelDefenderOverride()) snapshot.percentBonus = bonusOverrides.percentBonus.manual;
+    return snapshot;
   }
   function saveActiveSkill() {
-    void window.UserConfig.patch('rk_damage_view', {
-      skill: { ...window.UserConfig.getObject('rk_damage_view', {}).skill, ...skillSnapshot() }
-    });
+    if (isBattleSimulation()) return;
+    const skill = { ...window.UserConfig.getObject('rk_damage_view', {}).skill, ...skillSnapshot() };
+    // The active view has no owner ID. Only the native623 per-pet record may carry this marker.
+    delete skill.abuBuffOverridden;
+    void window.UserConfig.patch('rk_damage_view', { skill });
   }
   function saveSkillConfig(petId) {
+    if (isBattleSimulation()) return;
     if (petId) void window.UserConfig.patch('rk_damage_skill_configs', {
-      [petId]: { ...loadSkillConfig(petId), ...skillSnapshot() }
+      [petId]: { ...loadSkillConfig(petId), ...skillSnapshot(),
+        ...(Number(petId) === 623 ? { abuBuffOverridden: nativeAbuBuffOverridden } : {}),
+        ...Object.fromEntries(Object.entries(bonusOverrides).filter(([,v]) => v).map(([k,v]) => [k,v.manual])) }
     });
     // Also remember edits made without an attacker. This is NOT per-pet memory.
     saveActiveSkill();
@@ -841,21 +1358,31 @@ const DamagePage = (function () {
     state.basePowerExpression = normalizePowerExpression(state.basePowerExpression, state.basePower);
     SKILL_CONFIG_KEYS.forEach(key => {
       const el = document.getElementById(key);
-      if (el) el.value = key === 'basePower' ? state.basePowerExpression || state.basePower : state[key];
+      if (el) {
+        el.value = key === 'basePower' ? state.basePowerExpression || state.basePower : state[key];
+        if (key === 'buff') { el.setAttribute('aria-invalid', 'false'); el.title = ''; }
+      }
     });
+    syncPowerInput();
     setSkillType(state.skillType);
     updateSkillAttrButton();
   }
 
   function applySkillConfig(cfg) {
     // 目标精灵缺少的旧字段使用默认值，绝不继承上一只精灵的残留。
+    appliedFireAttackBonus = 0; appliedAbuAttackBonus = 0; abuBlankSuspended = false;
+    nativeAbuBuffOverridden = state.atkPet?.id === 623 && loadSkillConfig(623)?.abuBuffOverridden === true;
     Object.assign(state, SKILL_DEFAULTS);
     for (const key of Object.keys(SKILL_DEFAULTS)) {
       if (cfg?.[key] == null) continue;
-      if (cfg[key] === '' && !['finalPowerManual', 'currentSkillName', 'basePowerExpression'].includes(key)) continue;
+      if (cfg[key] === '' && !['finalPowerManual', 'currentSkillName', 'basePowerExpression', 'skillInputValue'].includes(key)) continue;
       state[key] = cfg[key];
     }
+    const growth = rememberedFireAttackBonus();
+    if (growth) setFireAttackBonus(growth);
+    commitAbuBuff(prepareAbuBuff({ fromState: true }));
     writeSkillInputs();
+    if (hasLevelDefenderEffect()) checkJmfzBonus();
     checkSameType();
     updateTypeEffectiveness();
     updateFinalPower();
@@ -874,6 +1401,7 @@ const DamagePage = (function () {
     return window.UserConfig.getObject('rk_damage_selection', {});
   }
   function saveSelection(fields) {
+    if (isBattleSimulation()) return;
     void window.UserConfig.patch('rk_damage_selection', fields);
   }
   function selectionTeam(groupId, petId) {
@@ -884,27 +1412,31 @@ const DamagePage = (function () {
     } catch (_) { return null; }
   }
 
-  function selectPet(side, pet, teamData = null) {
+  function selectPet(side, pet, teamData = null, source = 'selection') {
     if (!pet) return;
+    if (isBattleSimulation()) endBattleSimulation();
+    closeReductionPicker?.();
+    closeLevelMenu?.();
     const config = petConfiguration(pet.id, teamData);
     if (side === 'attacker') {
       // User edits already save per-pet memory. Role changes save only the active view.
       state.atkPet = pet; state.atkNature = config.nature; state.atkIV = config.iv;
       applySkillMemory(pet.id);
-      onAttackerSelected();
+      applyTraitPowerDefaults(true);
+      onAttackerSelected(source);
       // 保留机幕方舟独立覆盖规则；仅换精灵时应用，不在切页时重置。
       checkJmfzBonus();
       calculate();
     } else {
       state.defPet = pet; state.defNature = config.nature; state.defIV = config.iv;
-      onDefenderSelected();
+      onDefenderSelected(source);
     }
     searchBoxes[side]?.setValue(getPetName(pet), pet);
     syncModifierButtons(side);
     renderSkillIcons();
     selectionTeams[side] = teamData?.id || null;
     saveSelection({ [side]: pet.id, [side + 'Team']: selectionTeams[side] });
-    saveActiveSkill();
+    saveActiveSkill(); renderBattleSnapshotPanel();
   }
 
   /* ============================================================
@@ -930,6 +1462,8 @@ const DamagePage = (function () {
     const active = window.UserConfig.getObject('rk_damage_view', {}).skill;
     // Populate inputs BEFORE any calculation reads the new DOM's 100 placeholders.
     applySkillConfig(active || loadSkillConfig(atkPet?.id) || SKILL_DEFAULTS);
+    applyTraitPowerDefaults(true);
+    checkJmfzBonus();
     restoreFromState();
   }
 
@@ -941,6 +1475,10 @@ const DamagePage = (function () {
     const iv = side === 'attacker' ? state.atkIV : state.defIV;
     const rootEl = document.querySelector(`.${side}-card`);
     CommonUI.StatBox.syncButtons(rootEl, nature, iv);
+    rootEl?.querySelectorAll?.('.iv-btn').forEach(button => {
+      const overlay = battleSides[side], stat = button.dataset.stat;
+      button.textContent = overlay && Object.hasOwn(overlay.iv, stat) ? `个体${overlay.iv[stat]}` : '个体';
+    });
     const modeKey = side === 'attacker' ? 'atkStatMode' : 'defStatMode';
     document.querySelectorAll(`input[name="${modeKey}"]`).forEach(radio => { radio.checked = radio.value === state[modeKey]; });
   }
@@ -964,10 +1502,15 @@ const DamagePage = (function () {
       sIV[stat] = !sIV[stat];
     }
 
+    if (battleSides[side]) {
+      if (isNature) { battleSides[side].nature[stat] = s[stat]; battleSides[side].manualNature[stat] = true; }
+      else { battleSides[side].iv[stat] = sIV[stat] ? 60 : 0; battleSides[side].manualIV[stat] = true; }
+    }
     syncModifierButtons(side);
     updateFinalStats(side);
     updateSpecialPower();
     calculate();
+    if (isBattleSimulation()) { renderBattleSnapshotPanel(); return; }
     // 保存性格/个体配置
     const pet = side === 'attacker' ? state.atkPet : state.defPet;
     if (pet) {
@@ -984,39 +1527,44 @@ const DamagePage = (function () {
     const pet = side === 'attacker' ? state.atkPet : state.defPet;
     if (!pet) return;
     const config = PetConfiguration.defaults(pet);
+    if (battleSides[side]) { battleSides[side].iv = {}; battleSides[side].nature = {}; battleSides[side].manualIV = {}; battleSides[side].manualNature = {}; }
     if (side === 'attacker') { state.atkNature = config.nature; state.atkIV = config.iv; }
     else { state.defNature = config.nature; state.defIV = config.iv; }
     selectionTeams[side] = null;
     savePetConfig(pet.id, config.nature, config.iv, 0);
     saveSelection({ [side + 'Team']: null });
     syncModifierButtons(side);
-    updateFinalStats(side); calculate(); saveActiveSkill();
+    updateFinalStats(side); calculate(); saveActiveSkill(); renderBattleSnapshotPanel();
   }
 
   function resetSkillSettings() {
+    bonusOverrides.fixedBonus = null; bonusOverrides.percentBonus = null; jmfzActive = false;
     applySkillConfig(SKILL_DEFAULTS);
     renderSkillIcons();
   }
 
   function swapPokemons() {
     if (!state.atkPet || !state.defPet) return;
+    closeLevelMenu?.();
     [state.atkPet, state.defPet] = [state.defPet, state.atkPet];
     [state.atkNature, state.defNature] = [state.defNature, state.atkNature];
     [state.atkIV, state.defIV] = [state.defIV, state.atkIV];
     [state.atkStatMode, state.defStatMode] = [state.defStatMode, state.atkStatMode];
     [selectionTeams.attacker, selectionTeams.defender] = [selectionTeams.defender, selectionTeams.attacker];
+    [battleSides.attacker, battleSides.defender] = [battleSides.defender, battleSides.attacker];
     applySkillMemory(state.atkPet.id);
+    applyTraitPowerDefaults(true);
     checkJmfzBonus();
     restoreFromState();
     saveSelection({ attacker: state.atkPet.id, defender: state.defPet.id,
       attackerTeam: selectionTeams.attacker, defenderTeam: selectionTeams.defender });
-    saveActiveSkill();
+    saveActiveSkill(); renderBattleSnapshotPanel();
   }
 
   /* ============================================================
    * 9. 精灵选中 & 属性更新
    * ============================================================ */
-  function onAttackerSelected() {
+  function onAttackerSelected(source = 'selection') {
     const pet = state.atkPet;
     if (!pet) return;
 
@@ -1030,11 +1578,11 @@ const DamagePage = (function () {
     updateFinalPower();
     calculate();
     renderSkillIcons();
-    addSearchedPet(pet);
+    if (source !== 'history' && source !== 'battle') addSearchedPet(pet);
     updateAllRoleMarks();
   }
 
-  function onDefenderSelected() {
+  function onDefenderSelected(source = 'selection') {
     const pet = state.defPet;
     if (!pet) return;
 
@@ -1045,7 +1593,7 @@ const DamagePage = (function () {
     updateSpecialPower();
     updateTypeEffectiveness();
     calculate();
-    addSearchedPet(pet);
+    if (source !== 'history' && source !== 'battle') addSearchedPet(pet);
     updateAllRoleMarks();
   }
 
@@ -1059,13 +1607,21 @@ const DamagePage = (function () {
   }
 
   function updateFinalStats(side) {
+    syncLevelControls(side);
     const pet = state[side === 'attacker' ? 'atkPet' : 'defPet'];
     if (!pet) return;
     const nature = side === 'attacker' ? state.atkNature : state.defNature;
     const iv = side === 'attacker' ? state.atkIV : state.defIV;
-    const mode = side === 'attacker' ? state.atkStatMode : state.defStatMode;
+    const mode = battleSides[side] ? 'final' : isWolf(pet) ? (wolfRecord(side).mode === 'base' ? 'base' : 'final') : configurableLevel(pet) ? 'final' : side === 'attacker' ? state.atkStatMode : state.defStatMode;
     const rootEl = document.querySelector(`.${side}-card`);
     CommonUI.StatBox.refreshValues(rootEl, pet, nature, iv, mode);
+    // The common StatBox uses page-default levels; override only this special
+    // damage-side instance while retaining its base metadata and shared controls.
+    if (mode === 'final' && (configurableLevel(pet) || battleSides[side])) rootEl?.querySelectorAll('.final-stat-item').forEach(item => {
+      const stat = item.dataset.stat, value = item.querySelector('.stat-value');
+      if (value) value.textContent = battleStat(side, stat);
+    });
+    if (battleSides[side]) syncModifierButtons(side);
   }
 
   function checkSameType() {
@@ -1077,25 +1633,28 @@ const DamagePage = (function () {
     else { el.textContent = '未触发'; el.classList.remove('triggered'); }
   }
 
-  /* 机幕方舟特殊规则：被克制时威力加成默认25% */
+  const isLevelDefenderOverride = () => ['ming-defender', 'abu-defender'].includes(bonusOverrides.percentBonus?.reason);
+  const hasLevelDefenderEffect = () => ['ming', 'abu'].includes(levelEffectMode('defender')) || isLevelDefenderOverride();
+  /* Target-side automatic percentage presets; keep the existing entry for callers. */
   function checkJmfzBonus() {
-    const defender = state.defPet;
-    if (!defender) return;
-    const input = document.getElementById('percentBonus');
-    if (!input) return;
-    const isJmfz = defender.id === 501;
-    const typeEff = CalcEngine.calcTypeEff(state.skillAttr, defender);
-    if (isJmfz && typeEff > 1) {
-      input.value = 25;
-      state.percentBonus = 25;
-    } else {
-      input.value = 0;
-      state.percentBonus = 0;
+    const isJmfz = state.defPet?.id === 501, mode = levelEffectMode('defender');
+    if (['ming', 'abu'].includes(mode) && effectiveLevel('defender') < 80) {
+      setAutomaticBonus('percentBonus', mode === 'abu' ? 30 : 40, mode + '-defender');
+      jmfzActive = false;
+    } else if (isJmfz) {
+      setAutomaticBonus('percentBonus', CalcEngine.calcTypeEff(state.skillAttr, state.defPet) > 1 ? 25 : 0, 'defender');
+      jmfzActive = true;
+    } else if (jmfzActive || isLevelDefenderOverride()) {
+      releaseAutomaticBonus('percentBonus'); jmfzActive = false;
+      applyTraitPowerDefaults(true);
     }
+    // Ordinary defenders never zero a restored manual value (including saved 0).
   }
 
   // 切换种族值/属性值显示
   function setStatMode(side, mode) {
+    if (isWolf(levelPet(side)) && !battleSides[side]) { setWolfMode(side, mode); return; }
+    if (configurableLevel(levelPet(side))) return;
     const key = side === 'attacker' ? 'atkStatMode' : 'defStatMode';
     state[key] = mode;
     updateFinalStats(side);
@@ -1140,10 +1699,12 @@ const DamagePage = (function () {
     dimLabels.forEach(l => l.classList.remove('dimmed'));
     if (sameTypeEl) sameTypeEl.classList.remove('dimmed');
     if (typeEffEl) typeEffEl.classList.remove('dimmed');
-    const basePower = Math.round(evalExpr(document.getElementById('basePower').value, 0));
+    if (!readPowerInput()) return;
+    const basePower = state.basePower;
     const fixedBonus = Math.round(evalExpr(document.getElementById('fixedBonus').value, 0));
     const percentBonus = evalExpr(document.getElementById('percentBonus').value, 0);
-    const buffPercent = evalExpr(document.getElementById('buff').value, 0);
+    if (!readBuffInput()) return;
+    const buffPercent = state.buff;
     fpEl.textContent = CalcEngine.calcFinalPower(basePower, fixedBonus, percentBonus,
       state.atkPet, state.defPet, state.skillAttr, buffPercent, null);
   }
@@ -1157,14 +1718,11 @@ const DamagePage = (function () {
     const stepsEl = document.getElementById('calculationSteps');
 
     // 同步输入到 state（支持 + - * / 表达式，如 30+40+50）
-    const powerInput = String(document.getElementById('basePower').value).trim();
-    state.basePower = Math.round(evalExpr(powerInput, 0));
-    state.basePowerExpression = normalizePowerExpression(powerInput, state.basePower);
+    if (!readPowerInput() || !readBuffInput()) return;
     // 保留特殊技能自动覆盖；依据主技能表分别比较速度或物防。
     updateSpecialPower();
     state.fixedBonus = Math.round(evalExpr(document.getElementById('fixedBonus').value, 0));
     state.percentBonus = evalExpr(document.getElementById('percentBonus').value, 0);
-    state.buff = evalExpr(document.getElementById('buff').value, 0);
     state.comboCount = Math.max(1, Math.round(evalExpr(document.getElementById('comboCount').value, 1)));
     state.debuffPercent = (document.getElementById('debuffPercent').value || '0').trim();
     state.defenseMod = (document.getElementById('defenseMod').value || '0').trim();
@@ -1183,6 +1741,13 @@ const DamagePage = (function () {
 
     const r = CalcEngine.calculate();
     if (!r) return;
+    if (![r.totalDamage, r.skillFinalPower, r.basePower].every(value => Number.isFinite(value) && Math.abs(value) <= Number.MAX_SAFE_INTEGER)) {
+      document.getElementById('damageValue').textContent = '—';
+      document.getElementById('damagePercent').textContent = '—';
+      document.getElementById('remainingHP').textContent = '数值超出安全计算范围';
+      stepsEl.textContent = '请减少累计次数或修正加成后重新计算；未显示溢出的伤害结果。';
+      return;
+    }
 
     document.getElementById('damageValue').textContent = r.totalDamage;
     document.getElementById('damagePercent').textContent = `${r.damagePercent.toFixed(2)}%`;
@@ -1249,6 +1814,7 @@ const DamagePage = (function () {
         state.skillAttr = el.dataset.type;
         updateSkillAttrButton();
         checkSameType();
+        applyTraitPowerDefaults(false);
         checkJmfzBonus();
         updateTypeEffectiveness();
         updateFinalPower();
@@ -1268,7 +1834,74 @@ const DamagePage = (function () {
     if (textEl) textEl.textContent = state.skillAttr;
   }
 
+  let closeReductionPicker = null;
+  function bindReductionPresets() {
+    const input = document.getElementById('debuffPercent');
+    if (!input) return;
+    let disposed = false, closeOwnedPicker = null, unregister = () => {};
+    input.setAttribute('aria-haspopup', 'listbox');
+    input.setAttribute('aria-expanded', 'false');
+    const open = () => {
+      if (disposed || closeReductionPicker || !input.isConnected) return;
+      const layer = document.createElement('div');
+      layer.id = 'damageReductionPresets';
+      layer.className = 'bloodline-hdropdown damage-reduction-picker';
+      layer.setAttribute('role', 'listbox');
+      layer.setAttribute('aria-label', '减伤百分比预设');
+      const choices = [50, 60, 70, 80, 90].map(value => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'damage-reduction-option';
+        button.dataset.reduction = String(value); button.textContent = value + '%';
+        button.setAttribute('role', 'option');
+        button.setAttribute('aria-selected', String(Number(input.value) === value));
+        button.addEventListener('click', () => {
+          if (!layer.isConnected || !input.isConnected) return;
+          closeReductionPicker?.();
+          input.value = String(value);
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.focus({ preventScroll: true });
+        });
+        layer.appendChild(button); return button;
+      });
+      layer.addEventListener('keydown', event => {
+        const index = choices.indexOf(document.activeElement);
+        let next;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % choices.length;
+        else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index + choices.length - 1) % choices.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = choices.length - 1;
+        if (next !== undefined) { event.preventDefault(); choices[next].focus(); }
+      });
+      document.body.appendChild(layer);
+      input.setAttribute('aria-expanded', 'true'); input.setAttribute('aria-controls', layer.id);
+      CommonUI.positionAnchoredLayer(input, layer);
+      closeOwnedPicker = CommonUI.bindAnchoredLayer(input, layer, () => {
+        const restoreFocus = layer.contains(document.activeElement);
+        layer.remove();
+        if (closeReductionPicker === closeOwnedPicker) closeReductionPicker = null;
+        closeOwnedPicker = null;
+        input.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-controls');
+        if (restoreFocus && input.isConnected) input.focus({ preventScroll: true });
+      });
+      closeReductionPicker = closeOwnedPicker;
+    };
+    input.addEventListener('click', open);
+    document.querySelector('.debuff-percent-label')?.addEventListener('click', open);
+    input.addEventListener('keydown', event => {
+      if (event.key !== 'ArrowDown' || event.isComposing) return;
+      event.preventDefault(); open();
+      const layer = document.getElementById('damageReductionPresets');
+      (layer?.querySelector('[aria-selected="true"]') || layer?.querySelector('button'))?.focus();
+    });
+    input.addEventListener('input', () => closeOwnedPicker?.());
+    unregister = CommonUI.registerCleanup?.(input, () => {
+      if (disposed) return;
+      disposed = true; closeOwnedPicker?.(); unregister();
+    }) || unregister;
+  }
+
   function bindEvents() {
+    bindReductionPresets();
     const atkInput = searchBoxes.attacker.input;
     const defInput = searchBoxes.defender.input;
 
@@ -1278,12 +1911,12 @@ const DamagePage = (function () {
     atkInput.addEventListener('input', function(e) {
       const name = e.target.value.trim();
       const pet = RKData.getMonsters().find(m => getPetName(m) === name);
-      if (pet) selectPet('attacker', pet);
+      if (pet) selectExplicitPet('attacker', pet);
     });
     defInput.addEventListener('input', function(e) {
       const name = e.target.value.trim();
       const pet = RKData.getMonsters().find(m => getPetName(m) === name);
-      if (pet) selectPet('defender', pet);
+      if (pet) selectExplicitPet('defender', pet);
     });
 
     // 交换攻守方图标：点击交换 + hover时切换图标
@@ -1303,6 +1936,7 @@ const DamagePage = (function () {
     }
 
     // 种族值/属性值切换
+    for (const side of ['attacker', 'defender']) bindLevelControls(side);
     document.querySelectorAll('input[name="atkStatMode"]').forEach(radio => {
       radio.addEventListener('change', () => setStatMode('attacker', radio.value));
     });
@@ -1312,6 +1946,9 @@ const DamagePage = (function () {
 
     document.querySelectorAll('input[name="skillType"]').forEach(radio => {
       radio.addEventListener('change', () => {
+        const prepared = preflightAbuBuff({ type: radio.value });
+        if (!prepared.ok) { setSkillType(state.skillType); return; }
+        commitAbuBuff(prepared.plan);
         setSkillType(radio.value);
         calculate();
         saveSkillConfig(state.atkPet && state.atkPet.id);
@@ -1321,6 +1958,24 @@ const DamagePage = (function () {
     ['basePower','fixedBonus','percentBonus','comboCount','buff','debuffPercent','defenseMod','starMeteor','finalPowerManual'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', () => {
+        if (id === 'buff' && !readBuffInput(true)) return;
+        if (id === 'basePower') {
+          if (!readPowerInput()) return;
+          const move = simulationMove(), kind = state.skillInputKind;
+          if (kind === 'energy') saveSimulation(move, { energy: Number(state.skillInputValue) });
+          else if (kind === 'hp-ratio') saveSimulation(move, { hpRatio: state.skillInputValue });
+          else if (SkillSimulation.kind(move, state.atkPet)) {
+            const reset = { powerCount: 0, comboCount: 0, counterMode: false };
+            // A manual power edit is distinct from selecting the base50 preset.
+            // Preserve only the explicitly retained growth; the next113 click realigns both counts.
+            if (move?.id === 113 && SkillSimulation.fireAttackEnabled(state.atkPet) && SkillVariants.describe(move).reviewed) {
+              reset.firePowerDetached = true;
+              reset.fireAttackCount = appliedFireAttackBonus / 30;
+            }
+            saveSimulation(move, reset);
+          }
+        }
+        if (id === 'fixedBonus' || id === 'percentBonus') bonusOverrides[id] = null;
         updateFinalPower();
         calculate(); // 先同步 state
         // 用户手动输入：保存为该攻击方精灵的技能设置记忆（须在 state 同步后）
@@ -1442,21 +2097,21 @@ const DamagePage = (function () {
   }
 
   /* 绑定头像点击事件：左键攻方，右键守方，中键收藏 */
-  function bindAvatarClicks(container) {
+  function bindAvatarClicks(container, source = 'selection') {
     const teamData = container._teamData || null;
     container.querySelectorAll('.quick-pet-item').forEach(el => {
       el.addEventListener('click', () => {
         const petId = parseInt(el.dataset.petId);
         const pet = RKData.getMonsterById(petId);
         if (!pet) return;
-        selectPet('attacker', pet, teamData);
+        selectExplicitPet('attacker', pet, teamData, source);
       });
       el.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         const petId = parseInt(el.dataset.petId);
         const pet = RKData.getMonsterById(petId);
         if (!pet) return;
-        selectPet('defender', pet, teamData);
+        selectExplicitPet('defender', pet, teamData, source);
       });
       el.addEventListener('auxclick', (e) => {
         if (e.button === 1) {
@@ -1584,10 +2239,7 @@ const DamagePage = (function () {
       if (bl === 'Leader') {
         const pet = RKData.getMonsterById(petId);
         if (pet) {
-          // 找到所有同 dex_number 的首领形态
-          const leaderForms = RKData.getMonsters().filter(m =>
-            m.dex_number === pet.dex_number && m.is_leader_form
-          ).sort((a, b) => a.id - b.id);
+          const leaderForms = RKData.getLeaderForms(pet).filter(m => !m.hidden).sort((a, b) => a.id - b.id);
           leaderForms.forEach(lf => {
             html += buildPetAvatarHtml(lf.id, { title: `${getPetName(lf)} (首领形态) - 左键攻方/右键守方/中键收藏` });
           });
@@ -1612,7 +2264,9 @@ const DamagePage = (function () {
       html += buildPetAvatarHtml(petId);
     });
     container.innerHTML = html;
-    bindAvatarClicks(container);
+    // Reusing a historical avatar changes roles/configuration, not its position
+    // or the persisted history. Other avatar/search paths retain normal MRU.
+    bindAvatarClicks(container, 'history');
   }
 
   function renderQuickFav() {
@@ -1666,6 +2320,9 @@ const DamagePage = (function () {
    * 对外接口
    * ============================================================ */
   function onLeave() {
+    closeReductionPicker?.();
+    closeLevelMenu?.();
+    for (const dispose of [...levelControlDisposers.values()]) dispose();
     const scroller = document.querySelector('.calc-root.scroll-container');
     if (scroller) pageScrollTop = scroller.scrollTop;
     if (copyOutsideClick) document.removeEventListener('click', copyOutsideClick);
@@ -1679,7 +2336,7 @@ const DamagePage = (function () {
   function reloadPersonalDefaults() {
     for (const [side, prefix] of [['attacker','atk'],['defender','def']]) {
       const pet = state[prefix + 'Pet'];
-      if (!pet || selectionTeams[side]) continue;
+      if (!pet || selectionTeams[side] || battleSides[side]) continue;
       const config = petConfiguration(pet.id);
       state[prefix + 'IV'] = config.iv;
       state[prefix + 'Nature'] = config.nature;
@@ -1693,5 +2350,8 @@ const DamagePage = (function () {
     }
   }
   if (typeof window !== 'undefined') window.addEventListener?.('petdefaultsreset', reloadPersonalDefaults);
+  // Preserve the established public/test instrumentation anchor.
+  Object.assign(CalcEngine, { effectiveLevel, levelRecord, setLevelPreference, stepLevelPreference, LEVEL_STEPS, levelSteps, setWolfMode, sideLevelConfig,
+    applyBattlePet, setBattleValue, endBattleSimulation, isBattleSimulation, battleStat, renderBattleSnapshotPanel });
   return { render, onLeave, getState: () => state, CalcEngine };
 })();

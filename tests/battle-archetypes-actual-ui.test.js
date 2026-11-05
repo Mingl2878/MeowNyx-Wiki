@@ -1,0 +1,34 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const {createRequire}=require('node:module');
+const input=process.env.AR_ACTUAL_UI_STATS;
+test('actual redesigned stats preserve enemy win direction, own details and unknown component evidence without writes',{skip:!input},async t=>{
+ const hp=path.join(__dirname,'battle-records-ui.test.js'),text=fs.readFileSync(hp,'utf8');
+ const box={module:{exports:{}},require:createRequire(hp),__dirname,console,AbortController,URLSearchParams,setImmediate};
+ vm.runInNewContext(text.slice(0,text.indexOf('\ntest('))+'\nmodule.exports=runtime;',box,{filename:hp});
+ const raw=fs.readFileSync(input,'utf8'),stats=JSON.parse(raw),data=require('../scripts/lib/catalog-data.js').readLegacy(path.join(__dirname,'..'));
+ const r=box.module.exports({stats,data:{getMonsters:()=>data.monsters,getMonsterById:id=>data.monsters.find(p=>p.id===id),getMonsterDisplayName:p=>p.localized.zh.name,getMoves:()=>data.moves,getMoveName:p=>p.localized.zh.name,getTypes:()=>data.types,getTypeObjZh:p=>p.localized.zh}});
+ t.after(()=>r.page.onLeave());const doc=r.root.document;doc.createElementNS=(ns,tag)=>{const n=doc.createElement(tag);n.namespaceURI=ns;return n;};
+ await new Promise(resolve=>setImmediate(resolve));r.btn('样本统计').click();await new Promise(resolve=>setImmediate(resolve));
+ const own=r.find(n=>n.dataset.brStats==='me'),enemy=r.find(n=>n.dataset.brStats==='enemy');
+ const cls=(name,host)=>r.all(host).filter(n=>(n.getAttribute('class')||n.className||'').split(' ').includes(name));
+ const identity=r.all(own).find(n=>n.dataset.performanceMonsterId==='501'),row=identity.parentNode.parentNode;
+ assert.match(row.children[0].textContent,/登场局数/);assert.match(row.children[0].textContent,/精灵详情/);assert.doesNotMatch(row.children[0].textContent,/过山车/);
+ assert.match(row.children[4].textContent,/过山车成功率/);assert.match(row.children[4].textContent,/成功过山车后的胜率/);
+ assert.doesNotMatch(own.textContent,/主动切换|来源 \/ 数据提示/);
+ const calls=r.calls.length,before=JSON.stringify(stats);
+ r.all(own).find(n=>n.dataset.departureMonsterId==='501').click();
+ const modal=r.find(n=>n.dataset.modalKind==='departures');assert.equal(cls('br-own-skill-usage',modal).length,1);assert.equal(cls('br-skill-pie',modal).length,1);assert.equal(cls('br-own-skill-table',modal).length,1);
+ assert.match(modal.textContent,/过山车/);assert.match(modal.textContent,/风隐/);assert.match(modal.textContent,/33\.3%/);assert.equal(cls('br-departure-charts',modal).length,1);
+ doc.emit('keydown',{key:'Escape'});
+ cls('br-lineup-select',own)[0].click();const ownModal=r.find(n=>n.dataset.modalKind==='own-lineup'),matchups=cls('br-own-matchups',ownModal)[0];assert.ok(ownModal);assert.match(matchups.textContent,/其他/);assert.match(matchups.textContent,/0\.0%/);assert.equal(cls('br-skill-pie',matchups).length,0);assert.equal(cls('br-lineup-matchups',own).length,0);doc.emit('keydown',{key:'Escape'});
+ r.btn('敌方样本统计').click();assert.deepEqual(Array.from(cls('br-enemy-module',enemy),n=>n.dataset.enemyModule),['performance','teams','environment']);
+ assert.equal(r.all(enemy).some(n=>n.dataset.departureMonsterId),false);assert.doesNotMatch(enemy.textContent,/精灵详情|登场局数|主动切换/);
+ const pets=r.all(enemy).filter(n=>n.dataset.performanceMonsterId);assert.equal(pets.length,6);
+ for(const p of pets){assert.match(p.textContent,/携带率/);assert.match(p.textContent,/精灵胜率/);assert.equal((p.textContent.match(/100\.0%/g)||[]).length,2);}
+ assert.equal(cls('br-environment-pie',enemy).length,0);assert.match(cls('br-environment-rate',enemy)[0].textContent,/其他.*100\.0%/);
+ const team=r.all(enemy).find(n=>n.tagName==='tr'&&n.dataset.archetypeId==='__other__');team.click();const components=r.find(n=>n.dataset.modalKind==='archetype');assert.ok(components);assert.equal(cls('br-archetype-component',components).length,6);assert.equal(cls('br-archetype-component',enemy).length,0);
+ assert.match(components.textContent,/技能使用率/);assert.doesNotMatch(components.textContent,/初始技能携带|联合分布|双生命/);assert.match(components.textContent,/暂无性格配置样本/);assert.equal(cls('br-individual-line',components).length,36);assert.ok(cls('br-individual-line',components).every(n=>n.dataset.available==='false'&&n.textContent.includes('未探明')));doc.emit('keydown',{key:'Escape'});assert.equal(r.find(n=>n.dataset.modalKind==='archetype'),undefined);
+ r.btn('阵容规则').click();assert.ok(r.find(n=>n.dataset.modalKind==='rules'));doc.emit('keydown',{key:'Escape'});assert.equal(r.all().some(n=>n.dataset.modalKind==='rules'),false);
+ assert.equal(r.calls.length,calls);assert.equal(r.calls.some(c=>c.options.method&&c.options.method!=='GET'),false);assert.equal(JSON.stringify(stats),before);assert.equal(fs.readFileSync(input,'utf8'),raw);
+});

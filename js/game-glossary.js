@@ -85,7 +85,8 @@
 
   let matcher = createMatcher([]), initPromise = null, installed = false;
   let observer = null, frame = null, layer = null, anchor = null, closeLayer = null, hideTimer = null;
-  const pending = new Set(), listeners = [], ownNodes = new WeakSet();
+  const pending = new Set(), listeners = [];
+  let ownNodes = new WeakSet(), regionMarkup = new WeakMap(), textValues = new WeakMap();
   const byId = new Map();
   const requestFrame = fn => global.requestAnimationFrame(fn);
   const elementOf = node => node?.nodeType === 1 ? node : node?.parentElement;
@@ -93,20 +94,29 @@
 
   function queue(root) {
     if (!root || inLayer(root)) return;
-    for (const old of pending) if (old === root || old.contains?.(root)) return;
-    for (const old of pending) if (root.contains?.(old)) pending.delete(old);
+    if (root.nodeType === 3 && !root.parentElement?.closest(selector)) return;
+    // O(1) enqueue. A fragment inserting N sibling rows must not compare all
+    // pairs with contains(). Ancestor dedup runs once at the frame boundary.
     pending.add(root);
     if (frame == null) frame = requestFrame(() => {
       frame = null;
-      const roots = [...pending];
+      const roots = [...pending].filter(node => {
+        if (!node.isConnected) return false;
+        for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+          if (pending.has(parent)) return false;
+        }
+        return true;
+      });
       pending.clear();
-      roots.forEach(node => { if (node.isConnected) decorate(node); });
+      decorateRoots(roots);
     });
   }
 
   function decorateText(text) {
     const parent = text.parentElement;
     if (!parent || parent.closest(skipSelector) || !text.nodeValue) return 0;
+    if (textValues.get(text) === text.nodeValue) return 0;
+    textValues.set(text, text.nodeValue);
     const parts = matcher.tokenize(text.nodeValue);
     if (!parts.some(part => part.entry)) return 0;
     const fragment = doc.createDocumentFragment();
@@ -124,6 +134,7 @@
         count++;
       }
       ownNodes.add(node);
+      if (node.nodeType === 3) textValues.set(node, node.nodeValue);
       fragment.appendChild(node);
     }
     ownNodes.add(text);
@@ -133,22 +144,46 @@
 
   /** Synchronous and idempotent; returns the number of new term spans. */
   function decorate(root = doc?.body) {
-    if (!root || !matcher.entries.length) return 0;
-    const base = root.nodeType === 3 ? root.parentElement : root;
-    if (!base || elementOf(base)?.closest(skipSelector)) return 0;
+    return decorateRoots(root ? [root] : []);
+  }
+
+  function decorateRoots(roots) {
+    if (!matcher.entries.length) return 0;
     const regions = new Set();
-    const containing = elementOf(base)?.closest(selector);
-    if (containing) regions.add(containing);
-    base.querySelectorAll?.(selector).forEach(region => regions.add(region));
-    const texts = new Set();
+    for (const root of roots) {
+      const base = root.nodeType === 3 ? root.parentElement : root;
+      if (!base || elementOf(base)?.closest(skipSelector)) continue;
+      const containing = elementOf(base)?.closest(selector);
+      if (containing) regions.add(containing);
+      base.querySelectorAll?.(selector).forEach(region => regions.add(region));
+    }
+    const texts = new Set(), changed = [];
     for (const region of regions) {
       if (region.closest(skipSelector)) continue;
+      // Markup rather than only textContent: replacing decorated text with the
+      // same raw text (even while detached) must decorate again. Weak keys do
+      // not retain filtered rows/pages. Moves and CSS visibility need no walk.
+      const markup = region.innerHTML;
+      if (regionMarkup.has(region) && regionMarkup.get(region) === markup) continue;
+      changed.push(region);
       const walker = doc.createTreeWalker(region, 4 /* SHOW_TEXT */);
       while (walker.nextNode()) texts.add(walker.currentNode);
     }
     let count = 0;
     for (const text of texts) count += decorateText(text);
+    for (const region of changed) regionMarkup.set(region, region.innerHTML);
     return count;
+  }
+
+  // Our accessible tooltip link is not a description edit. Keep only already
+  // current snapshots in sync; never stamp over an unprocessed external edit.
+  function updateDescriptionAria(term, update) {
+    const current = [];
+    for (let region = term.parentElement?.closest(selector); region; region = region.parentElement?.closest(selector)) {
+      if (regionMarkup.has(region) && regionMarkup.get(region) === region.innerHTML) current.push(region);
+    }
+    update();
+    for (const region of current) regionMarkup.set(region, region.innerHTML);
   }
 
   function clearHide() { if (hideTimer != null) global.clearTimeout(hideTimer); hideTimer = null; }
@@ -157,8 +192,10 @@
     if (closeLayer) { const dispose = closeLayer; closeLayer = null; dispose(); return; }
     if (anchor && layer) {
       const ids = (anchor.getAttribute('aria-describedby') || '').split(/\s+/).filter(id => id && id !== layer.id);
-      if (ids.length) anchor.setAttribute('aria-describedby', ids.join(' '));
-      else anchor.removeAttribute('aria-describedby');
+      updateDescriptionAria(anchor, () => {
+        if (ids.length) anchor.setAttribute('aria-describedby', ids.join(' '));
+        else anchor.removeAttribute('aria-describedby');
+      });
     }
     anchor = null;
     if (layer) layer.hidden = true;
@@ -214,7 +251,7 @@
     layer.style.zIndex = String(Math.min(99998, z));
     const ids = new Set((anchor.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean));
     ids.add(layer.id);
-    anchor.setAttribute('aria-describedby', [...ids].join(' '));
+    updateDescriptionAria(anchor, () => anchor.setAttribute('aria-describedby', [...ids].join(' ')));
     ui.positionAnchoredLayer(anchor, layer);
     closeLayer = ui.bindAnchoredLayer(anchor, layer, () => { closeLayer = null; close(); });
   }
@@ -251,20 +288,33 @@
       if (term) { event.stopPropagation(); show(term); }
     }, true);
     observer = new global.MutationObserver(records => {
-      if (anchor && (!anchor.isConnected || !anchor.getClientRects().length ||
-          doc.querySelector('.cui-popup-overlay'))) close();
-      for (const record of records) {
-        if (inLayer(record.target)) continue;
+      const outside = records.filter(record => !inLayer(record.target));
+      if (anchor && outside.length) {
+        if (!anchor.isConnected || !anchor.getClientRects().length ||
+            ['hidden', 'collapse'].includes(global.getComputedStyle(anchor).visibility) ||
+            anchor.parentElement?.closest(skipSelector) || doc.querySelector('.cui-popup-overlay')) close();
+        // Retained anchors can move when sibling rows are inserted/reordered.
+        // Layer-only style mutations are ignored above, avoiding a feedback loop.
+        else common().positionAnchoredLayer(anchor, layer);
+      }
+      for (const record of outside) {
         if (record.type === 'childList') {
           const changed = [...record.addedNodes, ...record.removedNodes];
-          // Ignore only our exact replacements; external edits still enqueue normally.
           if (changed.length && changed.every(node => ownNodes.has(node) || inLayer(node))) continue;
           record.addedNodes.forEach(node => queue(node));
-        } else queue(record.target);
+        } else if (record.type === 'characterData') queue(record.target);
+        else if (!['style', 'hidden'].includes(record.attributeName)) {
+          // Class/editor eligibility can change; pure visibility is handled
+          // above and never triggers a description containment scan.
+          queue(record.target);
+        }
       }
+      // Suppression is one delivery only; later external edits to our spans
+      // or plain text must not be mistaken for our original replacements.
+      ownNodes = new WeakSet();
     });
     observer.observe(doc.body, { childList: true, subtree: true, characterData: true,
-      attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+      attributes: true, attributeFilter: ['class', 'style', 'hidden', 'contenteditable', 'data-game-glossary', 'role', 'id'] });
     decorate(doc.body);
   }
 
@@ -289,6 +339,7 @@
     listeners.splice(0).forEach(dispose => dispose());
     if (frame != null) global.cancelAnimationFrame(frame);
     frame = null; pending.clear();
+    ownNodes = new WeakSet(); regionMarkup = new WeakMap(); textValues = new WeakMap();
     layer?.remove(); layer = null;
     installed = false; initPromise = null;
     // Existing spans are inert until the next init; never rewrite caller-owned data.

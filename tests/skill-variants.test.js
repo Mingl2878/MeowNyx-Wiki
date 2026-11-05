@@ -6,8 +6,10 @@ const path = require('node:path');
 const vm = require('node:vm');
 const V = require('../js/skill-variants.js');
 const M = require('../js/battle-math.js');
-const moves = require('../data/moves.json');
+const moves = require('./catalog-read-fixture.cjs').readProjectData('moves.json');
 const byId = id => moves.find(m => m.id === id);
+const pinned = require('./catalog-pinned-baseline.cjs');
+const {newSkillDispositions} = require('./catalog-s5-expectations.cjs');
 // Independent expected values for EVERY fixed or retained dynamic supported ID.
 const expected = [
   [5,65,1,325,1],[10,100,1,160,1],[35,210,1,40,1],[70,100,1,160,1],
@@ -19,7 +21,7 @@ const expected = [
   [239,55,1,110,1],[241,170,1,340,1],[262,80,1,120,1],[278,35,2,55,2],
   [303,90,1,180,1],[322,65,1,325,1],[327,25,2,25,3],[331,35,1,350,1],
   [337,35,2,35,6],[340,85,1,170,1],[354,25,1,25,3],[356,70,1,105,1],
-  [358,60,1,60,1],[359,75,1,112,1],[369,100,1,160,1],[382,80,1,140,1],
+  [358,60,1,60,1],[359,75,1,113,1],[369,100,1,160,1],[382,80,1,140,1],
   [394,25,3,25,6],[400,70,1,140,1],[420,20,3,20,5],[431,20,2,20,3],
   [432,70,1,100,1],[434,70,1,160,1],[437,90,1,130,1],[441,45,1,105,1],
   [469,75,1,165,1],[470,80,1,160,1],[501,125,1,185,1],[505,90,1,130,1],
@@ -31,17 +33,30 @@ const simulation = Object.freeze({ basePower: 0, comboCount: 99, skillType: 'att
   fixedBonus: -17, percentBonus: 23.5, buff: -35, debuffPercent: '10+5', defenseMod: '-50', starMeteor: 4,
   finalPowerManual: '0', mode: 0, atkIV: { hp: false }, unknownPersonalField: 'keep' });
 
-test('entire shipped 579-entry list has explicit matching semantic evidence and a disposition', () => {
+test('every shipped skill has reviewed semantic evidence with pinned legacy and explicit S5 dispositions', () => {
   const a = V.audit(moves);
-  assert.equal(a.total, 579);
-  assert.deepEqual(a.counts, { supported: 62, ordinary: 244, 'manual-only': 0, 'base-only': 52, 'non-attack': 221 });
+  const expectedIds=[...pinned.legacySkillIds,...Object.values(newSkillDispositions).flat()].sort((a,b)=>a-b);
+  assert.deepEqual(a.rows.map(r=>r.id).sort((a,b)=>a-b),expectedIds,'no unreviewed or unexpected IDs may enter the shipped set');
+  assert.equal(a.total,expectedIds.length);
+  assert.equal(a.total,moves.length);
+  const derived=Object.fromEntries(['supported','ordinary','manual-only','base-only','non-attack'].map(key=>[key,a.rows.filter(r=>r.disposition===key).length]));
+  assert.deepEqual(a.counts,derived,'audit totals must reflect actual per-row dispositions');
+  assert.deepEqual(derived,{supported:62,ordinary:246,'manual-only':0,'base-only':65,'non-attack':235});
+  const oldRows=a.rows.filter(r=>pinned.legacySkillIds.includes(r.id));
+  assert.equal(oldRows.length,pinned.legacySkillIds.length);
+  assert.equal(pinned.fingerprint(oldRows),pinned.hashes.skill_variant_rows,'all original registry descriptions, classifications and presets must remain unchanged');
+  for(const [disposition,ids]of Object.entries(newSkillDispositions)) {
+    assert.deepEqual(a.rows.filter(r=>!pinned.legacySkillIds.includes(r.id)&&r.disposition===disposition).map(r=>r.id),ids);
+  }
+  assert.equal(Object.values(newSkillDispositions).flat().length,29,'reviewed S5 increment, not permanent game population');
   assert.deepEqual(a.unreviewed, []);
-  assert.equal(new Set(a.rows.map(r => r.id)).size, 579);
+  assert.equal(new Set(a.rows.map(r => r.id)).size,expectedIds.length);
   assert.deepEqual(a.rows.filter(r => r.disposition === 'supported').map(r => r.id), [...expected.map(r => r[0]),425].sort((a,b)=>a-b));
   for (const row of a.rows) {
     assert.ok(row.reason.length > 10, row.name);
     assert.equal(row.evidence, byId(row.id).localized.zh.description);
-    assert.match(V.tooltip(byId(row.id)), /左键：[\s\S]*右键：/);
+    assert.match(V.tooltip(byId(row.id)), /基础威力：[\s\S]*效果：/);
+    assert.doesNotMatch(V.tooltip(byId(row.id)), /左键：|右键：/);
     if (row.disposition === 'non-attack') assert.equal(row.left, null);
     if (!['supported','base-only'].includes(row.disposition)) assert.equal(row.right, null);
   }
@@ -76,12 +91,13 @@ test('legacy total/counter helpers are never consulted, even via accessors', () 
   assert.equal(byId(420).power,20); assert.equal(byId(535).power,70);
   assert.equal(byId(469).alt_power_total,130); // Source data intentionally NOT rewritten.
 });
-test('fractional percent presets follow BattleMath floor, never stale nearest rounding', () => {
+test('fractional percent presets follow new non-damage round rule, never stale floor112', () => {
   assert.equal(V.describe(byId(359)).right.basePower,M.basePower(75,0,50));
-  assert.notEqual(V.describe(byId(359)).right.basePower,Math.round(75*1.5));
+  assert.equal(V.describe(byId(359)).right.basePower,113);
+  assert.notEqual(V.describe(byId(359)).right.basePower,112);
   assert.equal(V.describe(byId(356)).right.basePower,M.basePower(70,0,50));
   const p=V.select(simulation,byId(359),'right').state;
-  assert.equal(M.basePower(p.basePower,p.fixedBonus,p.percentBonus),Math.floor((112-17)*1.235));
+  assert.equal(M.basePower(p.basePower,p.fixedBonus,p.percentBonus),Math.round((113-17)*1.235));
 });
 test('explicit base-only requests are repeatable base values; disaster self-target remains unavailable', () => {
   for (const id of [493,2,6,299,516,538,180,182,536]) {

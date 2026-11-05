@@ -1,9 +1,9 @@
-﻿/**
+/**
  * speed.js — 速度线页面
  * 速度档位表（基础速度 → 各加成下实际速度）
  */
 const SpeedPage = (function () {
-  let tierState = { iv: true, nature: true, fixed: 0, percent: 0, search: '', searchDisplay: '', selectedCol: null, negNature: false, showMonsters: true, selectedSpeed: null, formOverrides: {} };
+  let tierState = { iv: true, nature: true, fixed: 0, percent: 0, search: '', searchDisplay: '', searchPetId: null, selectedCol: null, negNature: false, showMonsters: true, selectedSpeed: null, selectedLevel: 60, selectedRowKey: null, mingSpeedLevel: 99, formOverrides: {} };
 
   /* ===== 搜索习惯持久化（localStorage） ===== */
   const PET_PRIORITY_KEY = 'rk_speed_pet_priority';
@@ -32,8 +32,26 @@ const SpeedPage = (function () {
     if (petPriority[spd].length > 20) petPriority[spd].length = 20;
     savePetPriority(spd);
   }
+  function readDamageHistory() {
+    let history = [];
+    try {
+      const active = typeof DamagePage !== 'undefined' ? DamagePage.getState()?.searchedPets : null;
+      if (Array.isArray(active) && active.length) history = active;
+      else {
+        const saved = JSON.parse(localStorage.getItem('rk_searched_pets') || '[]');
+        if (Array.isArray(saved)) history = saved;
+      }
+    } catch (_) { /* History is optional; never reset the speed page on cache failure. */ }
+    return [...new Set(history.filter(id => typeof id === 'number' || (typeof id === 'string' && /^\d+$/.test(id)))
+      .map(Number).filter(id => Number.isSafeInteger(id) && id > 0 && id !== 9001))];
+  }
   function getPetPriority(spd) {
-    return petPriority[spd] || [];
+    // Keep current speed-search precedence. Damage's independent selection order
+    // includes quick clicks without moving its visible history; only use the old
+    // history as a read-only fallback until an explicit choice creates that order.
+    const legacy = readDamageHistory();
+    const damagePriority = window.DamageSpeedPriority?.read(legacy) ?? legacy;
+    return [...new Set([...damagePriority, ...(petPriority[spd] || [])])];
   }
   loadPetPriority();
 
@@ -48,7 +66,15 @@ const SpeedPage = (function () {
   }
   function saveFormOverrides(key) {
     if (window.UserConfig) { void window.UserConfig.patch(FORM_OVERRIDE_KEY, { [key]: tierState.formOverrides[key] ?? null }); return; }
-    try { localStorage.setItem(FORM_OVERRIDE_KEY, JSON.stringify(tierState.formOverrides)); } catch (e) {}
+    try {
+      // The shared leader module owns other keys in this object. Patch only this
+      // form key into the latest fallback value, never replay a page-local snapshot.
+      const raw = JSON.parse(localStorage.getItem(FORM_OVERRIDE_KEY) || '{}');
+      const saved = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+      if (key in tierState.formOverrides) saved[key] = tierState.formOverrides[key];
+      else delete saved[key];
+      localStorage.setItem(FORM_OVERRIDE_KEY, JSON.stringify(saved));
+    } catch (e) {}
   }
   function getFormGroupKey(m) {
     const name = RKData.getMonsterName(m);
@@ -74,14 +100,56 @@ const SpeedPage = (function () {
   // Historical persisted view values are neither imported nor read/written here.
 
   /* ===== 属性计算公式（与 data.js getPetStat 一致，非HP） ===== */
-  function calcSpeedStat(base, iv, nature) {
-    const ivVal = iv ? 10 : 0;
-    const natureMod = nature === 1 ? 1.2 : nature === 2 ? 0.9 : 1.0;
-    return Math.round(Math.round(Math.round(1.1 * (base + 3 * ivVal)) + 10) * natureMod) + 50;
+  function calcSpeedStat(base, iv, nature, level = 60) {
+    return BattleMath.statFromBase(base, 'speed', nature, iv, level);
   }
 
   function applyBonus(val) {
-    return Math.floor((val + tierState.fixed) * (1 + tierState.percent / 100));
+    return BattleMath.basePower(val, tierState.fixed, tierState.percent);
+  }
+
+  // One species-owned speed row, independent of damage levels and personal config.
+  // Its selected level lives only in this page's session state, never on the pet.
+  const MING_SPEED_LEVELS = Object.freeze([1, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99]);
+  function getSpeedLevel(pet) {
+    return pet?.id === 619 ? tierState.mingSpeedLevel : RKData.getPetLevel(pet);
+  }
+  function speedRowKey(base, level, petId) {
+    return petId === 619 ? 'pet:619' : `${base}:${level}`;
+  }
+  function rowContainsPet(row, pet) {
+    return !!pet && row.base === pet.base_spd && row.key === speedRowKey(pet.base_spd, getSpeedLevel(pet), pet.id);
+  }
+
+  function levelRows(speeds, monsters) {
+    const rows = speeds.map(base => ({ base, level: 60, key: speedRowKey(base, 60) }));
+    for (const pet of monsters) {
+      if (pet.hidden || !pet.base_spd) continue;
+      const level = getSpeedLevel(pet), key = speedRowKey(pet.base_spd, level, pet.id);
+      if ((pet.id === 619 || level !== 60) && !rows.some(row => row.key === key)) {
+        rows.push({ base: pet.base_spd, level, key });
+      }
+    }
+    const mingIndex = rows.findIndex(row => row.key === 'pet:619');
+    const mingRow = mingIndex < 0 ? null : rows.splice(mingIndex, 1)[0];
+    rows.sort((a, b) => b.base - a.base || b.level - a.level);
+    if (mingRow) {
+      // Fixed display slot between the105 and100 tiers, not a synthetic base stat
+      // or computed-speed sort. Keep its species key and actual selected level.
+      const before100 = rows.findIndex(row => row.base <= 100);
+      rows.splice(before100 < 0 ? rows.length : before100, 0, mingRow);
+    }
+    return rows;
+  }
+
+  function stepMingSpeedLevel(direction) {
+    const current = tierState.mingSpeedLevel;
+    const next = direction < 0 ? MING_SPEED_LEVELS.filter(level => level < current).at(-1)
+      : MING_SPEED_LEVELS.find(level => level > current);
+    if (next === undefined) return;
+    tierState.mingSpeedLevel = next;
+    if (tierState.selectedRowKey === 'pet:619') tierState.selectedLevel = next;
+    renderTierTable();
   }
 
   function render(container) {
@@ -134,22 +202,29 @@ const SpeedPage = (function () {
       onInput: (val) => {
         tierState.search = val.trim().toLowerCase();
         tierState.searchDisplay = val;
+        tierState.searchPetId = null;
         tierState.selectedCol = null;
         tierState.selectedSpeed = null;
-        // 不调用 renderTierTable()，避免表格重建触发 scroll 事件导致下拉列表被隐藏
+        tierState.selectedRowKey = null;
+        // Typing must not close the candidate dropdown via table scroll events.
+        // Empty input already closes it, and must remove temporary low-speed rows now.
+        if (!tierState.search) renderTierTable();
       },
       onSelect: (pet) => {
         const displayName = RKData.getMonsterDisplayName(pet);
         tierState.search = displayName.toLowerCase();
         tierState.searchDisplay = displayName;
+        tierState.searchPetId = pet.id;
         tierState.selectedCol = null;
         tierState.selectedSpeed = null;
+        tierState.selectedRowKey = null;
         tierState.scrollIntoView = true;
         setFormOverride(pet);
         recordPetSearch(pet);
+        window.SpeedLeaderDisplay?.recordSearch(pet, RKData.getMonsters());
         renderTierTable();
       },
-      renderItem: CommonUI.monsterRenderItem(m => '速度 ' + (m.base_spd || 0))
+      renderItem: CommonUI.monsterRenderItem(m => '速度资质 ' + (m.base_spd || 0) + (m.id === 619 || getSpeedLevel(m) !== 60 ? ' · Lv' + getSpeedLevel(m) : ''))
     });
     acSearch.input.id = 'tier-search';
     if (tierState.searchDisplay) {
@@ -287,25 +362,33 @@ const SpeedPage = (function () {
 
     // 获取所有不重复的基础速度值，降序排列
     const monsters = RKData.getMonsters();
+    // Read the shared explicit-search choice once. Damage/speed history only sorts
+    // the remaining avatars; it never elects or restores a suppressed member.
+    const visibleIds = window.SpeedLeaderDisplay?.visibleIds(monsters) ?? new Set(monsters.map(m => m.id));
+    const preferredIds = window.SpeedLeaderDisplay?.preferredIds?.(monsters) ?? new Set();
     const speedSet = new Set();
-    monsters.forEach(m => { if (m.base_spd) speedSet.add(m.base_spd); });
+    monsters.forEach(m => { if (m.base_spd && m.id !== 619 && getSpeedLevel(m) === 60) speedSet.add(m.base_spd); });
     const speeds = [...speedSet]
-      .filter(s => s >= 40 && (s % 5 === 0 || s === 92 || s === 44 || s === 49) && s !== 45)
+      .filter(s => s >= 50 && (s % 5 === 0 || s === 92))
       .sort((a, b) => b - a);
 
     // 如果有搜索，找到匹配精灵的速度
     let highlightSpeed = null;
     let highlightMonster = null;
+    let highlightLevel = tierState.selectedRowKey === 'pet:619' ? tierState.mingSpeedLevel : tierState.selectedLevel || 60;
+    let highlightRowKey = tierState.selectedRowKey;
     if (tierState.search) {
-      const matched = monsters.find(m =>
+      const matched = monsters.find(m => m.id === tierState.searchPetId) || monsters.find(m =>
         RKData.getMonsterName(m).toLowerCase() === tierState.search ||
         RKData.getMonsterDisplayName(m).toLowerCase() === tierState.search
       );
       if (matched && matched.base_spd) {
         highlightSpeed = matched.base_spd;
         highlightMonster = matched;
-        // 如果搜索到的精灵速度不在表格中，临时新增一行
-        if (!speeds.includes(highlightSpeed)) {
+        highlightLevel = getSpeedLevel(matched);
+        highlightRowKey = speedRowKey(highlightSpeed, highlightLevel, matched.id);
+        // 如果搜索到的普通精灵速度不在表格中，临时新增一行
+        if (matched.id !== 619 && highlightLevel === 60 && !speeds.includes(highlightSpeed)) {
           speeds.push(highlightSpeed);
           speeds.sort((a, b) => b - a);
         }
@@ -338,30 +421,31 @@ const SpeedPage = (function () {
     let highlightVals = null;
     if (highlightSpeed !== null) {
       highlightVals = {
-        negNature: applyBonus(calcSpeedStat(highlightSpeed, false, 2)),
-        base: applyBonus(calcSpeedStat(highlightSpeed, false, 0)),
-        iv: applyBonus(calcSpeedStat(highlightSpeed, true, 0)),
-        ivNature: applyBonus(calcSpeedStat(highlightSpeed, true, 1))
+        negNature: applyBonus(calcSpeedStat(highlightSpeed, false, 2, highlightLevel)),
+        base: applyBonus(calcSpeedStat(highlightSpeed, false, 0, highlightLevel)),
+        iv: applyBonus(calcSpeedStat(highlightSpeed, true, 0, highlightLevel)),
+        ivNature: applyBonus(calcSpeedStat(highlightSpeed, true, 1, highlightLevel))
       };
     }
 
-    speeds.forEach(base => {
-      const isHighlight = highlightSpeed !== null && base === highlightSpeed;
+    levelRows(speeds, monsters).forEach(row => {
+      const { base, level, key } = row;
+      const isHighlight = highlightSpeed !== null && key === highlightRowKey;
       // 高亮行：选中某列后，只有选中列显示加成值，其他列显示常规值
       const showBonus = (colKey) => {
         if (!isHighlight) return false;
         if (!tierState.selectedCol) return true;
         return tierState.selectedCol === colKey;
       };
-      const baseVal = showBonus('base') ? applyBonus(calcSpeedStat(base, false, 0)) : calcSpeedStat(base, false, 0);
-      const ivVal = showBonus('iv') ? applyBonus(calcSpeedStat(base, true, 0)) : calcSpeedStat(base, true, 0);
-      const ivNatureVal = showBonus('ivNature') ? applyBonus(calcSpeedStat(base, true, 1)) : calcSpeedStat(base, true, 1);
-      const negNatureVal = showBonus('negNature') ? applyBonus(calcSpeedStat(base, false, 2)) : calcSpeedStat(base, false, 2);
+      const baseVal = showBonus('base') ? applyBonus(calcSpeedStat(base, false, 0, level)) : calcSpeedStat(base, false, 0, level);
+      const ivVal = showBonus('iv') ? applyBonus(calcSpeedStat(base, true, 0, level)) : calcSpeedStat(base, true, 0, level);
+      const ivNatureVal = showBonus('ivNature') ? applyBonus(calcSpeedStat(base, true, 1, level)) : calcSpeedStat(base, true, 1, level);
+      const negNatureVal = showBonus('negNature') ? applyBonus(calcSpeedStat(base, false, 2, level)) : calcSpeedStat(base, false, 2, level);
 
-      const hasSelection = isHighlight && tierState.selectedCol;
       const rowClass = isHighlight ? 'tier-highlight' : '';
-      html += `<tr class="${rowClass}">`;
-      html += `<td class="td-speed"><span class="speed-column-label">${base}</span></td>`;
+      const isMing = key === 'pet:619';
+      html += `<tr class="${rowClass}" data-level="${level}" data-base-speed="${base}" data-row-key="${key}">`;
+      html += `<td class="td-speed"><span class="speed-column-label${isMing ? ' speed-level-selector' : ''}"><span class="speed-row-label">${base}${isMing || level !== 60 ? ' · Lv' + level : ''}</span>${isMing ? `<span class="speed-level-actions"><button type="button" class="speed-level-step" data-level-step="-1" aria-label="降低冥古龙速度计算等级"${level <= MING_SPEED_LEVELS[0] ? ' disabled' : ''}>&lt;</button><button type="button" class="speed-level-step" data-level-step="1" aria-label="提高冥古龙速度计算等级"${level >= MING_SPEED_LEVELS.at(-1) ? ' disabled' : ''}>&gt;</button></span>` : ''}</span></td>`;
 
       // 构建列数据（根据开关动态插入）
       const colOrder = [];
@@ -386,7 +470,7 @@ const SpeedPage = (function () {
               // 右侧列：比较常规值与选中列加成值
               const curRegular = calcSpeedStat(base,
                 colKey === 'iv' || colKey === 'ivNature',
-                colKey === 'ivNature' ? 1 : colKey === 'negNature' ? 2 : 0);
+                colKey === 'ivNature' ? 1 : colKey === 'negNature' ? 2 : 0, level);
               if (curRegular < highlightVals[tierState.selectedCol]) {
                 cellClass += ' tier-grayed';
               } else {
@@ -398,34 +482,32 @@ const SpeedPage = (function () {
           // 非高亮行：如果该列被选中且当前值低于高亮行的值，则灰掉
           const currentVal = calcSpeedStat(base,
             colKey === 'iv' || colKey === 'ivNature',
-            colKey === 'ivNature' ? 1 : colKey === 'negNature' ? 2 : 0);
+            colKey === 'ivNature' ? 1 : colKey === 'negNature' ? 2 : 0, level);
           if (currentVal < highlightVals[tierState.selectedCol]) {
             cellClass += ' tier-grayed';
           }
         }
-        html += `<td class="${cellClass.trim()}" data-col="${colKey}" data-speed="${base}" style="cursor:pointer;"><span class="speed-column-label">${val}</span></td>`;
+        html += `<td class="${cellClass.trim()}" data-col="${colKey}" data-speed="${base}" data-level="${level}" role="button" tabindex="0" aria-pressed="${isHighlight && tierState.selectedCol === colKey ? 'true' : 'false'}"><span class="speed-column-label">${val}</span></td>`;
       });
       // 精灵列
       if (tierState.showMonsters) {
         const pets = monsters.filter(m => {
-          if (m.base_spd !== base) return false;
-          // 过滤掉非高级形态（除非例外）
-          if (m.evolution_stage !== '高级形态') {
-            const name = RKData.getMonsterName(m);
-            if (name !== '武斗酷猫' && name !== '恶魔男爵') return false;
-          }
-          // 多形态去重：同速度的形态只显示一个
-          // 优先级：形态覆盖 > 主形态 > 变体形态
-          if (m.form_category === '变体形态' || m.form_category === '主形态') {
+          if (m.hidden || !visibleIds.has(m.id) || !rowContainsPet(row, m)) return false;
+          // Advanced forms and confirmed leaders share the ordinary eligible pool.
+          if (level === 60 && !isMing && m.evolution_stage !== '高级形态' &&
+              m.evolution_stage !== '首领形态' && !m.is_leader_form) return false;
+          // The shared leader choice is an exact ID, not a same-name form guess.
+          // Independent form groups keep their existing override/main-form policy.
+          if (!preferredIds.has(m.id) && (m.form_category === '变体形态' || m.form_category === '主形态')) {
             const fgKey = getFormGroupKey(m);
             const overrideId = tierState.formOverrides[fgKey];
             const mainForm = getMainForm(m);
-            if (overrideId) {
+            if (overrideId && visibleIds.has(overrideId)) {
               // 有覆盖：只显示被覆盖的形态
               if (m.id !== overrideId) return false;
             } else {
               // 无覆盖：只显示主形态，隐藏同速变体
-              if (m.form_category === '变体形态' && mainForm && mainForm.base_spd === m.base_spd) return false;
+              if (m.form_category === '变体形态' && mainForm && visibleIds.has(mainForm.id) && mainForm.base_spd === m.base_spd) return false;
             }
           }
           return true;
@@ -441,46 +523,119 @@ const SpeedPage = (function () {
           return ai - bi;
         });
         // Keep the complete eligible pool. Search injection/priority precedes viewport slicing.
-        const orderedPets = prioritizeSearchedPet(pets, highlightMonster?.base_spd === base ? highlightMonster : null);
+        const searchedPet = highlightMonster && visibleIds.has(highlightMonster.id) && rowContainsPet(row, highlightMonster) ? highlightMonster : null;
+        const orderedPets = prioritizeSearchedPet(pets, searchedPet);
         rowPets.push(orderedPets);
         html += '<td class="td-monsters" style="text-align:left;padding:3px 8px;line-height:0;white-space:nowrap;"><div class="speed-avatar-strip"></div></td>';
       }
       html += '</tr>';
     });
     html += '</tbody>';
-    table.innerHTML = html;
+    syncTierTable(table, html);
 
-    // 绑定数据单元格点击事件
-    table.querySelectorAll('.tier-btn[data-col]').forEach(td => {
-      td.addEventListener('click', function () {
-        const col = this.dataset.col;
-        const spd = parseInt(this.dataset.speed);
-        if (tierState.search) {
-          // 搜索模式：只切换列选中
-          tierState.selectedCol = (tierState.selectedCol === col) ? null : col;
-        } else {
-          // 手动模式：点击单元格 → 选中该行+该列；再次点击同一单元格 → 取消
-          if (tierState.selectedSpeed === spd && tierState.selectedCol === col) {
-            tierState.selectedSpeed = null;
-            tierState.selectedCol = null;
-          } else {
-            tierState.selectedSpeed = spd;
-            tierState.selectedCol = col;
-          }
-        }
-        renderTierTable();
-      });
-    });
-
-    // Delegate once: capacity changes replace avatars, never the whole table or numeric handlers.
+    // One delegated handler per event; reused rows never accumulate listeners.
     table.onclick = e => {
+      const step = e.target.closest('.speed-level-step');
+      if (step) {
+        e.stopPropagation();
+        if (!step.disabled) stepMingSpeedLevel(Number(step.dataset.levelStep));
+        return;
+      }
       const avatar = e.target.closest('.speed-tier-avatar[data-pet-id]');
-      if (!avatar) return;
-      e.stopPropagation();
-      if (typeof PetDexPage !== 'undefined' && PetDexPage.showPetDetail) PetDexPage.showPetDetail(Number(avatar.dataset.petId));
+      if (avatar) {
+        e.stopPropagation();
+        if (typeof PetDexPage !== 'undefined' && PetDexPage.showPetDetail) PetDexPage.showPetDetail(Number(avatar.dataset.petId));
+        return;
+      }
+      const cell = e.target.closest('.tier-btn[data-col]');
+      if (!cell) return;
+      const col = cell.dataset.col, spd = Number(cell.dataset.speed), level = Number(cell.dataset.level);
+      const key = cell.closest('tr').dataset.rowKey;
+      if (tierState.search) {
+        // Comparison-column clicks keep the searched species/row highlighted.
+        tierState.selectedCol = tierState.selectedCol === col ? null : col;
+        if (key === highlightRowKey) {
+          tierState.selectedSpeed = spd;
+          tierState.selectedLevel = level;
+          tierState.selectedRowKey = key;
+        }
+      } else if (tierState.selectedRowKey === key && tierState.selectedCol === col) {
+        tierState.selectedSpeed = null;
+        tierState.selectedRowKey = null;
+        tierState.selectedCol = null;
+      } else {
+        tierState.selectedSpeed = spd;
+        tierState.selectedLevel = level;
+        tierState.selectedRowKey = key;
+        tierState.selectedCol = col;
+      }
+      renderTierTable();
     };
+    table.onkeydown = e => {
+      if (e.target.closest('.speed-level-step')) {
+        // Native buttons supply Enter/Space click exactly once. Do not prevent it.
+        e.stopPropagation();
+      } else if (e.target.closest('.tier-btn[data-col]') && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault(); e.stopPropagation();
+        e.target.closest('.tier-btn[data-col]').click();
+      }
+    };
+    table.onkeyup = e => { if (e.target.closest('.speed-level-step')) e.stopPropagation(); };
     layoutState = { table, rowPets, hasHighlight: highlightSpeed !== null };
     updateResponsiveLayout();
+  }
+
+  // Reconcile by stable row/column keys. In particular a Ming level change must
+  // not replace its row, label, buttons or selected cell (and lose keyboard focus).
+  function syncTierTable(table, html) {
+    const body = table.querySelector('tbody');
+    if (!body) { table.innerHTML = html; return; }
+    const focused = table.contains(document.activeElement) ? document.activeElement : null;
+    const next = document.createElement('table');
+    next.innerHTML = html;
+    for (const tag of ['colgroup', 'thead']) {
+      const current = table.querySelector(tag), incoming = next.querySelector(tag);
+      if (current.innerHTML !== incoming.innerHTML) current.innerHTML = incoming.innerHTML;
+    }
+    const rows = new Map([...body.children].map(row => [row.dataset.rowKey, row]));
+    [...next.querySelector('tbody').children].forEach((incoming, index) => {
+      const row = rows.get(incoming.dataset.rowKey) || incoming;
+      rows.delete(incoming.dataset.rowKey);
+      if (row !== incoming) {
+        row.className = incoming.className;
+        Object.assign(row.dataset, incoming.dataset);
+        const cellKey = cell => cell.dataset.col || cell.className;
+        const cells = new Map([...row.children].map(cell => [cellKey(cell), cell]));
+        [...incoming.children].forEach((fresh, i) => {
+          const cell = cells.get(cellKey(fresh)) || fresh;
+          cells.delete(cellKey(fresh));
+          if (cell !== fresh) {
+            cell.className = fresh.className;
+            Object.assign(cell.dataset, fresh.dataset);
+            if (cell.className === 'td-speed') {
+              cell.querySelector('.speed-row-label').textContent = fresh.querySelector('.speed-row-label').textContent;
+              cell.querySelectorAll('.speed-level-step').forEach((button, j) => {
+                button.disabled = fresh.querySelectorAll('.speed-level-step')[j].disabled;
+              });
+            } else if (cell.dataset.col) {
+              cell.querySelector('.speed-column-label').textContent = fresh.querySelector('.speed-column-label').textContent;
+              cell.setAttribute('aria-pressed', fresh.getAttribute('aria-pressed'));
+            } else {
+              // Invalidate avatar capacity so a changed search/pool is repopulated.
+              cell.innerHTML = fresh.innerHTML;
+            }
+          }
+          if (row.children[i] !== cell) row.insertBefore(cell, row.children[i] || null);
+        });
+        cells.forEach(cell => cell.remove());
+      }
+      if (body.children[index] !== row) body.insertBefore(row, body.children[index] || null);
+    });
+    rows.forEach(row => row.remove());
+    if (focused && table.contains(focused)) {
+      const target = focused.disabled ? focused.closest('tr')?.querySelector('.speed-level-step:not(:disabled)') : focused;
+      if (target && document.activeElement !== target) target.focus({ preventScroll: true });
+    }
   }
 
   // Capacity is a layout-pixel calculation, independent of visual/CSS zoom.

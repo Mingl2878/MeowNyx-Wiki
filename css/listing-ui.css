@@ -85,6 +85,9 @@
   border: 1px solid currentColor; pointer-events: none;
 }
 .filter-exclusion-mark[hidden] { display: none; }
+/* A full power range blocks only adding another left-click endpoint.
+   Keep right-click exclusion and keyboard focus available, including in portals. */
+#move-power-pills .type-pill.filter-include-locked { opacity: .55; cursor: not-allowed; }
 .type-pill[data-filter-state]:focus-visible, .detail-skill-filter-btn[data-filter-state]:focus-visible {
   outline: 2px solid var(--accent); outline-offset: 2px;
 }

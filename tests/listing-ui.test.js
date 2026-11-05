@@ -208,7 +208,7 @@ function pageApi(r, name, exports) {
   vm.runInContext(code, r.context); return vm.runInContext(name, r.context);
 }
 function learnerFixture(r) {
-  const monsters = [{ id:1 },{ id:2, evolves_from_id:1 },{ id:3, name:'同名独立形态' },{ id:4 },{ id:5, is_leader_form:true },{ id:6 }];
+  const monsters = [{ id:1 },{ id:2, evolves_from_id:1 },{ id:3, name:'同名独立形态' },{ id:4 },{ id:5, is_leader_form:true, learnset_mode:'inherit', learnset_inherits_from_id:2 },{ id:6 }];
   const skills = {
     1: [{ name:'测试',source:'默认' }],
     2: [{ name:'测试',source:'默认' },{ name:'测试',source:'技能石' },{ name:'交集',source:'血脉' }],
@@ -218,7 +218,7 @@ function learnerFixture(r) {
     6: [{ name:'别的技能',source:'默认' }]
   };
   r.RKData.getMonsters = () => monsters;
-  r.RKData.resolveSkillSource = m => { const source = m.id === 4 ? monsters[1] : m; return { sourceMonster:source, wiki:{skills:skills[source.id]} }; };
+  r.RKData.resolveSkillSource = m => { const source = m.id === 4 || m.learnset_mode === 'inherit' ? monsters[1] : m; return { sourceMonster:source, wiki:{skills:skills[source.id]} }; };
   r.RKData.getResolvedWikiData = m => r.RKData.resolveSkillSource(m).wiki;
   r.RKData.getTypeShortZh = () => '';
   return monsters;

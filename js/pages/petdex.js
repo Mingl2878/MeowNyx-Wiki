@@ -1,4 +1,4 @@
-﻿/**
+/**
  * petdex.js — 精灵图鉴页面
  * 亮色主题，pill属性筛选，形态筛选，完整数据表格
  */
@@ -6,7 +6,7 @@ const PetDexPage = (function () {
   let state = {
     keyword: '',
     activeTypes: new Set(),    // 选中的属性集合，多选交集筛选
-    activeForms: new Set(['high']),  // 多选: 'high' | 'leader'
+    activeForms: new Set(['high']),  // 多选: 'high' | 'leader' | 'pending'（不把未确认当成高级）
     activeSeasons: new Set(),
     sortKey: 'dex_number',
     sortAsc: true,
@@ -15,11 +15,47 @@ const PetDexPage = (function () {
   };
 
   // 记录被收起的精灵 id 集合（默认展开）
-  let collapsedTraits = new Set([129, 469]);
-  // 长描述阈值（超过则显示展开/收起箭头）
-  const TRAIT_LONG_THRESHOLD = 50;
+  let collapsedTraits = new Set([129, 467, 468, 469, 509, 510, 646, 647]);
   // 记录已展开形态的主形态 id 集合
   let expandedForms = new Set();
+
+  // Presentation-only copy: all identity/type/learning data remains the original data.
+  // Call with catalogue entries, never feed a projected copy back into this function.
+  function projectMonster(monster, enabled = window.AppPreferences?.getTrickRoom?.() === true) {
+    if (!monster || !enabled) return monster;
+    return { ...monster, base_spd: 200 - (Number(monster.base_spd) || 0) };
+  }
+
+  // One cache per mounted page, never an unbounded history of filters/sorts.
+  let tableView = null;
+  let pendingFilterInitialized = false;
+
+  function mountTable(tbody) {
+    tableView?.dispose();
+    if (!pendingFilterInitialized) {
+      if (RKData.getMonsters().some(m => !m.hidden && m.evolution_stage === '未确认')) state.activeForms.add('pending');
+      pendingFilterInitialized = true;
+    }
+    const view = { tbody, rows: new Map(), dispose: null };
+    tableView = view;
+    const click = event => {
+      const target = event.target.closest?.('[data-petdex-action], tr[data-id]');
+      const row = target?.closest('tr[data-id]');
+      if (!row || row.parentElement !== tbody || event.target.closest('.game-glossary-term')) return;
+      const id = Number(row.dataset.id);
+      if (target.dataset.petdexAction === 'trait') toggleTrait(id);
+      else if (target.dataset.petdexAction === 'form') toggleForm(id);
+      else showPetDetail(id, { petdex: true });
+    };
+    tbody.addEventListener('click', click);
+    const unregister = CommonUI.registerCleanup(tbody, () => view.dispose());
+    view.dispose = () => {
+      tbody.removeEventListener('click', click);
+      view.rows.clear();
+      unregister();
+      if (tableView === view) { tableView = null; formGroupIndex = null; }
+    };
+  }
 
   function render(container) {
     CommonUI.destroyWithin(container);
@@ -39,6 +75,7 @@ const PetDexPage = (function () {
             <button class="form-btn" data-form="regional">地区形态</button>
             <button class="form-btn active" data-form="high">高阶形态</button>
             <button class="form-btn" data-form="leader">首领形态</button>
+            ${RKData.getMonsters().some(m => !m.hidden && m.evolution_stage === '未确认') ? '<button class="form-btn" data-form="pending" title="官方尚未提供进化阶段；独立显示，不视为高级或首领">阶段未确认</button>' : ''}
           </div>
         </div>
         <!-- 赛季筛选 -->
@@ -49,6 +86,7 @@ const PetDexPage = (function () {
             <button class="form-btn" data-season="S2">S2</button>
             <button class="form-btn" data-season="S3">S3</button>
             <button class="form-btn" data-season="S4">S4</button>
+            <button class="form-btn" data-season="S5">S5</button>
           </div>
         </div>
       </div>
@@ -71,6 +109,7 @@ const PetDexPage = (function () {
       </div>
       </div>
     `;
+    mountTable(document.getElementById('pet-tbody'));
     renderTypePills();
     // 创建搜索框（纯文本，无下拉，搜索精灵名称和特性）
     const searchWrap = document.createElement('div');
@@ -110,6 +149,7 @@ const PetDexPage = (function () {
     else document.querySelector('.form-btn[data-form="high"]')?.classList.remove('active');
     if (state.activeForms.has('leader')) document.querySelector('.form-btn[data-form="leader"]')?.classList.add('active');
     else document.querySelector('.form-btn[data-form="leader"]')?.classList.remove('active');
+    document.querySelector('.form-btn[data-form="pending"]')?.classList.toggle('active', state.activeForms.has('pending'));
     if (allExpanded) document.querySelector('.form-btn[data-form="regional"]')?.classList.add('active');
     else document.querySelector('.form-btn[data-form="regional"]')?.classList.remove('active');
     document.querySelectorAll('#season-buttons .form-btn').forEach(btn => btn.classList.toggle('active', state.activeSeasons.has(btn.dataset.season)));
@@ -147,6 +187,7 @@ const PetDexPage = (function () {
           allExpanded = false;
           btn.classList.remove('active');
         } else {
+          buildFormGroupIndex();
           for (const m of RKData.getMonsters()) {
             if (m.hidden) continue;
             if (m.form_category === '主形态' && getFormVariants(m).length > 0) {
@@ -225,6 +266,7 @@ const PetDexPage = (function () {
   }
 
   function getSeason(m) {
+    if (['S1', 'S2', 'S3', 'S4', 'S5'].includes(m.season)) return m.season;
     const dex = m.dex_number || 0;
     if ((dex >= 443 && dex <= 465) || dex === 466) return 'S4';
     if (dex >= 376 && dex <= 442) return 'S3';
@@ -232,44 +274,15 @@ const PetDexPage = (function () {
     return 'S1';
   }
 
-  /** 获取精灵的形态组键（主形态用 form，变体用 main_form_name） */
-  function getFormGroupKey(m) {
-    if (m.form_category === '主形态') return m.form || 'default';
-    return m.main_form_name || m.form || 'default';
-  }
-
-  /** 构建形态组索引：key(name + groupKey) -> [主形态, ...变体形态] */
+  /** Explicit local-ID ownership, independent of dex/name sorting and leader forms. */
   let formGroupIndex = null;
   function buildFormGroupIndex() {
-    formGroupIndex = new Map();
-    const all = RKData.getMonsters();
-    for (const m of all) {
-      if (m.hidden) continue;
-      const name = RKData.getMonsterName(m);
-      const gk = getFormGroupKey(m);
-      const key = name + '|' + gk;
-      if (!formGroupIndex.has(key)) formGroupIndex.set(key, []);
-      formGroupIndex.get(key).push(m);
-    }
-    // 每组内排序：主形态在前，变体在后
-    for (const arr of formGroupIndex.values()) {
-      arr.sort((a, b) => {
-        if (a.form_category === '主形态' && b.form_category !== '主形态') return -1;
-        if (a.form_category !== '主形态' && b.form_category === '主形态') return 1;
-        return 0;
-      });
-    }
+    formGroupIndex = PetDexFamily.formIndex(RKData.getMonsters());
   }
 
-  /** 获取某主形态精灵的变体形态列表 */
   function getFormVariants(m) {
     if (!formGroupIndex) buildFormGroupIndex();
-    const name = RKData.getMonsterName(m);
-    const gk = getFormGroupKey(m);
-    const key = name + '|' + gk;
-    const group = formGroupIndex.get(key);
-    if (!group) return [];
-    return group.filter(x => x.id !== m.id);
+    return formGroupIndex.variantsById.get(m.id) || [];
   }
 
   let allExpanded = false;
@@ -283,6 +296,7 @@ const PetDexPage = (function () {
         const stages = [];
         if (state.activeForms.has('high')) stages.push('高级形态');
         if (state.activeForms.has('leader')) stages.push('首领形态');
+        if (state.activeForms.has('pending')) stages.push('未确认');
         return stages.includes(m.evolution_stage);
       });
     }
@@ -294,18 +308,11 @@ const PetDexPage = (function () {
       // 搜索关键词匹配变体形态时，直接放行
       if (state.keyword) {
         const kw = state.keyword.toLowerCase();
-        if (RKData.getMonsterDisplayName(m).toLowerCase().includes(kw)) return true;
+        if (RKData.matchesMonsterName ? RKData.matchesMonsterName(m, kw) : RKData.getMonsterDisplayName(m).toLowerCase().includes(kw)) return true;
       }
-      // 变体形态：检查对应的主形态是否已展开
-      const name = RKData.getMonsterName(m);
-      const gk = getFormGroupKey(m);
-      const key = name + '|' + gk;
-      const group = formGroupIndex ? formGroupIndex.get(key) : null;
-      if (group) {
-        const mainForm = group.find(x => x.form_category === '主形态');
-        if (mainForm && expandedForms.has(mainForm.id)) return true;
-      }
-      return false;
+      // Never attach a variant to an adjacent same-dex row (e.g. 岚鸟 / 霜翼领主).
+      if (!formGroupIndex) buildFormGroupIndex();
+      return expandedForms.has(formGroupIndex.parentById.get(m.id));
     });
 
     // 赛季筛选：多选并集；未选任何赛季时显示全部。
@@ -329,7 +336,7 @@ const PetDexPage = (function () {
       const kw = state.keyword.toLowerCase();
       list = list.filter(m => {
         if (RKData.getMonsterName(m).toLowerCase().includes(kw)) return true;
-        if (RKData.getMonsterDisplayName(m).toLowerCase().includes(kw)) return true;
+        if (RKData.matchesMonsterName ? RKData.matchesMonsterName(m, kw) : RKData.getMonsterDisplayName(m).toLowerCase().includes(kw)) return true;
         const trait = RKData.getTraitInfo(m);
         if (trait.name && trait.name.toLowerCase().includes(kw)) return true;
         if (trait.desc && trait.desc.toLowerCase().includes(kw)) return true;
@@ -338,105 +345,115 @@ const PetDexPage = (function () {
     }
 
     // Shared stable numeric sorting; filtering and form policies remain local.
-    return ListingUI.sortMonsters(list, state.sortKey, state.sortAsc);
+    return ListingUI.sortMonsters(list.map(monster => projectMonster(monster)), state.sortKey, state.sortAsc);
+  }
+
+  // Compare the actual presentation inputs, not monster object identity: source
+  // editors can mutate in place and the dream-speed projection makes fresh copies.
+  function updateRow(m, idx, view) {
+    const id = String(m.id);
+    let entry = view.rows.get(id);
+    if (!entry) {
+      const row = document.createElement('tr');
+      row.dataset.id = id;
+      row.innerHTML = `<td style="color:var(--text-muted);"></td><td></td><td></td><td style="max-width:280px;white-space:normal;font-size:12px;"></td>${ListingUI.statCells(m)}`;
+      entry = { row, cells: Array.from(row.cells), stats: [], name: null, types: null, trait: null };
+      view.rows.set(id, entry);
+    }
+    const { row, cells } = entry;
+    const rowClass = m.form_category === '变体形态' ? 'form-variant-row' : '';
+    if (row.className !== rowClass) row.className = rowClass;
+    const dexNum = state.sortKey === 'dex_number'
+      ? String(m.dex_number || m.id).padStart(3, '0') : String(idx + 1);
+    if (cells[0].textContent !== dexNum) cells[0].textContent = dexNum;
+
+    const hasVariants = m.form_category === '主形态' && getFormVariants(m).length > 0;
+    const nameHtml = RKData.getMonsterDisplayNameHtml(m);
+    const pendingStage = m.evolution_stage === '未确认';
+    const nameKey = JSON.stringify([nameHtml, m.image, hasVariants, hasVariants && expandedForms.has(m.id), pendingStage]);
+    if (entry.name !== nameKey) {
+      const iconHtml = m.image
+        ? `<img src="assets/monster/images/${m.image}" class="pet-icon-img" alt="" loading="lazy" onerror="this.removeAttribute('src'); this.style.visibility='hidden';">`
+        : '<div class="pet-icon-placeholder" aria-hidden="true"></div>';
+      const arrow = hasVariants ? `<span class="form-toggle-arrow" data-petdex-action="form">${expandedForms.has(m.id) ? '▼' : '▶'}</span>` : '';
+      const stageNote = pendingStage ? '<small class="pet-stage-pending" title="官方未提供进化阶段，暂不归入高级或首领">（阶段未确认）</small>' : '';
+      cells[1].innerHTML = `<div class="pet-name-cell">${iconHtml}<span class="pet-name-text">${nameHtml}${stageNote}</span>${arrow}</div>`;
+      entry.name = nameKey;
+    }
+    const types = [m.main_type?.name, m.sub_type?.name].filter(Boolean).map(t => RKData.typeBadgeHtml(t)).join(' ') || '-';
+    if (entry.types !== types) { cells[2].innerHTML = types; entry.types = types; }
+
+    const { name: traitName, desc: traitDesc } = RKData.getTraitInfo(m);
+    const collapsible = [129, 467, 468, 469, 509, 510, 646, 647].includes(m.id) && traitDesc.includes('\n');
+    const collapsed = collapsible && collapsedTraits.has(m.id);
+    const traitKey = JSON.stringify([traitName, traitDesc, collapsible, collapsed]);
+    // Builder references also invalidate if the host replaces a presentation helper.
+    if (entry.trait !== traitKey || entry.traitBuilder !== RKData.buildTraitDetailHtml || entry.traitIcon !== RKData.traitIconHtml) {
+      let html = '<span style="color:var(--text-muted);">-</span>';
+      if (traitName && collapsible) {
+        const visibleDesc = collapsed ? traitDesc.split('\n')[0] : traitDesc;
+        const desc = RKData.traitDescriptionHtml(visibleDesc, m.id).replace(/\n/g, '<br>');
+        html = `<div class="detail-trait-box" data-petdex-action="trait" style="cursor:pointer;">
+          <div class="detail-trait-head"><span class="trait-arrow">${collapsed ? '▶' : '▼'}</span>
+          ${RKData.traitIconHtml(traitName, { className: 'detail-trait-icon', fallback: 'assets/icons/type/light.png' })}
+          <span><span class="detail-trait-name">${traitName}:</span> <span class="detail-trait-desc">${desc}</span></span></div></div>`;
+      } else if (traitName) html = RKData.buildTraitDetailHtml(traitName, traitDesc, m.id);
+      cells[3].innerHTML = html;
+      entry.trait = traitKey;
+      entry.traitBuilder = RKData.buildTraitDetailHtml;
+      entry.traitIcon = RKData.traitIconHtml;
+    }
+    // Dynamic effective-speed policy, 200-Q projection and shared formulas are
+    // evaluated every time, but unchanged numbers never generate DOM mutations.
+    ListingUI.STAT_COLUMNS.forEach(({ key }, i) => {
+      const value = String(ListingUI.statValue(m, key));
+      if (entry.stats[i] !== value) {
+        const span = cells[i + 4].firstElementChild;
+        if (span.textContent !== value) span.textContent = value;
+        entry.stats[i] = value;
+      }
+    });
+    return row;
+  }
+
+  function reconcileRows(tbody, rows) {
+    const wanted = new Set(rows);
+    for (const row of Array.from(tbody.children)) if (!wanted.has(row)) row.remove();
+    let cursor = tbody.firstElementChild;
+    let batch = document.createDocumentFragment();
+    const flush = () => {
+      if (!batch.childNodes.length) return;
+      tbody.insertBefore(batch, cursor);
+      batch = document.createDocumentFragment();
+    };
+    // Existing correctly ordered rows stay connected. New/moved runs enter in
+    // order as fragments, not hundreds of individual tbody insertions.
+    const focused = document.activeElement;
+    for (const row of rows) {
+      if (row === cursor) { flush(); cursor = cursor.nextElementSibling; }
+      else batch.appendChild(row);
+    }
+    flush();
+    if (focused && tbody.contains(focused) && document.activeElement !== focused) focused.focus({ preventScroll: true });
   }
 
   function renderTable() {
-    const tbody = document.getElementById('pet-tbody');
-    if (!tbody) return;
-
+    const view = tableView;
+    if (!view || !view.tbody.isConnected) return;
+    // Rebuild this small index from current records (including in-place edits).
+    buildFormGroupIndex();
+    const liveIds = new Set(RKData.getMonsters().filter(m => !m.hidden).map(m => String(m.id)));
+    for (const id of view.rows.keys()) if (!liveIds.has(id)) view.rows.delete(id);
+    for (const id of expandedForms) if (!liveIds.has(String(id))) expandedForms.delete(id);
     const list = getFilteredMonsters();
-
-    const isDexNumberSort = state.sortKey === 'dex_number';
-    tbody.innerHTML = list.map((m, idx) => {
-      const name = RKData.getMonsterDisplayName(m);
-      const nameHtml = RKData.getMonsterDisplayNameHtml(m);
-      const mainType = m.main_type ? m.main_type.name : '';
-      const subType = m.sub_type ? m.sub_type.name : '';
-      const dexNum = isDexNumberSort
-        ? String(m.dex_number || m.id).padStart(3, '0')
-        : String(idx + 1);
-
-      // 属性标签
-      const typeBadges = [mainType, subType].filter(Boolean).map(t =>
-        RKData.typeBadgeHtml(t)
-      ).join(' ');
-
-      // 不在名称旁显示形态后缀（形态信息已在名称中或无需显示）
-      const formSuffix = '';
-
-      // 特性
-      const { name: traitName, desc: traitDesc } = RKData.getTraitInfo(m);
-      const COLLAPSE_TRAIT_IDS = [129, 469];
-      const isCollapseMonster = COLLAPSE_TRAIT_IDS.includes(m.id);
-      const isCollapsed = collapsedTraits.has(m.id);
-
-      // 构建特性单元格内容
-      let traitCellHtml;
-      if (!traitName) {
-        traitCellHtml = '<span style="color:var(--text-muted);">-</span>';
-      } else if (isCollapseMonster && traitDesc.includes('\n')) {
-        // 多行特性：第一行摘要，剩余展开/收起
-        const parts = traitDesc.split('\n');
-        const traitSummary = parts[0] || '';
-        const traitDetail = parts.slice(1).join('\n');
-        const arrow = isCollapsed ? '▶' : '▼';
-        const descText = isCollapsed ? traitSummary : traitDesc.replace(/\n/g, '<br>');
-        traitCellHtml = `
-          <div class="detail-trait-box" onclick="event.stopPropagation();PetDexPage.toggleTrait(${m.id})" style="cursor:pointer;">
-            <div class="detail-trait-head">
-              <span class="trait-arrow" onclick="event.stopPropagation();PetDexPage.toggleTrait(${m.id})">${arrow}</span>
-              ${RKData.traitIconHtml(traitName, { className: 'detail-trait-icon', fallback: 'assets/icons/type/light.png' })}
-              <span><span class="detail-trait-name">${traitName}:</span> <span class="detail-trait-desc">${descText}</span></span>
-            </div>
-          </div>`;
-      } else {
-        // 普通特性：直接用 buildTraitDetailHtml
-        traitCellHtml = RKData.buildTraitDetailHtml(traitName, traitDesc);
-      }
-
-      // 图片
-      const imgUrl = m.image ? `assets/monster/images/${m.image}` : '';
-      const iconHtml = imgUrl
-        ? `<img src="${imgUrl}" class="pet-icon-img" alt="" loading="lazy" onerror="this.removeAttribute('src'); this.style.visibility='hidden';">`
-        : '<div class="pet-icon-placeholder" aria-hidden="true"></div>';
-
-      // 形态折叠箭头（仅主形态且有变体时显示）
-      let formArrow = '';
-      if (m.form_category === '主形态') {
-        const variants = getFormVariants(m);
-        if (variants.length > 0) {
-          const expanded = expandedForms.has(m.id);
-          formArrow = `<span class="form-toggle-arrow" onclick="event.stopPropagation();PetDexPage.toggleForm(${m.id})">${expanded ? '▼' : '▶'}</span>`;
-        }
-      }
-
-      const rowClass = m.form_category === '变体形态' ? ' class="form-variant-row"' : '';
-
-      return `
-        <tr data-id="${m.id}"${rowClass}>
-          <td style="color:var(--text-muted);">${dexNum}</td>
-          <td>
-            <div class="pet-name-cell">
-              ${iconHtml}
-              <span class="pet-name-text">${nameHtml}</span>
-              ${formArrow}
-            </div>
-          </td>
-          <td>${typeBadges || '-'}</td>
-          <td style="max-width:280px;white-space:normal;font-size:12px;">${traitCellHtml}</td>
-          ${ListingUI.statCells(m)}
-        </tr>
-      `;
-    }).join('');
-
-    // 行点击
-    tbody.querySelectorAll('tr').forEach(tr => {
-      tr.addEventListener('click', () => {
-        const id = parseInt(tr.dataset.id);
-        showPetDetail(id);
-      });
-    });
+    const speedHeader = document.querySelector('#pet-table th[data-sort="base_spd"]');
+    const speedLabel = window.AppPreferences?.getTrickRoom?.() ? '速度（梦境）' : '速度';
+    if (speedHeader && speedHeader.textContent !== speedLabel) speedHeader.textContent = speedLabel;
+    // Keep the sorted rank attached to its ID; only presentation nests visible
+    // variants under their visible owner. A filtered-out owner is never reinserted.
+    const rankById = new Map(list.map((m, idx) => [m.id, idx]));
+    const grouped = PetDexFamily.groupVisible(list, formGroupIndex);
+    reconcileRows(view.tbody, grouped.map(m => updateRow(m, rankById.get(m.id), view)));
   }
 
   /** 统计条颜色 */
@@ -488,7 +505,7 @@ const PetDexPage = (function () {
     return `<span class="def-type-item"><img src="${icon}" class="def-type-icon" alt="${zh}">${zh}</span>`;
   }
 
-  function getEffectiveRank(m) {
+  function getEffectiveRank(m, petdex = false) {
     const allMonsters = RKData.getMonsters().filter(mm => !mm.hidden);
     // 有效种族值排名：基础形态不显示，高级形态只与高级形态比，首领形态与高级+首领比
     let effectiveRank = 0;
@@ -500,23 +517,35 @@ const PetDexPage = (function () {
       );
       effectiveRankTotal = rankPool.length;
       effectiveRank = rankPool
-        .map(mm => ({ id: mm.id, e: RKData.getEffectiveStats(mm) }))
+        .map(mm => ({ id: mm.id, e: RKData.getEffectiveStats(petdex ? projectMonster(mm) : mm) }))
         .sort((a, b) => b.e - a.e)
         .findIndex(mm => mm.id === m.id) + 1;
     }
     return { rank: effectiveRank, count: effectiveRankTotal };
   }
 
-  function refreshPetStats(m, body) {
+  function refreshPetStats(m, body, petdex = false) {
     const modal = document.getElementById('pet-modal');
     if (!modal || modal.style.display === 'none') return;
     const valueEl = body.querySelector('.detail-stats-total');
     if (!valueEl) return;
-    const { rank, count } = getEffectiveRank(m);
-    valueEl.innerHTML = `${RKData.getEffectiveStats(m)}${rank > 0 ? `<span class="detail-stats-rank"> #${rank}/${count}</span>` : ''}`;
+    const display = petdex ? projectMonster(m) : m;
+    const { rank, count } = getEffectiveRank(m, petdex);
+    valueEl.innerHTML = `${RKData.getEffectiveStats(display)}${rank > 0 ? `<span class="detail-stats-rank"> #${rank}/${count}</span>` : ''}`;
+    const speedBar = body.querySelector('[data-detail-stat="速度"]');
+    if (speedBar) {
+      const speed = display.base_spd || 0;
+      speedBar.querySelector('.detail-stat-val').textContent = speed;
+      speedBar.querySelector('.detail-stat-fill').style.width = Math.max(0, Math.min(100, speed / 2)) + '%';
+      speedBar.querySelector('.detail-stat-label').textContent = petdex && window.AppPreferences?.getTrickRoom?.() ? '速度（霞光梦境）' : '速度';
+    }
   }
 
-  function showPetDetail(id) {
+  function buildRelationsHtml(monster) {
+    return PetDexFamily.render(PetDexFamily.build(RKData.getMonsters(), monster.id), RKData.getMonsterDisplayName);
+  }
+
+  function showPetDetail(id, { petdex = false } = {}) {
    try {
     const m = RKData.getMonsterById(id);
     if (!m) return;
@@ -528,16 +557,18 @@ const PetDexPage = (function () {
     const baseName = RKData.getMonsterName(m);
     const mainType = m.main_type ? m.main_type.name : '';
     const subType = m.sub_type ? m.sub_type.name : '';
-    const total = RKData.getTotalStats(m);
-    const effective = RKData.getEffectiveStats(m);
+    // Calls from speed / skill learner pages intentionally retain raw qualifications.
+    const display = petdex ? projectMonster(m) : m;
+    const total = RKData.getTotalStats(display);
+    const effective = RKData.getEffectiveStats(display);
 
     // 计算种族值排名
     const allMonsters = RKData.getMonsters().filter(mm => !mm.hidden);
     const totalRank = allMonsters
-      .map(mm => ({ id: mm.id, t: RKData.getTotalStats(mm) }))
+      .map(mm => ({ id: mm.id, t: RKData.getTotalStats(petdex ? projectMonster(mm) : mm) }))
       .sort((a, b) => b.t - a.t)
       .findIndex(mm => mm.id === m.id) + 1;
-    const { rank: effectiveRank, count: effectiveRankTotal } = getEffectiveRank(m);
+    const { rank: effectiveRank, count: effectiveRankTotal } = getEffectiveRank(m, petdex);
     const totalRankStr = totalRank > 0 ? ` #${totalRank}` : '';
     const effectiveRankStr = effectiveRank > 0 ? ` #${effectiveRank}/${effectiveRankTotal}` : '';
 
@@ -555,7 +586,7 @@ const PetDexPage = (function () {
       { label: '魔攻', value: m.base_mag_atk || 0, color: STAT_COLORS['魔攻'] },
       { label: '物防', value: m.base_phy_def || 0, color: STAT_COLORS['物防'] },
       { label: '魔防', value: m.base_mag_def || 0, color: STAT_COLORS['魔防'] },
-      { label: '速度', value: m.base_spd || 0, color: STAT_COLORS['速度'] }
+      { label: '速度', value: display.base_spd || 0, color: STAT_COLORS['速度'] }
     ];
 
     const maxStat = 200;
@@ -568,13 +599,13 @@ const PetDexPage = (function () {
       '速度': 'assets/icons/move/图标 图鉴 速度.png'
     };
     const statBarsHtml = stats.map(s => {
-      const pct = Math.min(100, (s.value / maxStat) * 100);
+      const pct = Math.max(0, Math.min(100, (s.value / maxStat) * 100));
       const icon = STAT_ICON_MAP[s.label] || '';
       return `
-        <div class="detail-stat-bar">
+        <div class="detail-stat-bar" data-detail-stat="${s.label}">
           <div class="detail-stat-left">
             ${icon ? `<img src="${icon}" class="detail-stat-icon" alt="${s.label}">` : ''}
-            <span class="detail-stat-label">${s.label}</span>
+            <span class="detail-stat-label">${s.label === '速度' && petdex && window.AppPreferences?.getTrickRoom?.() ? '速度（霞光梦境）' : s.label}</span>
           </div>
           <div class="detail-stat-track"><div class="detail-stat-fill" style="width:${pct}%;"></div></div>
           <span class="detail-stat-val">${s.value}</span>
@@ -651,7 +682,7 @@ const PetDexPage = (function () {
               ${statBarsHtml}
             </div>
           </div>
-          ${RKData.buildTraitDetailHtml(traitName, traitDesc)}
+          ${RKData.buildTraitDetailHtml(traitName, traitDesc, m.id)}
         </div>
         <div class="detail-col-3">
           <div class="detail-matchup">
@@ -673,6 +704,7 @@ const PetDexPage = (function () {
               <div class="detail-matchup-types">${resist025Html}</div>
             </div>
           </div>
+          ${buildRelationsHtml(m)}
         </div>
       </div>
       ${skillsHtml ? `
@@ -681,7 +713,7 @@ const PetDexPage = (function () {
         ${skillsHtml}
       </div>` : ''}
     `;
-    ListingUI.onStatsChange(body.querySelector('.detail-layout'), () => refreshPetStats(m, body));
+    ListingUI.onStatsChange(body.querySelector('.detail-layout'), () => refreshPetStats(m, body, petdex));
     body.scrollTop = 0;
     modal.style.display = 'flex';
     // 动态调整 z-index，确保显示在技能弹窗之上
@@ -694,11 +726,12 @@ const PetDexPage = (function () {
       if (e.target === modal) modal.style.display = 'none';
     };
 
-    // 右键任意区域关闭弹窗
-    modal.oncontextmenu = function(e) {
-      e.preventDefault();
-      modal.style.display = 'none';
-    };
+    // 整个弹窗（含筛选、输入和遮罩）右键关闭，主页面的右键不受影响。
+    CommonUI.bindModalContextMenu(modal, () => { modal.style.display = 'none'; });
+
+    body.querySelectorAll('[data-related-id]').forEach(button => {
+      button.addEventListener('click', () => showPetDetail(Number(button.dataset.relatedId), { petdex }));
+    });
 
     // 绑定筛选按钮事件 — 使用 SkillPicker 公共模块（多选并集）
     CommonUI.SkillPicker.bindFilterEvents(body, undefined, { allowExclusion: true });
@@ -723,6 +756,7 @@ const PetDexPage = (function () {
       const moveModal2 = document.getElementById('move-modal');
       const moveZ2 = moveModal2 ? parseInt(getComputedStyle(moveModal2).zIndex) || 200 : 200;
       modal.style.zIndex = moveZ2 + 100;
+      CommonUI.bindModalContextMenu(modal, () => { modal.style.display = 'none'; });
      }
    }
   }

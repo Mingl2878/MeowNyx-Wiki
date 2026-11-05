@@ -376,5 +376,12 @@
     "category": "其他",
     "attribute": "光系",
     "description": "光系技能，1能耗，对敌方造成60威力物伤。"
+  },
+  {
+    "id": "glossary-55",
+    "name": "霞光梦境",
+    "category": "天气",
+    "attribute": null,
+    "description": "天气为霞光梦境时，速度慢的精灵会先行动（该天气不影响先手度）。"
   }
 ]

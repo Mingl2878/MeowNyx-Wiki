@@ -1,4 +1,4 @@
-﻿/**
+/**
  * team.js — 精灵组队系统
  * 左列：我的队伍 / 筛选条件 / 候选精灵
  * 右列：精灵详情
@@ -575,21 +575,7 @@ const TeamPage = (function () {
       placeholder: '搜索精灵名称...',
       limit: 10,
       onInput: (val) => { searchKeyword = val; renderCandidateList(); },
-      onSelect: (pet) => {
-        // 5c: 如果选中首领形态精灵，自动切换到基础形态
-        if (pet.is_leader_form) {
-          const baseForm = RKData.getMonsters().find(m =>
-            m.dex_number === pet.dex_number && !m.is_leader_form && !m.hidden
-          );
-          if (baseForm) {
-            searchKeyword = RKData.getMonsterDisplayName(baseForm);
-            renderCandidateList();
-            return;
-          }
-        }
-        searchKeyword = RKData.getMonsterDisplayName(pet);
-        renderCandidateList();
-      },
+      onSelect: selectSearchMonster,
       renderItem: CommonUI.monsterRenderItem(null)
     });
     searchBox.input.id = 'team-search';
@@ -601,6 +587,16 @@ const TeamPage = (function () {
     renderCandidateList();
     if (selectedDetailId) renderDetail();
     updateRestoreBtn();
+  }
+
+  function selectSearchMonster(pet) {
+    if (pet.is_leader_form || pet.evolution_stage === '首领形态') {
+      const base = RKData.getLeaderBase(pet);
+      if (!base || base.hidden) { alert('普通来源不可用'); return; }
+      pet = base;
+    }
+    searchKeyword = RKData.getMonsterDisplayName(pet);
+    renderCandidateList();
   }
 
   function renderSlots() {
@@ -850,12 +846,8 @@ const TeamPage = (function () {
 
     // 5d: 首领血脉时，根据 leaderFormId 决定显示哪个形态的数据
     const bl = detailBloodline[m.id] || '';
-    const lfId = leaderFormId[m.id] || null;
-    let displayM = m;
-    if (bl === 'Leader' && lfId) {
-      const lf = RKData.getMonsterById(lfId);
-      if (lf) displayM = lf;
-    }
+    const displayM = getTeamDisplayMonster(m.id);
+    const lfId = displayM.id !== m.id ? displayM.id : null;
     const name = RKData.getMonsterDisplayName(displayM);
     const mainType = displayM.main_type ? displayM.main_type.name : '';
     const subType = displayM.sub_type ? displayM.sub_type.name : '';
@@ -863,8 +855,7 @@ const TeamPage = (function () {
     const { name: traitName, desc: traitDesc } = RKData.getTraitInfo(displayM);
 
     // 5d: 首领血脉时查找可用的首领形态列表
-    const allMonsters = RKData.getMonsters();
-    const leaderForms = allMonsters.filter(mm => mm.dex_number === m.dex_number && mm.is_leader_form).sort((a, b) => a.id - b.id);
+    const leaderForms = RKData.getLeaderForms(m).filter(mm => !mm.hidden).sort((a, b) => a.id - b.id);
     const showLeaderDropdown = bl === 'Leader' && leaderForms.length > 0;
 
     body.innerHTML = `
@@ -965,9 +956,9 @@ const TeamPage = (function () {
       const petId = selectedDetailId;
       const m = RKData.getMonsterById(petId);
       if (!m) return;
-      const allMonsters = RKData.getMonsters();
-      const leaderForms = allMonsters.filter(mm => mm.dex_number === m.dex_number && mm.is_leader_form).sort((a, b) => a.id - b.id);
-      const lfId = leaderFormId[petId] || null;
+      const leaderForms = RKData.getLeaderForms(m).filter(mm => !mm.hidden).sort((a, b) => a.id - b.id);
+      const displayM = getTeamDisplayMonster(petId);
+      const lfId = displayM.id !== m.id ? displayM.id : null;
 
       const dropdown = document.createElement('div');
       dropdown.id = 'leader-form-dropdown';
@@ -1004,7 +995,13 @@ const TeamPage = (function () {
           e.stopPropagation();
           const val = this.dataset.lfId;
           if (val) {
-            leaderFormId[petId] = parseInt(val);
+            const leader = RKData.getMonsterById(parseInt(val));
+            if (!leader || leader.hidden || RKData.getLeaderBase(leader)?.id !== petId) {
+              dropdown.remove();
+              alert('首领形态不可用');
+              return;
+            }
+            leaderFormId[petId] = leader.id;
           } else {
             leaderFormId[petId] = null;
           }
@@ -1256,6 +1253,7 @@ const TeamPage = (function () {
     return `<span class="def-type-item"><img src="${icon}" class="def-type-icon" alt="${zh}">${zh}</span>`;
   }
 
+  let disposeSkillPickerContextMenu = null;
   function openSkillPicker(scrollTopVal) {
     const m = RKData.getMonsterById(selectedDetailId);
     if (!m) return;
@@ -1375,7 +1373,9 @@ const TeamPage = (function () {
 
     // 创建弹窗 — 复用图鉴详情页布局
     let modal = document.getElementById('team-skill-picker-modal');
-    if (modal) modal.remove();
+    disposeSkillPickerContextMenu?.();
+    disposeSkillPickerContextMenu = null;
+    if (modal) { CommonUI.destroyWithin(modal); modal.remove(); }
     modal = document.createElement('div');
     modal.id = 'team-skill-picker-modal';
     modal.dataset.petId = m.id;
@@ -1411,7 +1411,7 @@ const TeamPage = (function () {
                   ${statBarsHtml}
                 </div>
               </div>
-              ${RKData.buildTraitDetailHtml(traitName, traitDesc)}
+              ${RKData.buildTraitDetailHtml(traitName, traitDesc, m.id)}
             </div>
             <div class="detail-col-3">
               <div class="detail-matchup">
@@ -1474,24 +1474,24 @@ const TeamPage = (function () {
       });
     }
 
-    // 关闭
-    const closeModal = () => { modal.remove(); renderDetail(); saveConfig(); };
+    // 所有关闭入口共用一次清理，右键覆盖整个弹窗（含血脉技能）。
+    let closed = false;
+    const closeModal = () => {
+      if (closed || !modal.isConnected) return;
+      closed = true;
+      disposeContextMenu();
+      if (disposeSkillPickerContextMenu === disposeContextMenu) disposeSkillPickerContextMenu = null;
+      CommonUI.destroyWithin(modal);
+      modal.remove(); renderDetail(); saveConfig();
+    };
+    const disposeContextMenu = CommonUI.bindModalContextMenu(modal, closeModal);
+    disposeSkillPickerContextMenu = disposeContextMenu;
     modal.querySelector('.team-skill-picker-overlay').addEventListener('click', closeModal);
-    modal.querySelector('.team-skill-picker-overlay').addEventListener('contextmenu', e => { e.preventDefault(); closeModal(); });
     modal.querySelector('#team-skill-picker-close').addEventListener('click', closeModal);
     modal.querySelector('#team-skill-picker-done').addEventListener('click', closeModal);
 
     // 筛选 — 使用 SkillPicker 公共模块（多选并集）
     CommonUI.SkillPicker.bindFilterEvents(modal);
-
-    // 右键空白区域 → 关闭模态框
-    modal.querySelector('.team-skill-picker-content').addEventListener('contextmenu', function(e) {
-      // 只在点击的不是技能项时关闭（技能项有自己的右键处理）
-      if (!e.target.closest('.detail-skill-item')) {
-        e.preventDefault();
-        closeModal();
-      }
-    });
 
     // 点击技能装备/卸载
     modal.querySelectorAll('.detail-skill-item').forEach(item => {
@@ -1562,42 +1562,6 @@ const TeamPage = (function () {
           it.classList.toggle('skill-disabled', disabled);
         });
       });
-      // 右键：血脉技能 → 清除血脉限制；非血脉技能/空白处 → 关闭模态框
-      item.addEventListener('contextmenu', function(e) {
-        if (this.dataset.skillSource !== '血脉') {
-          e.preventDefault();
-          closeModal();
-          return;
-        }
-        e.preventDefault();
-        const petId = selectedDetailId;
-        // 清除血脉属性，解除所有血脉技能的限制
-        detailBloodline[petId] = '';
-        // 移除已装备的血脉技能
-        if (petSkills[petId]) {
-          petSkills[petId].forEach((n, i) => {
-            if (!n) return;
-            const it = modal.querySelector(`.detail-skill-item[data-skill-name="${n}"]`);
-            if (it && it.dataset.skillSource === '血脉') petSkills[petId][i] = null;
-          });
-        }
-        refreshTeamCard();
-        saveConfig();
-        // 更新技能槽位显示
-        const slotsEl = document.getElementById('detail-skill-slots');
-        if (slotsEl) slotsEl.innerHTML = renderSkillSlots(petId);
-        // 重新计算禁用状态
-        const equipped = (petSkills[petId] || []).filter(s => s);
-        modal.querySelectorAll('.detail-skill-item').forEach(it => {
-          it.classList.toggle('skill-equipped', equipped.includes(it.dataset.skillName));
-          const isEquipped = equipped.includes(it.dataset.skillName);
-          let disabled = false;
-          if (!isEquipped && equipped.length >= 4) {
-            disabled = true;
-          }
-          it.classList.toggle('skill-disabled', disabled);
-        });
-      });
     });
   }
 
@@ -1611,13 +1575,7 @@ const TeamPage = (function () {
         detailStatMode = this.value;
         const m = RKData.getMonsterById(selectedDetailId);
         if (!m) return;
-        const bl = detailBloodline[m.id] || '';
-        const lfId = leaderFormId[m.id] || null;
-        let displayM = m;
-        if (bl === 'Leader' && lfId) {
-          const lf = RKData.getMonsterById(lfId);
-          if (lf) displayM = lf;
-        }
+        const displayM = getTeamDisplayMonster(m.id);
         const detailNature = petNatures[m.id] || {};
         const detailIV = petIVs[m.id] || {};
         CommonUI.StatBox.refreshValues(body, displayM, detailNature, detailIV, detailStatMode);
@@ -1918,14 +1876,9 @@ const TeamPage = (function () {
       }
       const idx = slot;
       const bl = detailBloodline[p.id] || '';
-      const lfId = leaderFormId[p.id] || null;
-      let displayName = RKData.getMonsterDisplayName(p);
-      // 5e: 首领血脉且有首领形态选中时，显示首领形态名称
-      if (bl === 'Leader' && lfId) {
-        const lf = RKData.getMonsterById(lfId);
-        if (lf) displayName = RKData.getMonsterDisplayName(lf);
-      }
-      const name = displayName;
+      const displayM = getTeamDisplayMonster(p.id);
+      const lfId = displayM.id !== p.id ? displayM.id : null;
+      const name = RKData.getMonsterDisplayName(displayM);
       const mainType = p.main_type ? p.main_type.name : '';
       const subType = p.sub_type ? p.sub_type.name : '';
       const wikiData = RKData.getWikiData(name);
@@ -2100,7 +2053,9 @@ const TeamPage = (function () {
 
   function getTeamDisplayMonster(id) {
     const base = RKData.getMonsterById(id);
-    return (detailBloodline[id] === 'Leader' && leaderFormId[id] && RKData.getMonsterById(leaderFormId[id])) || base;
+    const leader = detailBloodline[id] === 'Leader' && leaderFormId[id] && RKData.getMonsterById(leaderFormId[id]);
+    // A stale/mismatched saved choice must not swap another form in or rewrite the profile.
+    return base && leader && !leader.hidden && RKData.getLeaderBase(leader)?.id === base.id ? leader : base;
   }
 
   // Pure calculation. Only master-table attacks count; no Wiki/category/type fallback.
@@ -2179,7 +2134,10 @@ const TeamPage = (function () {
 
   function onLeave() {
     window.removeEventListener('appstatspreferenceschange', refreshStatsPreferences);
-    document.getElementById('team-skill-picker-modal')?.remove();
+    disposeSkillPickerContextMenu?.();
+    disposeSkillPickerContextMenu = null;
+    const modal = document.getElementById('team-skill-picker-modal');
+    if (modal) { CommonUI.destroyWithin(modal); modal.remove(); }
   }
 
   function refreshTeamCard() {

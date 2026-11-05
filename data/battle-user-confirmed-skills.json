@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "source": "user_confirmed",
+  "confirmedAt": "2026-11-03",
+  "policy": "Exact runtime identities explicitly confirmed by the user, not independently proven static configuration mappings. Fill missing local stable skill IDs only; reject known/direct-configuration conflicts. Never name-rematch, truncate IDs, infer aliases, initial skills, costs or effects. Stun is a derived no-op; preserve the original event and all source facts.",
+  "mappings": [
+    {"runtimeId":"705021100","localSkillId":164,"name":"天洪","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"713022100","localSkillId":444,"name":"超维投射","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"704018100","localSkillId":132,"name":"闪燃","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"709013100","localSkillId":213,"name":"冰雹","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"702078100","localSkillId":12,"name":"防御","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"702111100","localSkillId":74,"name":"有效预防","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"707027100","localSkillId":491,"name":"相位移动","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"715011100","localSkillId":356,"name":"龙卷风","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"705020100","localSkillId":163,"name":"水刃","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"705027100","localSkillId":161,"name":"水泡盾","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"712009100","localSkillId":283,"name":"毒囊","source":"user_confirmed","confirmedAt":"2026-11-03"},
+    {"runtimeId":"705026100","localSkillId":148,"name":"泡沫幻影","source":"user_confirmed","confirmedAt":"2026-11-03"}
+  ],
+  "noOps": [
+    {"runtimeId":"700001200","label":"眩晕","source":"user_confirmed","confirmedAt":"2026-11-03"}
+  ]
+}

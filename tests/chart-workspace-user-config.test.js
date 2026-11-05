@@ -59,9 +59,9 @@ test('curve adoption waits for whole queue to drain then reconciles even when la
 
 test('curve retry button uses real UserConfig queue without pretending failed draft succeeded',async()=>{
   const e=await fixture();await e.store.init();e.server.fail=true;
-  await assert.rejects(e.store.setControls({atkNature:{attack:2}}));
+  await assert.rejects(e.store.setControls({atkNature:{attack:1}}));
   await assert.rejects(e.store.retry());assert.equal(e.store.getState().controls.atkNature.attack,0);
-  e.server.fail=false;await e.store.retry();assert.equal(e.store.getState().controls.atkNature.attack,2);
-  assert.equal(e.user.getStatus().pending,0);assert.equal(e.server.data.rk_chart_workspace.state.controls.atkNature.attack,2);
+  e.server.fail=false;await e.store.retry();assert.equal(e.store.getState().controls.atkNature.attack,1);
+  assert.equal(e.user.getStatus().pending,0);assert.equal(e.server.data.rk_chart_workspace.state.controls.atkNature.attack,1);
   e.store.dispose();assert.equal(e.listeners.get('userconfigchange').size,0);
 });

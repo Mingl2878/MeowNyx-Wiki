@@ -1,0 +1,56 @@
+/* Update-page layout only; no calculator or shared-control overrides. */
+#ud-page .ud-catalog-toolbar { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-bottom: 16px; }
+#ud-page .ud-catalog-toolbar [role="status"] { color: var(--text-secondary); font-size: 13px; overflow-wrap: anywhere; }
+#ud-tab-content .catalog-updater { padding: clamp(12px, 3vw, 24px); min-width: 0; color: var(--text-primary); line-height: 1.65; overflow-wrap: anywhere; }
+#ud-tab-content .catalog-updater [hidden] { display: none !important; }
+#ud-tab-content .catalog-updater h3,
+#ud-tab-content .catalog-updater h4,
+#ud-tab-content .catalog-updater p { margin: 0 0 12px; }
+#ud-tab-content .catalog-updater h3.cu-heading { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; max-width: 100%; }
+#ud-tab-content .catalog-updater h3.cu-heading > .cu-feature-hint { color: var(--text-secondary); font-size: 12px; font-weight: normal; }
+#ud-tab-content .catalog-updater .cu-muted { color: var(--text-secondary); }
+#ud-tab-content .catalog-updater .cu-status { font-weight: 700; }
+#ud-tab-content .catalog-updater progress { width: 100%; height: 12px; accent-color: var(--accent); margin: 10px 0; }
+#ud-tab-content .catalog-updater .cu-error { color: var(--danger, #bc3040); white-space: pre-wrap; }
+#ud-tab-content .catalog-updater .cu-notice { white-space: pre-wrap; color: var(--text-secondary); }
+#ud-tab-content .catalog-updater .cu-operation { border: 2px solid var(--accent); border-radius: 12px; background: var(--bg-secondary); padding: clamp(12px, 2vw, 20px); margin: 16px 0; }
+#ud-tab-content .catalog-updater .cu-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
+#ud-tab-content .catalog-updater .cu-bulk-actions,
+#ud-tab-content .catalog-updater .cu-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 12px 0; }
+#ud-tab-content .catalog-updater .cu-apply-reason { margin: 10px 0 16px; font-weight: 600; }
+#ud-tab-content .catalog-updater button { min-width: 0; white-space: normal; }
+#ud-tab-content .catalog-updater button:disabled { opacity: 0.55; cursor: not-allowed; }
+#ud-tab-content .catalog-updater .cu-panel { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px; min-width: 0; }
+#ud-tab-content .catalog-updater select { max-width: 100%; padding: 8px 12px; color: var(--text-primary); background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
+#ud-tab-content .catalog-updater .cu-review { display: flex; min-width: 0; align-items: flex-start; gap: 10px; margin: 12px 0; }
+#ud-tab-content .catalog-updater .cu-review input { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 4px; accent-color: var(--accent); }
+#ud-tab-content .catalog-updater .cu-choice-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 12px; }
+#ud-tab-content .catalog-updater .cu-choice-table th,
+#ud-tab-content .catalog-updater .cu-choice-table td { text-align: left; vertical-align: top; padding: 8px; border: 1px solid var(--border); overflow-wrap: anywhere; }
+#ud-tab-content .catalog-updater .cu-choice-table th:first-child { width: 23%; }
+#ud-tab-content .catalog-updater .cu-choice { display: flex; align-items: flex-start; gap: 8px; min-width: 0; cursor: pointer; }
+#ud-tab-content .catalog-updater .cu-choice input { flex: 0 0 auto; width: 18px; height: 18px; margin: 4px 0 0; accent-color: var(--accent); }
+#ud-tab-content .catalog-updater .cu-choice input:disabled { cursor: not-allowed; }
+#ud-tab-content .catalog-updater .cu-remember { display: flex; align-items: flex-start; gap: 6px; margin-top: 10px; font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+#ud-tab-content .catalog-updater .cu-remember input { flex: 0 0 auto; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--accent); }
+#ud-tab-content .catalog-updater pre { min-width: 0; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+#ud-tab-content .catalog-updater .cu-issues,
+#ud-tab-content .catalog-updater .cu-memories { list-style: none; padding: 0; margin: 12px 0; }
+#ud-tab-content .catalog-updater .cu-issue { border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+#ud-tab-content .catalog-updater .cu-blocking { border-left-color: var(--danger, #bc3040); }
+#ud-tab-content .catalog-updater .cu-issue p { white-space: pre-wrap; margin: 6px 0; }
+#ud-tab-content .catalog-updater .cu-memories li { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+#ud-tab-content .catalog-updater .cu-pagination span { color: var(--text-secondary); font-size: 13px; }
+#ud-tab-content .catalog-updater :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+#ud-tab-content .catalog-updater .cu-evidence { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; color: var(--text-secondary); font-size: 13px; }
+#ud-tab-content .catalog-updater .cu-details-button { padding: 4px 12px; }
+/* Native dialog supplies top-layer modality, focus containment and Escape;
+   appearance and bounded, keyboard-scrollable contents belong to this page. */
+#ud-tab-content .catalog-updater .cu-detail-modal { width: min(900px, calc(100vw / var(--page-zoom, 1) - 32px)); max-width: none; max-height: calc(100vh / var(--page-zoom, 1) - 32px); box-sizing: border-box; padding: 0; border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); background: var(--bg-card); box-shadow: 0 16px 64px #0006; overflow: hidden; }
+#ud-tab-content .catalog-updater .cu-detail-modal[open] { display: flex; flex-direction: column; }
+#ud-tab-content .catalog-updater .cu-detail-modal::backdrop { background: #0009; }
+#ud-tab-content .catalog-updater .cu-detail-header { display: flex; flex: 0 0 auto; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 16px; border-bottom: 1px solid var(--border); }
+#ud-tab-content .catalog-updater .cu-detail-header h4 { min-width: 0; max-height: calc(25vh / var(--page-zoom, 1)); overflow: auto; margin: 0; }
+#ud-tab-content .catalog-updater .cu-detail-header button { flex: 0 0 auto; }
+#ud-tab-content .catalog-updater .cu-detail-body { min-height: 0; padding: 16px; overflow: auto; overscroll-behavior: contain; }
+#ud-tab-content .catalog-updater .cu-detail-body pre + h4 { margin-top: 20px; }

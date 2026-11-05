@@ -26,7 +26,10 @@ async function save({ current = original, baseline = original, loaded = true, co
     window: { confirm() { confirmations++; return confirm; } },
     m: { id: 434 }, editorTypeSel: new Set(['Mechanical']),
     editorSkillList: current, originalSkillList: JSON.stringify(baseline), skillsLoaded: loaded,
-    editorFormCategory: '无多形态', editorEvolvesFromID: null,
+    editorFormCategory: '无多形态', editorEvolvesFromID: null, editorLeaderOfID: null,
+    originalPredecessor: null, originalLeaderBase: null,
+    initialLevels: {enabled:false,default:60,min:1,max:99,step:1},
+    readEditorLevelSettings: () => ({enabled:false,default:60,min:1,max:99,step:1}),
     getEvoValue: () => '高级形态',
     fetch: async (url, options) => { requests.push({ url, payload: JSON.parse(options.body) }); return { json: async () => ({ ok: true }) }; }
   };

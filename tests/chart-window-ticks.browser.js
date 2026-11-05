@@ -79,22 +79,23 @@ async page => {
     if (!await page.evaluate(() => ChartPage.getState().markersVisible)) await page.locator('#chartFavoriteToggle').click();
     await settle();
     check(await page.evaluate(() => !document.getElementById('chartInfo').textContent.includes('头像等效生命仅换算属性')
-      && /最终威力：562/.test(document.getElementById('chartInfo').textContent)), 'Water / final-power562 header has no removed trailing sentence');
-    check(await page.locator('[data-favorite-key="chart:327"]').getAttribute('title').then(t => /等效生命/.test(t) && /HP：/.test(t) && !/伤害收藏/.test(t) && /逐步取整/.test(t)), 'precise HP/equivalent notes remain with curve-only configuration');
-    await page.locator('#chartAtkIVBtn').click(); await page.waitForFunction(() => !document.getElementById('chartAtkIVBtn').disabled);
-    await page.locator('#chartAtkNatureBtn').click({ button: 'right' }); await page.waitForFunction(() => !document.getElementById('chartAtkNatureBtn').disabled);
+      && /最终威力：563/.test(document.getElementById('chartInfo').textContent)), 'Water / rounded final-power563 header has no removed trailing sentence');
+    check(await page.locator('[data-favorite-key="chart:327"]').getAttribute('title').then(t => /① .* = /.test(t) && /⑥ 伤害占比 = \d+ ÷ \d+ /.test(t) && !/伤害收藏|剩余HP|配置来源/.test(t)), 'six-line tooltip shows requested concise attack/damage/HP arithmetic');
+    await page.evaluate(async()=>ChartWorkspace.setControls({atkIV:{attack:true},atkNature:{attack:1},defIV:{defense:true},hpNature:true})); await page.waitForFunction(() => !document.getElementById('chartAtkIVBtn').disabled);
+    await page.locator('#chartAllBtn').click();
+    check(await page.evaluate(() => { const c = Chart.getChart(document.getElementById('defenseChart')); return c.data.datasets.filter(d => d.damageConfig).length === 12 && c.data.datasets.filter((d,i) => d.damageConfig && c.isDatasetVisible(i)).length === 1; }), 'explicit ALL starts with twelve options and one visible curve');
     await page.evaluate(() => {
       const c = Chart.getChart(document.getElementById('defenseChart'));
-      c.options.plugins.legend.onClick(null, { datasetIndex: 1 }, { chart: c });
+      c.options.plugins.legend.onClick(null, { datasetIndex: 11 }, { chart: c });
       window.__chartSizingStorageWrites = [];
       window.__chartSizingSetItem = Storage.prototype.setItem;
       Storage.prototype.setItem = function(key, value) { window.__chartSizingStorageWrites.push(key); return window.__chartSizingSetItem.call(this, key, value); };
     });
     const initialWrites = writes.length, base = await snapshot();
     check(base.height <= 520 && base.visible && base.correctSize, 'native-windowed initial cap and favorites reserved');
-    checkGrid(base, 'windowed Water562');
-    check(base.labels.every(t => /^攻：[✓×]个体&(?:[✓×]性格|负性格) \/ 防：[✓×]个体&(?:[✓×]性格|负性格)$/.test(t) && !t.includes('√'))
-      && base.labels.some(t => t.includes('负性格')), 'compact legends use one slash; absence/negative are distinct');
+    checkGrid(base, 'windowed Water563');
+    check(base.labels.every(t => /^攻：[✓×]个体&[✓×]性格 \/ 防：[✓×]个体&[✓×]生命性格$/.test(t) && !t.includes('√'))
+      && base.labels.length === 12 && base.labels.every(t => !t.includes('负性格')), 'twelve compact legends use one slash and only legal positive/neutral nature');
 
     // Trigger resize BEFORE its native fetch resolves, without changing viewport.
     let release, started;
@@ -154,8 +155,9 @@ async page => {
     check(await page.evaluate(() => window.__chartSizingResizeCount <= 4), 'resize burst coalesces, with no unbounded canvas/flex/observer growth');
     check(writes.length === initialWrites && await page.evaluate(() => window.__chartSizingStorageWrites.length === 0), 'resize/native/theme/zoom previews perform no profile or local-storage writes');
 
+    await page.locator('#chartAllBtn').click();
     await page.locator('#chartModeBtn').click(); await page.locator('#chartModeBtn').click(); await settle();
-    check((await snapshot()).hidden === base.hidden, 'switching modes and back preserves hidden comparison keys');
+    check(await page.evaluate(() => { const c=Chart.getChart(document.getElementById('defenseChart')); return c.data.datasets.filter((d,i)=>d.damageConfig&&c.isDatasetVisible(i)).length===1; }), 'after disabling ALL, switching modes retains the selected single configuration');
     await page.evaluate(async () => { for (const pet of RKData.getMonsters().slice(0,160)) await ChartWorkspace.addPet(pet.id); });
     await settle();
     check(await page.evaluate(() => {

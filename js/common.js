@@ -1,4 +1,4 @@
-﻿/**
+/**
  * common.js — 公共组件模块
  * 提供跨页面复用的 UI 功能
  */
@@ -61,6 +61,21 @@
     : readMemory('xwiki-effective-include-speed') === 'false' ? 'exclude' : 'include';
   let effectiveSpeedThreshold = normalizeThreshold(readMemory('xwiki-effective-speed-threshold'));
   let effectiveRevision = 0;
+  // A petdex-only projection preference. Never rewrite the shared monster catalogue.
+  let trickRoom = readMemory('xwiki-trick-room') === 'true';
+  let trickRoomRevision = 0;
+  const getTrickRoom = () => trickRoom;
+  function setTrickRoom(value, persist = true) {
+    const next = value === true;
+    const changed = next !== trickRoom;
+    trickRoom = next;
+    trickRoomRevision++;
+    if (persist) writeMemory('xwiki-trick-room', next);
+    if (changed) window.dispatchEvent(new CustomEvent('appstatspreferenceschange', {
+      detail: { trickRoom: next, scope: 'petdex' }
+    }));
+    return trickRoom;
+  }
   const getEffectiveSpeedPolicy = () => ({ mode: effectiveSpeedMode, threshold: effectiveSpeedThreshold });
   // Legacy boolean means unconditional inclusion; threshold requires the new policy API.
   const getEffectiveIncludeSpeed = () => effectiveSpeedMode === 'include';
@@ -88,7 +103,7 @@
   }
   window.AppPreferences = Object.freeze({ getMaxZoom: () => savedMaxZoom, getZoom: () => zoom, setMaxZoom,
     getEffectiveSpeedPolicy, setEffectiveSpeedPolicy, getEffectiveIncludeSpeed, setEffectiveIncludeSpeed,
-    getWindowState, isMaximized: () => windowMaximized });
+    getTrickRoom, setTrickRoom, getWindowState, isMaximized: () => windowMaximized });
   function refreshWindowState() {
     // One shared request at a time. Resize during fetch invalidates that response and
     // coalesces a fresh read; an old response cannot overwrite a newer native state.
@@ -156,6 +171,7 @@
   // Parent app.init awaits this promise before choosing its initial route.
   const initialEffectiveRevision = effectiveRevision;
   const initialZoomRevision = zoomRevision;
+  const initialTrickRoomRevision = trickRoomRevision;
   window.appPreferencesReady = fetch('/api/settings', { cache: 'no-store' })
     .then(r => {
       if (!r.ok) throw new Error('加载共享设置失败');
@@ -170,6 +186,7 @@
         normalizeThreshold(s.effective_speed_threshold)
       );
       if (zoomRevision === initialZoomRevision) setMaxZoom((s.default_max_zoom ?? 100) / 100);
+      if (trickRoomRevision === initialTrickRoomRevision) setTrickRoom(s.trick_room === true);
       return s;
     })
     .catch(() => null);
@@ -322,6 +339,7 @@ const CommonUI = (function () {
     };
   }
   function destroyWithin(root) {
+    releaseModalRightClick?.(); // An explicit redraw/route leave ends the old gesture.
     for (const [owner, callbacks] of [...managedWidgets]) {
       if (!root || root === owner || root.contains(owner)) for (const cleanup of [...callbacks]) cleanup();
     }
@@ -332,6 +350,93 @@ const CommonUI = (function () {
         if (!owner.isConnected) for (const cleanup of [...callbacks]) cleanup();
       }
     }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  // Only explicitly mounted modal surfaces own close gestures; no document-wide closer.
+  const modalContextMenus = new WeakMap();
+  let releaseModalRightClick = null;
+  function guardModalRightClick() {
+    releaseModalRightClick?.();
+    let timer = null;
+    const release = () => {
+      document.removeEventListener('contextmenu', consume, true);
+      document.removeEventListener('pointerdown', release, true);
+      document.removeEventListener('pointercancel', release, true);
+      clearTimeout(timer);
+      if (releaseModalRightClick === release) releaseModalRightClick = null;
+    };
+    const consume = event => {
+      release();
+      if (event.button !== 2) return; // Keyboard/menu-key invocation is a new action.
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    // Closing on release may retarget that same click's native contextmenu to
+    // the parent/page underneath. Consume only its trailing notification, never
+    // the next click: any new pointer press disarms this short-lived guard first.
+    document.addEventListener('contextmenu', consume, true);
+    document.addEventListener('pointerdown', release, true);
+    document.addEventListener('pointercancel', release, true);
+    releaseModalRightClick = release;
+    timer = setTimeout(release, 1500); // Host emitted no contextmenu: no idle leak.
+  }
+  function bindModalContextMenu(root, onClose) {
+    modalContextMenus.get(root)?.();
+    let disposed = false, rightPressed = false;
+    const dispose = () => {
+      if (disposed) return;
+      disposed = true;
+      rightPressed = false;
+      root.removeEventListener('contextmenu', contextMenu, true);
+      root.removeEventListener('pointerdown', rightPointerDown, true);
+      root.removeEventListener('pointerup', rightPointerUp, true);
+      observer?.disconnect();
+      unregister();
+      if (modalContextMenus.get(root) === dispose) modalContextMenus.delete(root);
+    };
+    const ownsSurface = event => {
+      if (disposed || !root.isConnected || root.hidden || root.style.display === 'none') return false;
+      // Capture before widget actions, but let an explicitly nested modal handle
+      // its own surface rather than closing both child and parent.
+      for (let node = event.target; node && node !== root; node = node.parentElement) {
+        if (modalContextMenus.has(node)) return false;
+      }
+      return true;
+    };
+    const contextMenu = event => {
+      if (!ownsSurface(event)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      dispose();
+      onClose();
+      // The close callback may destroy/rebuild its own UI. Arm only afterwards,
+      // so that cleanup cannot accidentally expose this gesture's trailing menu.
+      if (event.type === 'pointerup') guardModalRightClick();
+    };
+    // Native hosts can suppress the browser contextmenu notification. Fall back
+    // to right-button release on this surface only; left/middle clicks and page
+    // menus stay untouched. Release (not press) avoids removing the target while
+    // a normal right click is still in progress. Both paths share one disposer.
+    const rightPointerDown = event => {
+      rightPressed = event.button === 2 && ownsSurface(event);
+    };
+    const rightPointerUp = event => {
+      // If a child already closed on contextmenu and release hits its parent,
+      // that parent never owned the press and must not close as well.
+      if (event.button === 2 && rightPressed) contextMenu(event);
+      rightPressed = false;
+    };
+    const unregister = registerCleanup(root, dispose);
+    const observer = typeof MutationObserver === 'undefined' ? null : new MutationObserver(() => {
+      // Legacy X/Escape handlers may hide a persistent root directly.
+      if (!root.isConnected || root.hidden || root.style.display === 'none') dispose();
+    });
+    observer?.observe(root, { attributes: true, attributeFilter: ['style', 'hidden'] });
+    root.addEventListener('contextmenu', contextMenu, true);
+    root.addEventListener('pointerdown', rightPointerDown, true);
+    root.addEventListener('pointerup', rightPointerUp, true);
+    modalContextMenus.set(root, dispose);
+    return dispose;
   }
 
   function positionAnchoredLayer(anchor, layer, matchWidth = false, options = {}) {
@@ -388,6 +493,22 @@ const CommonUI = (function () {
   }
 
   /* ==================== 搜索框组件 ==================== */
+
+  // Only this entry's explicit members, in source order. No reciprocal/transitive
+  // closure and no fallback to parent pointers, names or dex numbers, even for [].
+  // Read current fields on reopen so in-session edits need no relation cache rebuild.
+  function monsterFamilyCandidates(monsters, selectedId) {
+    const byId = new Map(monsters.map(monster => [String(monster.id), monster]));
+    const selected = String(selectedId);
+    const members = byId.get(selected)?.evolution_members;
+    if (!Array.isArray(members)) return [];
+    const seen = new Set([selected]);
+    return members.map(id => byId.get(String(id))).filter(monster => {
+      if (!monster || monster.hidden || seen.has(String(monster.id))) return false;
+      seen.add(String(monster.id));
+      return true;
+    });
+  }
 
   /**
    * 统一搜索框（带候选下拉框 + 左侧图标占位）
@@ -491,6 +612,13 @@ const CommonUI = (function () {
     let destroyed = false;
     let blurTimer = null;
     let closeLayer = null;
+    let selectedMonsterId = null;
+    let selectedText = '';
+    let composing = false;
+    function trackSelection(item) {
+      selectedMonsterId = !customSearch && item?.id != null ? item.id : null;
+      selectedText = input.value;
+    }
     function hideDropdown() {
       dropdown.style.display = 'none';
       suggestIndex = -1;
@@ -505,38 +633,55 @@ const CommonUI = (function () {
     }
     const unregister = registerCleanup(input, destroy);
 
-    function doSearch() {
-      if (destroyed) return;
+    function matchesSearchMonster(monster, keyword) {
+      const matchesName = query => typeof RKData.matchesMonsterName === 'function'
+        ? RKData.matchesMonsterName(monster, query)
+        : RKData.getMonsterName(monster).toLowerCase().includes(query) || RKData.getMonsterDisplayName(monster).toLowerCase().includes(query);
+      const chainName = (monster.evolution_chain_name || '').toLowerCase();
+      if (matchesName(keyword) || chainName.includes(keyword)) return true;
+      // Keep the existing chain/form search, with ID-owned aliases also searchable.
+      const base = keyword.split(/[（(]/)[0].trim();
+      const formMatch = keyword.match(/[（(]([^）)]+)[）)]/);
+      if (!base || (!matchesName(base) && !chainName.includes(base))) return false;
+      if (!formMatch) return true;
+      const form = formMatch[1].trim();
+      return (monster.form || '').toLowerCase().includes(form) || (monster.main_form_name || '').toLowerCase().includes(form);
+    }
+    function acceptMonster(pet) {
+      // Both explicit candidates and exact-name Enter recheck the caller's policy.
+      if (!pet || pet.hidden || !extraFilter(pet)) return false;
+      input.value = RKData.getMonsterDisplayName(pet);
+      trackSelection(pet);
+      hideDropdown();
+      updateIcon(pet);
+      if (typeof opts.onSelect === 'function') opts.onSelect(pet);
+      return true;
+    }
+    function doSearch(reopen = false) {
+      if (destroyed || composing) return;
+      clearTimeout(blurTimer);
       suggestIndex = -1;
       const kw = input.value.trim().toLowerCase();
       if (!kw) { hideDropdown(); return; }
 
       let list;
+      const relationLabels = new Map();
       if (customSearch) {
         list = customSearch(kw) || [];
+      } else if (reopen && selectedMonsterId != null && input.value === selectedText) {
+        list = monsterFamilyCandidates(RKData.getMonsters(), selectedMonsterId);
+        // Leader pairing is a separate relation, never an extra evolution-family edge.
+        const base = RKData.getLeaderBase?.(selectedMonsterId);
+        const leaders = RKData.getLeaderForms?.(selectedMonsterId) || [];
+        if (base) relationLabels.set(base.id, '普通来源');
+        leaders.forEach(m => relationLabels.set(m.id, '首领化'));
+        const seen = new Set(list.map(m => m.id));
+        for (const related of [...(base ? [base] : []), ...leaders]) {
+          if (!seen.has(related.id)) { seen.add(related.id); list.push(related); }
+        }
+        list = list.filter(m => !m.hidden && extraFilter(m));
       } else {
-        // 拆分关键词："岚鸟(冬天的样子)" → namePart="岚鸟", formPart="冬天的样子"
-        const kwBase = kw.split(/[（(]/)[0].trim();
-        const formMatch = kw.match(/[（(]([^）)]+)[）)]/);
-        const formPart = formMatch ? formMatch[1].trim() : '';
-        list = RKData.getMonsters().filter(m => {
-          if (m.hidden || !extraFilter(m)) return false;
-          const name = RKData.getMonsterName(m).toLowerCase();
-          const displayName = RKData.getMonsterDisplayName(m).toLowerCase();
-          const chainName = (m.evolution_chain_name || '').toLowerCase();
-          const form = (m.form || '').toLowerCase();
-          const mainForm = (m.main_form_name || '').toLowerCase();
-          // 完整匹配
-          if (displayName.includes(kw) || name.includes(kw) || chainName.includes(kw)) return true;
-          // 拆分匹配：名字部分匹配 AND (无形态部分 OR 形态部分匹配)
-          if (kwBase && (name.includes(kwBase) || chainName.includes(kwBase) || displayName.includes(kwBase))) {
-            if (!formPart) return true;
-            if (form.includes(formPart) || mainForm.includes(formPart)) return true;
-            // 形态部分的变体形态也匹配（如搜"冬天的样子"，变体形态的 main_form_name 也是"冬天的样子"）
-            return false;
-          }
-          return false;
-        });
+        list = RKData.getMonsters().filter(m => !m.hidden && extraFilter(m) && matchesSearchMonster(m, kw));
       }
       if (list.length === 0) { hideDropdown(); return; }
       if (customSearch && list.length > limit) list = list.slice(0, limit);
@@ -552,13 +697,15 @@ const CommonUI = (function () {
           return `<div class="autocomplete-item" data-item-id="${item.id}">${iconHtml}<span class="autocomplete-name">${item.name}</span>${extraHtml}</div>`;
         }
         const name = RKData.getMonsterDisplayName(item);
+        const relationLabel = relationLabels.get(item.id);
+        const relationHtml = relationLabel ? `<span class="autocomplete-extra">${relationLabel}</span>` : '';
         if (customRenderItem) {
-          return `<div class="autocomplete-item" data-monster-id="${item.id}">${customRenderItem(item, name)}</div>`;
+          return `<div class="autocomplete-item" data-monster-id="${item.id}">${customRenderItem(item, name)}${relationHtml}</div>`;
         }
         const imgUrl = item.image ? `assets/monster/images/${item.image}` : '';
         return `<div class="autocomplete-item" data-monster-id="${item.id}">
           ${imgUrl ? `<img src="${imgUrl}" class="autocomplete-icon" loading="lazy">` : '<div class="autocomplete-icon-placeholder"></div>'}
-          <span class="autocomplete-name">${name}</span>
+          <span class="autocomplete-name">${name}</span>${relationHtml}
         </div>`;
       }).join('');
       positionAnchoredLayer(input, dropdown, true);
@@ -582,33 +729,34 @@ const CommonUI = (function () {
         const list = customSearch(kw) || [];
         matched = list.length > 0 ? list[0] : null;
       } else {
-        const kwBase = kw.split(/[（(]/)[0].trim();
-        matched = RKData.getMonsters().find(m => {
-          if (m.hidden || !extraFilter(m)) return false;
-          const name = RKData.getMonsterName(m).toLowerCase();
-          const displayName = RKData.getMonsterDisplayName(m).toLowerCase();
-          const chainName = (m.evolution_chain_name || '').toLowerCase();
-          if (displayName.includes(kw) || name.includes(kw) || chainName.includes(kw)) return true;
-          if (kwBase && (name.includes(kwBase) || chainName.includes(kwBase) || displayName.includes(kwBase))) {
-            const formMatch = kw.match(/[（(]([^）)]+)[）)]/);
-            if (!formMatch) return true;
-            const formPart = formMatch[1].trim();
-            return (m.form || '').toLowerCase().includes(formPart) || (m.main_form_name || '').toLowerCase().includes(formPart);
-          }
-          return false;
-        }) || null;
+        if (typeof RKData.matchesMonsterName === 'function') {
+          // A fuzzy name or several forms must not borrow the first candidate's icon.
+          const exact = RKData.getMonsters().filter(m => !m.hidden && extraFilter(m) && RKData.matchesMonsterName(m, kw, { exact: true }));
+          matched = exact.length === 1 ? exact[0] : null;
+        } else {
+          // Older isolated callers without the helper keep their previous behavior.
+          matched = RKData.getMonsters().find(m => !m.hidden && extraFilter(m) && matchesSearchMonster(m, kw)) || null;
+        }
       }
       updateIcon(matched);
     }
 
     /* ---- 事件绑定 ---- */
+    input.addEventListener('compositionstart', () => { composing = true; hideDropdown(); });
+    input.addEventListener('compositionend', () => { composing = false; doSearch(); });
     input.addEventListener('input', () => {
+      if (destroyed) return;
+      // Only a committed selection (or explicit setValue item) supplies identity.
+      // Icon/name matches are not selections; callbacks may set the actual ID below.
+      trackSelection(null);
       doSearch();
       syncIcon();
       if (typeof opts.onInput === 'function') opts.onInput(input.value);
     });
 
     input.addEventListener('keydown', e => {
+      if (destroyed || composing || e.isComposing || e.keyCode === 229) return;
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && dropdown.style.display === 'none') doSearch(true);
       const items = dropdown.querySelectorAll('.autocomplete-item');
       if (items.length === 0 || dropdown.style.display === 'none') return;
       if (e.key === 'ArrowDown') {
@@ -625,15 +773,21 @@ const CommonUI = (function () {
         if (suggestIndex >= 0 && items[suggestIndex]) {
           e.preventDefault();
           items[suggestIndex].click();
+        } else if (!customSearch && typeof RKData.matchesMonsterName === 'function') {
+          const keyword = input.value.trim();
+          const exact = RKData.getMonsters().filter(m => !m.hidden && extraFilter(m) && RKData.matchesMonsterName(m, keyword, { exact: true }));
+          // Bare names shared by multiple forms remain candidates, never a guessed ID.
+          if (exact.length === 1 && acceptMonster(exact[0])) e.preventDefault();
         }
       } else if (e.key === 'Escape') {
         hideDropdown();
       }
     });
 
-    input.addEventListener('focus', () => {
-      if (input.value.trim()) doSearch();
-    });
+    input.addEventListener('focus', () => { doSearch(true); });
+    // focus does not fire when the input is already active (including after Escape).
+    // Do not dispatch input/click or select text here: callers own text-selection behavior.
+    input.addEventListener('click', () => { doSearch(true); });
 
     input.addEventListener('blur', () => {
       clearTimeout(blurTimer);
@@ -641,6 +795,7 @@ const CommonUI = (function () {
     });
 
     dropdown.addEventListener('click', e => {
+      if (destroyed || composing) return;
       const itemEl = e.target.closest('.autocomplete-item');
       if (!itemEl) return;
       if (customSearch) {
@@ -653,13 +808,8 @@ const CommonUI = (function () {
         updateIcon(found);
         if (typeof opts.onSelect === 'function') opts.onSelect(found);
       } else {
-        const petId = parseInt(itemEl.dataset.monsterId);
-        const pet = RKData.getMonsterById(petId);
-        if (!pet) return;
-        input.value = RKData.getMonsterDisplayName(pet);
-        hideDropdown();
-        updateIcon(pet);
-        if (typeof opts.onSelect === 'function') opts.onSelect(pet);
+        const petId = Number(itemEl.dataset.monsterId);
+        acceptMonster(RKData.getMonsterById(petId));
       }
     });
 
@@ -668,7 +818,16 @@ const CommonUI = (function () {
       input,
       dropdown,
       getValue: () => input.value,
-      setValue: (v, item) => { input.value = v; if (item) updateIcon(item); else syncIcon(); },
+      setValue: (v, item) => {
+        input.value = v;
+        if (item) { trackSelection(item); updateIcon(item); }
+        else {
+          // Editors may echo the selected label without an item. Preserve its ID,
+          // but never guess another identity from a (possibly duplicate) name.
+          if (input.value !== selectedText) trackSelection(null);
+          syncIcon();
+        }
+      },
       focus: () => input.focus(),
       hideDropdown,
       destroy
@@ -740,7 +899,13 @@ const CommonUI = (function () {
           </div>
         </div>`;
       document.body.appendChild(overlay);
-      const close = () => { overlay.remove(); resolve(); };
+      let closed = false;
+      const close = () => {
+        if (closed) return;
+        closed = true;
+        disposeContextMenu(); overlay.remove(); resolve();
+      };
+      const disposeContextMenu = bindModalContextMenu(overlay, close);
       overlay.querySelector('#cui-popup-ok').addEventListener('click', close);
       overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
     });
@@ -759,9 +924,16 @@ const CommonUI = (function () {
         </div>
       </div>`;
     document.body.appendChild(overlay);
-    const close = () => overlay.remove();
+    let closed = false;
+    const close = () => {
+      if (closed) return false;
+      closed = true;
+      disposeContextMenu(); overlay.remove();
+      return true;
+    };
+    const disposeContextMenu = bindModalContextMenu(overlay, close);
     overlay.querySelector('#cui-popup-cancel').addEventListener('click', close);
-    overlay.querySelector('#cui-popup-confirm').addEventListener('click', () => { close(); if (typeof onConfirm === 'function') onConfirm(); });
+    overlay.querySelector('#cui-popup-confirm').addEventListener('click', () => { if (close() && typeof onConfirm === 'function') onConfirm(); });
     overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
   }
 
@@ -779,15 +951,32 @@ const CommonUI = (function () {
   const FilterExclusion = (function () {
     const dimensions = ['type', 'elem', 'energy', 'power', 'season'];
     const selector = dimensions.map(key => '[data-filter-' + key + ']').join(',');
-    function create() {
+    function create(options = {}) {
       return { include: Object.fromEntries(dimensions.map(key => [key, new Set()])),
-        exclude: Object.fromEntries(dimensions.map(key => [key, new Set()])) };
+        exclude: Object.fromEntries(dimensions.map(key => [key, new Set()])),
+        powerRange: options.powerRange === true };
+    }
+    function canInclude(state, dimension, value) {
+      return !state.powerRange || dimension !== 'power' ||
+        state.include.power.has(value) || state.include.power.size < 2;
     }
     function toggle(state, dimension, value, exclude = false) {
       value = String(value);
+      // Reject before touching exclusions: a blocked third endpoint must be a no-op.
+      if (!exclude && !canInclude(state, dimension, value)) return false;
       const target = state[exclude ? 'exclude' : 'include'][dimension];
       state[exclude ? 'include' : 'exclude'][dimension].delete(value);
       if (target.has(value)) target.delete(value); else target.add(value);
+      return true;
+    }
+    function powerRangeMatches(filters, value) {
+      if (value == null || value === '' || !['number', 'string'].includes(typeof value)) return false;
+      const power = Number(value);
+      if (!Number.isFinite(power)) return false;
+      const endpoints = [...filters].map(v => v === '140+' ? 140 : Number(v));
+      const min = Math.min(...endpoints);
+      const max = filters.has('140+') ? Infinity : Math.max(...endpoints);
+      return power >= min && power <= max;
     }
     function valueMatches(dimension, filter, value) {
       if (value == null || value === '') return false;
@@ -802,8 +991,10 @@ const CommonUI = (function () {
     function matches(state, values) {
       return dimensions.every(key => {
         const match = value => valueMatches(key, value, values[key]);
-        return (!state.include[key].size || [...state.include[key]].some(match)) &&
-          ![...state.exclude[key]].some(match);
+        const included = !state.include[key].size || (key === 'power' && state.powerRange
+          ? powerRangeMatches(state.include.power, values.power)
+          : [...state.include[key]].some(match));
+        return included && ![...state.exclude[key]].some(match);
       });
     }
     function hasSelection(state) {
@@ -822,8 +1013,17 @@ const CommonUI = (function () {
       button.setAttribute('role', 'button'); button.setAttribute('tabindex', '0');
       button.setAttribute('aria-pressed', excluded ? 'mixed' : included ? 'true' : 'false');
       const label = { type: '类型', elem: '属性', energy: '能耗', power: '威力', season: '赛季' }[dimension] + '：' + value;
-      button.setAttribute('aria-label', label + '，' + (excluded ? '已排除' : included ? '已纳入' : '不限制'));
-      button.title = label + '；左键或 Enter/空格：纳入；右键或 Shift+Enter/空格：排除；重复操作取消';
+      const includeBlocked = !canInclude(state, dimension, value);
+      button.classList.toggle('filter-include-locked', includeBlocked);
+      button.dataset.filterIncludeBlocked = String(includeBlocked);
+      // Only inclusion is blocked; right-click/Shift+Enter exclusion remains usable.
+      // Do not mark the whole control aria-disabled or suppress pointer events.
+      button.setAttribute('aria-label', label + '，' + (excluded ? '已排除' : included ? '已纳入' : '不限制') +
+        (includeBlocked ? '，已选两个威力端点，请先左键取消一个；右键排除仍可用' : ''));
+      button.title = label + (state.powerRange && dimension === 'power'
+        ? (includeBlocked ? '；已选两个端点，请先左键取消一个' : '；左键或 Enter/空格：单选精确值，双选包含两端的区间；140+ 表示无上限') +
+          '；右键或 Shift+Enter/空格：按原档位排除；重复操作取消'
+        : '；左键或 Enter/空格：纳入；右键或 Shift+Enter/空格：排除；重复操作取消');
       let mark = button.querySelector('.filter-exclusion-mark');
       if (!mark) {
         mark = document.createElement('span'); mark.className = 'filter-exclusion-mark';
@@ -839,7 +1039,10 @@ const CommonUI = (function () {
         sync(button, state);
         const apply = exclude => {
           const { dimension, value } = identify(button);
-          toggle(state, dimension, value, exclude); sync(button, state); onChange();
+          if (!toggle(state, dimension, value, exclude)) return;
+          if (state.powerRange && dimension === 'power') buttons.forEach(b => sync(b, state));
+          else sync(button, state);
+          onChange();
         };
         const click = event => { if (event.button === 0) { event.preventDefault(); apply(false); } };
         const context = event => { event.preventDefault(); event.stopPropagation(); apply(true); };
@@ -1111,7 +1314,7 @@ const CommonUI = (function () {
     // Enabled UI labels only; never normalize arbitrary text or mathematical roots.
     enabledText: (enabled, label) => `${enabled ? '✓' : '×'}${label}`,
     bindBackToTop, bindScrollControls, wrapRelative,
-    registerCleanup, destroyWithin, positionAnchoredLayer, bindAnchoredLayer,
+    registerCleanup, destroyWithin, bindModalContextMenu, positionAnchoredLayer, bindAnchoredLayer,
     createSearchBox,
     monsterRenderItem, monsterTypeText, renderTypePills,
     showAlert, showConfirm,

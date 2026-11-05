@@ -23,7 +23,7 @@ async page => {
   };
   const go = async route => { await page.evaluate(route => location.hash='/'+route,route); await page.waitForSelector(route==='damage'?'#basePower':'#tier-fixed'); };
   const snapshot = () => page.evaluate(() => UserConfig.getObject('rk_damage_view').skill);
-  const keys = ['skillType','skillAttr','basePower','basePowerExpression','fixedBonus','percentBonus','buff','comboCount','debuffPercent','defenseMod','starMeteor','finalPowerManual','currentSkillName'];
+  const keys = ['skillType','skillAttr','basePower','basePowerExpression','skillInputKind','skillInputValue','fixedBonus','percentBonus','buff','comboCount','debuffPercent','defenseMod','starMeteor','finalPowerManual','currentSkillName'];
   const skill = s => Object.fromEntries(keys.map(k=>[k,s[k]]));
   try {
     await page.goto(fixture.origins[0]+'/#/damage'); await ready();

@@ -1,0 +1,2 @@
+/* Reuse skill-card form geometry; only invalid simulation drafts need a state. */
+.skill-card #basePower[aria-invalid="true"] { border-color: var(--danger, #d94c4c); outline: 1px solid var(--danger, #d94c4c); }

@@ -46,17 +46,17 @@ async page => {
       const profileBefore=await page.evaluate(()=>UserConfig.getObject('rk_pet_configs'));
       for(const[name,group,lp,lc,rp,rc]of [
         ['吨位压制','基础技能',100,1,160,1],['以重制重','基础技能',100,1,160,1],
-        ['砂糖弹球','基础技能',80,1,120,1],['魔能爆','基础技能',210,1,40,1],
+        ['砂糖弹球','基础技能',80,1,120,1],['魔能爆','基础技能',211,1,46,1],
         ['穿膛','基础技能',65,1,325,1],['背袭','基础技能',40,1,800,1],['色散','基础技能',80,1,120,1],
         ['双联脉冲','基础技能',50,1,50,2],['驱赶','基础技能',90,1,210,1],['驱赶','过山车技能',90,1,210,1],
         ['爆冲','基础技能',65,1,325,1],['筛管奔流','基础技能',80,1,155,1],
         ['疾风刺','基础技能',25,1,25,3],['撕咬','血脉技能',20,3,20,5],['撕咬','过山车技能',20,3,20,5],
         ['埋伏','基础技能',30,3,30,6],['连续爪击','基础技能',30,2,30,4],['追打','基础技能',75,1,75,3],
         ['散手','基础技能',35,2,35,6],['散手','过山车技能',35,2,35,6],['磁暴','基础技能',70,1,100,1],
-        ['草虫冲击','基础技能',75,1,165,1],['扇风','基础技能',75,1,112,1],['引雷','基础技能',35,2,55,2]
+        ['草虫冲击','基础技能',75,1,165,1],['扇风','基础技能',75,1,113,1],['引雷','基础技能',35,2,55,2]
       ]){
         const el=icon(name,group);
-        check((await el.getAttribute('title')).includes('左键：')&&(await el.getAttribute('aria-label')).includes('右键：'),name+' accessible two-button help');
+        check((await el.getAttribute('title')).includes('基础威力：')&&(await el.getAttribute('aria-label')).includes('效果：'),name+' accessible two-button help');
         await el.click();let s=await state();check(s.basePower===lp&&s.comboCount===lc,name+' left '+group);
         await el.click({button:'right'});await el.click({button:'right'});s=await state();
         check(s.basePower===rp&&s.comboCount===rc&&s.currentSkillName===name,name+' right repeat does not compound '+group);
@@ -76,8 +76,8 @@ async page => {
     check((await state()).basePower===180&&(await state()).comboCount===1,'explicit enemy-target counter fills180x1');
     await page.evaluate(()=>UserConfig.flush());
     // User explicitly wants base-only rows to select the same original power on both buttons.
-    const bases=await page.evaluate(()=>SkillVariants.audit(RKData.getMoves()).rows.filter(r=>r.disposition==='base-only').map(r=>({name:r.name,power:r.left.basePower,combo:r.left.comboCount})));
-    check(bases.length===52,'52 explicit base-only rows');
+    const bases=await page.evaluate(()=>SkillVariants.audit(RKData.getMoves()).rows.filter(r=>r.disposition==='base-only'&&!SkillSimulation.kind(RKData.getMoves().find(m=>m.id===r.id),{id:434})).map(r=>({name:r.name,power:r.left.basePower,combo:r.left.comboCount})));
+    check(bases.length===31,'31 remaining stateless base-only rows; growth/ratio covered separately');
     for(const item of bases){
       const el=icon(item.name,'基础技能');
       for(const button of ['left','right']){

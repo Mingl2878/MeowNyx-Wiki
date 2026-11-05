@@ -1,4 +1,4 @@
-﻿/* ===================== 全局变量与重置 ===================== */
+/* ===================== 全局变量与重置 ===================== */
 :root {
   --bg-primary: #f5f6f8;
   --bg-secondary: #ffffff;
@@ -652,7 +652,7 @@ a:hover { color: var(--accent-hover); }
   padding: 12px 14px;
   margin: -12px -14px;
   position: relative;
-  z-index: 10;
+  z-index: 1;
   -webkit-user-drag: none;
 }
 .form-toggle-arrow:hover { color: var(--primary); }
@@ -668,10 +668,11 @@ a:hover { color: var(--accent-hover); }
   gap: 6px;
 }
 .detail-trait-icon { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; }
+.trait-point-type-icon { display: inline-block; width: 20px; height: 20px; object-fit: contain; vertical-align: middle; }
 .detail-trait-name { font-weight: 700; font-size: 13px; color: #2D3436; }
-.detail-trait-desc { font-weight: 400; font-size: 13px; color: #636E72; }
+.detail-trait-desc { font-weight: 400; font-size: 13px; color: #636E72; white-space: pre-line; }
 .detail-trait-summary { font-weight: 400; font-size: 13px; color: #636E72; display: inline; }
-.trait-arrow { display: inline-block; font-size: 10px; color: var(--text-muted); flex-shrink: 0; cursor: pointer; user-select: none; padding: 12px 14px; margin: -12px -14px; position: relative; z-index: 10; text-align: center; }
+.trait-arrow { display: inline-block; font-size: 10px; color: var(--text-muted); flex-shrink: 0; cursor: pointer; user-select: none; padding: 12px 14px; margin: -12px -14px; position: relative; z-index: 1; text-align: center; }
 
 /* 按钮 */
 .btn {

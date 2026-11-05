@@ -6,7 +6,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { createStore } = require('../js/chart-workspace.js');
 const rootDir = path.join(__dirname, '..');
-const dataset = JSON.parse(fs.readFileSync(path.join(rootDir, 'data/monsters.json'), 'utf8').replace(/^\uFEFF/, ''));
+const dataset = require('./catalog-read-fixture.cjs').readProjectData('monsters.json');
 const dataContext = vm.createContext({ console });
 vm.runInContext(fs.readFileSync(path.join(rootDir, 'js/data.js'), 'utf8'), dataContext);
 const order = Array.from(vm.runInContext('RKData.PILL_ORDER', dataContext));
@@ -34,8 +34,8 @@ for (const type of order) test(`actual ${type} dataset membership: main/sub, adv
   assert.equal(f.saved().state.activeGroupId,'preset:'+type);
 });
 
-test('exactly 18 descriptors use actual PILL_ORDER, full names, no extra pseudo-types', () => {
-  const f=fixture(), list=f.store.getPresets();
+test('18 typed descriptors use actual PILL_ORDER; dynamic preset is separate', () => {
+  const f=fixture(), list=f.store.getPresets().filter(p=>p.type);
   assert.deepEqual(list.map(p=>p.type),order); assert.equal(list.length,18);
   assert.equal(list.find(p=>p.type==='Normal').name,'所有普通系精灵');
   assert.equal(list.find(p=>p.type==='Mechanical').name,'所有机械系精灵');
@@ -127,4 +127,65 @@ test('source absence never creates a fake empty membership or writes a selection
   const f=fixture(); await f.store.init(); delete f.root.RKData;
   const writes=f.writes(); await assert.rejects(()=>f.store.selectGroup('preset:Fire'),/尚未加载/);
   assert.equal(f.writes(),writes);
+});
+
+test('Favorites descriptors are static; live read-only source covers every catalog shape/type/stage and stable-ID identity',async()=>{
+  const f=fixture();let ids=[],reads=0;
+  f.root.FavoritePets={getDamageIds:()=>{reads++;return ids;}};
+  assert.deepEqual(f.store.getPresets().find(p=>p.id==='preset:Favorites'),{id:'preset:Favorites',name:'收藏预设',readonly:true,dynamic:true});
+  assert.equal(reads,0);await f.store.init();
+  // Entire real catalog, not just the 18 presets' high-stage main forms.
+  ids=[...f.pets().map(p=>p.id)].reverse();ids.push(ids[0],999999999);
+  const expected=[...new Set(ids)].filter(id=>f.pets().some(p=>p.id===id));
+  const before=JSON.stringify(f.pets());await f.store.selectGroup('preset:Favorites');
+  assert.deepEqual(f.store.getEntries(),expected.map(id=>({id,key:`chart:${id}`})));
+  assert.ok(expected.length>100);assert.equal(f.store.getPresetAvailability('preset:Favorites').disabled,false);
+  assert.equal(f.store.getPresetAvailability('preset:Favorites').count,expected.length);
+  assert.equal(JSON.stringify(f.pets()),before);assert.deepEqual(f.saved().state.groups,[{id:'ungrouped',name:'未分组',petIds:[]}]);
+  const writes=f.writes();ids=[expected[2],expected[0],expected[2],999999999];
+  assert.deepEqual(f.store.getEntries().map(e=>e.id),[expected[2],expected[0]]);assert.equal(f.writes(),writes);
+  // Names/images cannot collapse distinct species or fabricate missing IDs.
+  f.replace([{id:1,name:'same',image:'same.png',evolution_stage:'基础形态',main_type:{name:'None'}},
+    {id:2,name:'same',image:'same.png',is_leader_form:true,main_type:{name:'Leader'}},
+    {id:3,hidden:true,form_category:'其它形态'}, {id:2,name:'duplicate'}]);
+  ids=[3,2,1,2,404];assert.deepEqual(f.store.getEntries().map(e=>e.id),[3,2,1]);
+  const saved=f.saved();
+  for(const action of [()=>f.store.addPet(1),()=>f.store.removePet(1),()=>f.store.movePet(1,'ungrouped'),
+    ()=>f.store.renameGroup('preset:Favorites','no'),()=>f.store.deleteGroup('preset:Favorites'),
+    ()=>f.store.orderGroup('preset:Favorites',1),()=>f.store.importPreset('preset:Fire','preset:Favorites')])
+    await assert.rejects(action,/只读/);
+  assert.deepEqual(f.saved(),saved);assert.deepEqual(ids,[3,2,1,2,404]);
+  await f.store.selectGroup('all');assert.deepEqual(f.store.getEntries(),[],'never restore the A/B union');
+});
+
+test('Favorites imports snapshot-append and copies are independent; failed retry never samples changed favorites',async()=>{
+  const f=fixture();let ids=[2,1,2,3];
+  f.replace([{id:1},{id:2},{id:3}]);f.root.FavoritePets={getDamageIds:()=>ids};await f.store.init();
+  const target=await f.store.createGroup('target');await f.store.addPet(99);await f.store.addPet(1);
+  const before=f.saved();f.fail(true);await assert.rejects(f.store.importPreset('preset:Favorites',target));
+  assert.deepEqual(f.saved(),before);ids=[3];f.fail(false);await f.store.retry();
+  assert.deepEqual(f.store.getEntries().map(e=>e.id),[99,1,2,3]);
+  await f.store.importPreset('preset:Favorites',target);assert.deepEqual(f.store.getEntries().map(e=>e.id),[99,1,2,3]);
+  ids=[3,2];const copied=await f.store.copyGroup('preset:Favorites','snapshot');ids=[];
+  assert.deepEqual(f.store.getEntries().map(e=>e.id),[3,2]);await f.store.removePet(2);
+  assert.deepEqual(f.store.getState().groups.find(g=>g.id===copied).petIds,[3]);assert.deepEqual(ids,[]);
+  await f.store.selectGroup('preset:Favorites');assert.deepEqual(f.store.getEntries(),[]);
+  const reload=createStore(f.root);await reload.init();ids=[1];assert.deepEqual(reload.getEntries().map(e=>e.id),[1]);
+  delete f.root.FavoritePets;assert.equal(f.store.getPresetAvailability('preset:Favorites').count,null);
+  assert.match(f.store.getPresetAvailability('preset:Favorites').reason,/收藏上下文不可用/);
+  assert.throws(()=>f.store.getEntries(),/收藏上下文不可用/);
+});
+
+test('Favorites uses actual FavoritePets.getDamageIds API without writing damage favorites, curve legacy favorites or personal defaults',async()=>{
+  const f=fixture(),values=new Map([['rk_fav_pets','["3",2,3,"1",0,-1,"bad",404]'],
+    ['rk_chart_fav_pets','[777]'],['rk_pet_configs','{"3":{"nature":{"hp":2}}}']]);
+  const context={localStorage:{getItem:key=>values.get(key),setItem:()=>assert.fail('read-only projection wrote storage')}};
+  context.window=context;vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(rootDir,'js/favorites.js'),'utf8'),context);
+  f.root.FavoritePets=context.FavoritePets;f.replace([{id:1},{id:2},{id:3}]);await f.store.init();
+  const originals=new Map(values);await f.store.selectGroup('preset:Favorites');
+  assert.deepEqual(f.store.getEntries().map(e=>e.id),[3,2,1]);
+  await f.store.importPreset('preset:Favorites','ungrouped');assert.deepEqual(values,originals);
+  values.set('rk_fav_pets','[1,3]');assert.deepEqual(f.store.getEntries().map(e=>e.id),[1,3]);
+  await f.store.selectGroup('all');assert.deepEqual(f.store.getEntries().map(e=>e.id),[3,2,1],'only explicit imported snapshot joins all');
 });

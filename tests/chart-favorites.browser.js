@@ -57,7 +57,7 @@ async page => {
       const di = c.data.datasets.findIndex(d => d.favoriteMarker), ds = c.data.datasets[di];
       const i=ds.data.findIndex(m=>m.key==='chart:249'),m=ds.data[i],point=c.getDatasetMeta(di).data[i];
       const power=BattleMath.finalPower(s.basePower,s.fixedBonus,s.percentBonus,DamagePage.CalcEngine.isSameType(s.atkPet,s.skillAttr)?1.25:1,1,s.buff);
-      const damage=Math.ceil(BattleMath.normalDamage(RKData.getPetStat(s.atkPet,'attack',0,true),power,m.defense,1,s.comboCount)*m.effect);
+      const damage=BattleMath.normalDamage(RKData.getPetStat(s.atkPet,'attack',0,true),power,m.defense,1,s.comboCount,RKData.getPetLevel(s.atkPet),m.effect);
       return m.x===136&&m.hp===455&&m.y===455&&m.damage===damage&&c.scales.y.max>=455
         &&Math.abs(point.$favoriteAnchor.x-c.scales.x.getPixelForValue(136))<.1
         &&Math.abs(point.$favoriteAnchor.y-c.scales.y.getPixelForValue(455))<.1
@@ -86,7 +86,7 @@ async page => {
       const hp = RKData.getPetStat(pet,'hp',1,true), def = RKData.getPetStat(pet,defStat,0,true);
       const effect = RKData.getTypeEff(s.skillAttr,pet.main_type.name,pet.sub_type?.name || '');
       for (let power=1;power<=600;power++) {
-        const damage = x => BattleMath.normalDamage(BattleMath.statFromBase(x,v.attackType,0,true),BattleMath.finalPower(power,0,0,v.sameType?1.25:1),def)*effect;
+        const damage = x => BattleMath.normalDamage(BattleMath.statFromBase(x,v.attackType,0,true),BattleMath.finalPower(power,0,0,v.sameType?1.25:1),def,1,1,RKData.getPetLevel(s.atkPet),effect);
         if (damage(80)<hp && damage(200)>=hp) return power;
       }
       throw Error('No visible attack threshold fixture');
@@ -96,7 +96,7 @@ async page => {
       const c = Chart.getChart(document.getElementById('defenseChart')), s = DamagePage.getState(), v = ChartPage.getState();
       const markers = c.data.datasets.find(d => d.favoriteMarker)?.data || [];
       return markers.length > 0 && markers.every(m => {
-        const damage = x => BattleMath.normalDamage(BattleMath.statFromBase(v.axisSwapped?v.qualification:x,v.attackType,0,true),BattleMath.finalPower(v.axisSwapped?x:v.power,0,0,v.sameType?1.25:1),m.defense)*m.effect;
+        const damage = x => BattleMath.normalDamage(BattleMath.statFromBase(v.axisSwapped?v.qualification:x,v.attackType,0,true),BattleMath.finalPower(v.axisSwapped?x:v.power,0,0,v.sameType?1.25:1),m.defense,1,1,RKData.getPetLevel(s.atkPet),m.effect);
         return m.y === m.hp && damage(m.x) >= m.hp && (m.x === 0 || damage(m.x-1) < m.hp);
       });
     });

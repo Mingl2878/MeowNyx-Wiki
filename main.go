@@ -194,33 +194,37 @@ func hotkeyThreadProc() {
 			continue
 		}
 		if msg.Message == WM_HOTKEY && msg.WParam == HOTKEY_ID && mainHwnd != 0 {
-			iconic, _, _ := procIsIconic.Call(mainHwnd)
-			if iconic != 0 {
-				procShowWindow.Call(mainHwnd, SW_RESTORE)
-			}
-			procSetForeground.Call(mainHwnd)
+			showHiddenWindow(mainHwnd)
 		}
 	}
 }
 
-// wndProc 主窗口消息钩子：拦截 WM_CLOSE（最小化到任务栏）
+// wndProc preserves the old close/minimize policy unless background was saved.
 func wndProc(hwnd, msg, wParam, lParam uintptr) uintptr {
+	if msg == WM_APP_TRAY {
+		handleBackgroundTrayMessage(lParam)
+		return 0
+	}
 	if msg == WM_CLOSE {
 		gCloseMu.Lock()
 		approved := gCloseApproved
 		gCloseApproved = false
-		cb := gCloseBehavior
+		cb, background, realExit := gCloseBehavior, gCloseToBackground, gRealExitRequested
+		if approved {
+			gRealExitRequested = false
+		}
 		gCloseMu.Unlock()
-		if !approved {
-			if cb == "minimize" {
-				iconic, _, _ := procIsIconic.Call(hwnd)
-				if iconic == 0 {
-					// Preserve minimize-on-close. Closing an already minimized
-					// window is a real exit and must flush first.
-					procShowWindow.Call(hwnd, SW_MINIMIZE)
-					return 0
-				}
-			}
+		iconic, _, _ := procIsIconic.Call(hwnd)
+		action := closeWindowAction(approved, realExit, background, cb, iconic != 0)
+		if action == "hide" {
+			procShowWindow.Call(hwnd, SW_HIDE)
+			return 0
+		}
+		if action == "minimize" {
+			procShowWindow.Call(hwnd, SW_MINIMIZE)
+			return 0
+		}
+		if action == "flush" {
 			gCloseMu.Lock()
 			flush := gRequestCloseFlush
 			pending := gClosePending
@@ -250,6 +254,9 @@ func finishCloseFlush(ok bool) bool {
 	}
 	gClosePending = false
 	gCloseApproved = ok
+	if !ok {
+		gRealExitRequested = false
+	}
 	return ok
 }
 
@@ -290,12 +297,7 @@ func bringExistingWindowToFront() {
 		titlePtr, _ := syscall.UTF16PtrFromString(title)
 		hwnd, _, _ := procFindWindow.Call(0, uintptr(unsafe.Pointer(titlePtr)))
 		if hwnd != 0 {
-			// 如果窗口最小化了，先还原
-			iconic, _, _ := procIsIconic.Call(hwnd)
-			if iconic != 0 {
-				procShowWindow.Call(hwnd, SW_RESTORE)
-			}
-			procSetForeground.Call(hwnd)
+			showHiddenWindow(hwnd)
 			return
 		}
 	}
@@ -447,60 +449,6 @@ func loadCache() {
 	}
 }
 
-func findWikiUpdateScript(exeDir string) string {
-	candidates := []string{
-		filepath.Join(exeDir, "tools", "wiki", "wiki_apply_pipeline.js"),
-		filepath.Join(exeDir, "tools", "wiki", "wiki_preview_update.js"),
-		filepath.Join(exeDir, "tools", "wiki", "wiki_update.js"),
-		filepath.Join(exeDir, "..", "tools", "wiki", "wiki_apply_pipeline.js"),
-		filepath.Join(exeDir, "..", "tools", "wiki", "wiki_preview_update.js"),
-		filepath.Join(exeDir, "..", "tools", "wiki", "wiki_update.js"),
-		filepath.Join(exeDir, "wiki_apply_pipeline.js"),
-		filepath.Join(exeDir, "..", "wiki_apply_pipeline.js"),
-		filepath.Join(exeDir, "wiki_preview_update.js"),
-		filepath.Join(exeDir, "..", "wiki_preview_update.js"),
-		filepath.Join(exeDir, "wiki_update.js"),
-		filepath.Join(exeDir, "..", "wiki_update.js"),
-	}
-	for _, candidate := range candidates {
-		if info, err := os.Stat(candidate); err == nil && !info.IsDir() {
-			return candidate
-		}
-	}
-	return ""
-}
-
-func runWikiUpdate(exeDir string) (string, error) {
-	script := findWikiUpdateScript(exeDir)
-	if script == "" {
-		return "", fmt.Errorf("找不到更新脚本")
-	}
-
-	nodePath, err := exec.LookPath("node")
-	if err != nil {
-		return "", fmt.Errorf("找不到 node.exe，请确认 Node.js 已安装并加入 PATH")
-	}
-
-	outputDir := filepath.Join(exeDir, "output")
-	runnerPath := filepath.Join(exeDir, "wiki_update_runner.cmd")
-	runnerContent := fmt.Sprintf("@echo off\r\necho [RK] node: \"%s\"\r\necho [RK] update script: \"%s\"\r\necho [RK] output dir: \"%s\"\r\ncd /d \"%s\"\r\n\"%s\" \"%s\" \"%s\"\r\necho.\r\necho [RK] update finished. Press any key to close.\r\npause\r\n", nodePath, script, outputDir, exeDir, nodePath, script, outputDir)
-	if err := os.WriteFile(runnerPath, []byte(runnerContent), 0644); err != nil {
-		return "", fmt.Errorf("无法创建更新脚本: %v", err)
-	}
-	spawn := exec.Command("cmd.exe", "/c", "start", "", "cmd.exe", "/k", runnerPath)
-	spawn.Dir = exeDir
-	spawn.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	spawn.Stdin = nil
-	spawn.Stdout = nil
-	spawn.Stderr = nil
-	if err := spawn.Start(); err != nil {
-		return "", fmt.Errorf("无法打开更新窗口: %v", err)
-	}
-	spawn.Process.Release()
-	msg := "已打开更新窗口，请在 CMD 中查看进度。更新完成后重启程序以加载最新数据。"
-	return msg, nil
-}
-
 // ---- JSON 响应 ----
 func writeJSON(w http.ResponseWriter, status int, data []byte) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
@@ -521,6 +469,27 @@ var (
 func handleAPI(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	q := r.URL.Query()
+
+	// Catalog routes never inherit the legacy API's permissive preflight.
+	if path == "/api/catalog/data" || strings.HasPrefix(path, "/api/catalog/update/") {
+		if activeCatalog == nil {
+			configError(w, http.StatusServiceUnavailable, errors.New("图鉴服务尚未初始化"))
+			return
+		}
+		if path == "/api/catalog/data" {
+			activeCatalog.handleData(w, r)
+		} else {
+			activeCatalog.handleUpdate(w, r)
+		}
+		return
+	}
+	if path == "/api/wiki/update" {
+		if !guardUserConfigRequest(w, r) {
+			return
+		}
+		configError(w, http.StatusGone, errors.New("旧脚本启动入口已移除，请使用数据更新页的官方图鉴更新"))
+		return
+	}
 
 	// Profile APIs do not inherit other API endpoints' permissive preflight.
 	if path == "/api/user-config" {
@@ -547,23 +516,6 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Methods", "GET,POST")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
 		w.WriteHeader(http.StatusNoContent)
-		return
-	}
-
-	if path == "/api/wiki/update" {
-		if r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, []byte(`{"error":"Method not allowed"}`))
-			return
-		}
-		exeDir := getExeDir()
-		msg, err := runWikiUpdate(exeDir)
-		if err != nil {
-			data, _ := json.Marshal(map[string]any{"ok": false, "error": msg})
-			writeJSON(w, 500, data)
-			return
-		}
-		data, _ := json.Marshal(map[string]any{"ok": true, "message": msg})
-		writeJSON(w, 200, data)
 		return
 	}
 
@@ -874,7 +826,9 @@ func getMovesFilePath() string    { return getDataFilePath("moves.json") }
 
 // ---- 用户设置 ----
 type UserSettings struct {
-	CloseBehavior           string `json:"close_behavior"` // "close" | "minimize"
+	CloseBehavior           string `json:"close_behavior"`      // "close" | "minimize"
+	RKPPAutostart           bool   `json:"rkpp_autostart"`      // Explicit opt-in; unset remains false.
+	CloseToBackground       bool   `json:"close_to_background"` // Independent of legacy close/minimize selection.
 	WindowWidth             int    `json:"window_width"`
 	WindowHeight            int    `json:"window_height"`
 	WindowMaximized         bool   `json:"window_maximized"`
@@ -887,6 +841,7 @@ type UserSettings struct {
 	EffectiveIncludeSpeed   bool   `json:"effective_include_speed"`
 	EffectiveSpeedMode      string `json:"effective_speed_mode"`
 	EffectiveSpeedThreshold int    `json:"effective_speed_threshold"`
+	TrickRoom               bool   `json:"trick_room"` // Petdex-only speed qualification projection.
 }
 
 // Startup/hotkey compatibility wrapper only. HTTP reads must expose errors.
@@ -948,10 +903,9 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// Live effects only AFTER a durable successful save.
-	gCloseMu.Lock()
-	gCloseBehavior = s.CloseBehavior
-	gCloseMu.Unlock()
+	// Live effects only AFTER a durable successful save. RKPP autostart is
+	// deliberately not an immediate effect: only Start or next program startup.
+	applySavedCloseSettings(s)
 	// 通知热键线程重载热键，并等待注册结果（最多500ms）
 	hotkeyOK := true
 	if hotkeyThreadID != 0 {
@@ -973,6 +927,10 @@ func handleSaveSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleEditMonster(w http.ResponseWriter, r *http.Request) {
+	if activeCatalog != nil {
+		activeCatalog.handleManual(w, r, "edit")
+		return
+	}
 	handleEditMonsterFiles(w, r, getMonstersFilePath(), getDataFilePath("wiki_monster_data.json"), getMovesFilePath())
 }
 
@@ -980,23 +938,26 @@ func handleEditMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wi
 	dataEditMu.Lock()
 	defer dataEditMu.Unlock()
 	var req struct {
-		ID               int            `json:"id"`
-		BaseHP           int            `json:"base_hp"`
-		BasePhyAtk       int            `json:"base_phy_atk"`
-		BaseMagAtk       int            `json:"base_mag_atk"`
-		BasePhyDef       int            `json:"base_phy_def"`
-		BaseMagDef       int            `json:"base_mag_def"`
-		BaseSpd          int            `json:"base_spd"`
-		MainType         string         `json:"main_type"`
-		SubType          string         `json:"sub_type"`
-		EvolutionStage   string         `json:"evolution_stage"`
-		FormCategory     string         `json:"form_category"`   // 无多形态 / 主形态 / 变体形态
-		MainFormName     string         `json:"main_form_name"`  // 变体形态时指定的主形态名
-		EvolvesFromID    *int           `json:"evolves_from_id"` // 进化上游精灵ID, nil=无
-		TraitName        string         `json:"trait_name"`
-		TraitDesc        string         `json:"trait_desc"`
-		SkillList        []wikiSkillRef `json:"skillList"`
-		AllowEmptySkills bool           `json:"allowEmptySkills"`
+		ID               int             `json:"id"`
+		BaseHP           int             `json:"base_hp"`
+		BasePhyAtk       int             `json:"base_phy_atk"`
+		BaseMagAtk       int             `json:"base_mag_atk"`
+		BasePhyDef       int             `json:"base_phy_def"`
+		BaseMagDef       int             `json:"base_mag_def"`
+		BaseSpd          int             `json:"base_spd"`
+		MainType         string          `json:"main_type"`
+		SubType          string          `json:"sub_type"`
+		EvolutionStage   string          `json:"evolution_stage"`
+		FormCategory     string          `json:"form_category"`   // 无多形态 / 主形态 / 变体形态
+		MainFormName     string          `json:"main_form_name"`  // 变体形态时指定的主形态名
+		EvolvesFromID    json.RawMessage `json:"evolves_from_id"` // 缺失保留；null明确清除
+		EvolutionMembers json.RawMessage `json:"evolution_members"`
+		LeaderOfID       json.RawMessage `json:"leader_of_id"`
+		TraitName        string          `json:"trait_name"`
+		TraitDesc        string          `json:"trait_desc"`
+		LevelControls    json.RawMessage `json:"level_controls"`
+		SkillList        []wikiSkillRef  `json:"skillList"`
+		AllowEmptySkills bool            `json:"allowEmptySkills"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, 400, []byte(`{"ok":false,"error":"无效的请求"}`))
@@ -1050,17 +1011,16 @@ func handleEditMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wi
 		monsters[i]["base_spd"] = req.BaseSpd
 		monsters[i]["evolution_stage"] = req.EvolutionStage
 
-		// 地区形态
-		if req.FormCategory != "" {
-			monsters[i]["form_category"] = req.FormCategory
+		// 同名形态保存时同步明确主形态ID，避免新投影中的旧ID覆盖编辑结果。
+		if err := applyManualMainForm(monsters[i], monsters, req.FormCategory, req.MainFormName); err != nil {
+			configError(w, 400, err)
+			return
 		}
-		monsters[i]["main_form_name"] = req.MainFormName
 
-		// 进化关系
-		if req.EvolvesFromID != nil {
-			monsters[i]["evolves_from_id"] = *req.EvolvesFromID
-		} else {
-			monsters[i]["evolves_from_id"] = nil
+		// 关系只在请求明确提供时修改，普通前置与首领化分开保存。
+		if err := applyManualRelationFields(monsters[i], req.ID, seenIDs, req.EvolutionMembers, req.EvolvesFromID, req.LeaderOfID); err != nil {
+			configError(w, 400, err)
+			return
 		}
 
 		if req.MainType != "" {
@@ -1087,6 +1047,10 @@ func handleEditMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wi
 			}
 		}
 
+		if err := applyManualLevelControls(monsters[i], req.LevelControls); err != nil {
+			configError(w, 400, err)
+			return
+		}
 		found = true
 		break
 	}
@@ -1111,6 +1075,10 @@ func handleEditMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wi
 }
 
 func handleAddMonster(w http.ResponseWriter, r *http.Request) {
+	if activeCatalog != nil {
+		activeCatalog.handleManual(w, r, "add-monster")
+		return
+	}
 	handleAddMonsterFiles(w, r, getMonstersFilePath(), getDataFilePath("wiki_monster_data.json"), getMovesFilePath())
 }
 
@@ -1132,6 +1100,7 @@ func handleAddMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wik
 		FormCategory     string         `json:"form_category"`
 		MainFormName     string         `json:"main_form_name"`
 		EvolvesFromID    *int           `json:"evolves_from_id"`
+		LeaderOfID       *int           `json:"leader_of_id"`
 		TraitName        string         `json:"trait_name"`
 		TraitDesc        string         `json:"trait_desc"`
 		SkillList        []wikiSkillRef `json:"skillList"`
@@ -1181,6 +1150,17 @@ func handleAddMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wik
 	}
 
 	newID := maxID + 1
+	if newID == 9001 {
+		newID++
+	} // 9001 is the runtime-only training dummy.
+	// Legacy add forms used one predecessor input for a leader transition.
+	if req.EvolutionStage == "首领形态" && req.LeaderOfID == nil && req.EvolvesFromID != nil {
+		req.LeaderOfID, req.EvolvesFromID = req.EvolvesFromID, nil
+	}
+	if req.LeaderOfID != nil && (req.EvolvesFromID != nil || req.EvolutionStage != "首领形态" || !seenIDs[*req.LeaderOfID]) {
+		configError(w, 400, errors.New("首领化来源必须存在，且不得同时指定普通进化前置"))
+		return
+	}
 
 	newMonster := map[string]interface{}{
 		"id":                     newID,
@@ -1188,7 +1168,7 @@ func handleAddMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wik
 		"main_type":              map[string]interface{}{"name": req.MainType},
 		"sub_type":               nil,
 		"leader_potential":       false,
-		"is_leader_form":         false,
+		"is_leader_form":         req.EvolutionStage == "首领形态",
 		"preferred_attack_style": "Physical",
 		"localized": map[string]interface{}{
 			"zh": map[string]interface{}{
@@ -1202,6 +1182,7 @@ func handleAddMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wik
 		"base_mag_def":    req.BaseMagDef,
 		"base_spd":        req.BaseSpd,
 		"evolves_from_id": req.EvolvesFromID,
+		"leader_of_id":    req.LeaderOfID,
 		"dex_number":      0,
 		"trait": map[string]interface{}{
 			"localized": map[string]interface{}{
@@ -1238,6 +1219,10 @@ func handleAddMonsterFiles(w http.ResponseWriter, r *http.Request, filePath, wik
 }
 
 func handleAddMove(w http.ResponseWriter, r *http.Request) {
+	if activeCatalog != nil {
+		activeCatalog.handleManual(w, r, "add-move")
+		return
+	}
 	handleAddMoveFiles(w, r, getMovesFilePath())
 }
 
@@ -1365,6 +1350,21 @@ func sanitizeStaticPath(raw string) string {
 }
 
 func handleStatic(w http.ResponseWriter, r *http.Request) {
+	if activeCatalog != nil {
+		name := sanitizeStaticPath(r.URL.Path)
+		if data, handled, err := activeCatalog.staticData(name); handled {
+			if err != nil {
+				if errors.Is(err, os.ErrNotExist) {
+					http.NotFound(w, r)
+				} else {
+					configError(w, http.StatusServiceUnavailable, err)
+				}
+				return
+			}
+			serveBytesWithMIME(w, r, name, data)
+			return
+		}
+	}
 	// 用 RequestURI 获取原始未解码路径（去掉 query string）
 	rawURI := r.RequestURI
 	if i := strings.Index(rawURI, "?"); i >= 0 {
@@ -1404,22 +1404,27 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveFileWithMIME(w http.ResponseWriter, r *http.Request, relPath string) {
-	ext := strings.ToLower(strings.TrimPrefix(path.Ext(relPath), "."))
-	ct, ok := mimeTypes[ext]
-	if !ok {
-		ct = "application/octet-stream"
-	}
-
 	data, err := appReadFile(relPath)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
+	serveBytesWithMIME(w, r, relPath, data)
+}
 
+func serveBytesWithMIME(w http.ResponseWriter, r *http.Request, relPath string, data []byte) {
+	ext := strings.ToLower(strings.TrimPrefix(path.Ext(relPath), "."))
+	ct, ok := mimeTypes[ext]
+	if !ok {
+		ct = "application/octet-stream"
+	}
 	// 对 HTML 注入时间戳，强制浏览器重新加载所有资源
 	if ext == "html" {
 		ts := fmt.Sprintf("%d", time.Now().Unix())
 		html := string(data)
+		if activeCatalog != nil {
+			html = strings.ReplaceAll(html, "<!-- CATALOG_BOOT -->", "<script>window.__MEOWNYX_NATIVE_CATALOG__=true;</script>")
+		}
 		html = strings.ReplaceAll(html, "{{CACHE_BUST}}", ts)
 		data = []byte(html)
 	}
@@ -1473,6 +1478,12 @@ func main() {
 
 	exeDir := getExeDir()
 	initAppFS(exeDir)
+	activeCatalog = initCatalogRuntime(exeDir)
+	if activeCatalog.initErr != nil {
+		log.Printf("图鉴初始化失败（未覆盖任何资料）: %v", activeCatalog.initErr)
+	} else {
+		defer activeCatalog.update.Close()
+	}
 
 	loadCache()
 
@@ -1481,6 +1492,24 @@ func main() {
 
 	// 启动 HTTP 服务器（后台 goroutine）
 	mux := http.NewServeMux()
+	battleService, battleInitErr := NewBattleService(filepath.Join(getUserDataDir(), "battle-records.sqlite"), func() ([]byte, error) {
+		if activeCatalog == nil || activeCatalog.initErr != nil {
+			return nil, errors.New("图鉴不可用，不能确认战报身份映射")
+		}
+		data, _, err := activeCatalog.staticData("data/catalog.json")
+		return data, err
+	})
+	if battleInitErr != nil {
+		battleService = &BattleService{initErr: battleInitErr, relay: BattleRelayStatus{State: "stopped", Issues: []string{}}}
+	}
+	battleService.Register(mux)
+	defer battleService.Close()
+	rkppRuntime, err := NewRKPPRuntime(exeDir, getUserDataDir(), battleService)
+	if err != nil {
+		log.Fatalf("无法初始化 RKPP 运行管理: %v", err)
+	}
+	rkppRuntime.Register(mux)
+	defer rkppRuntime.Close()
 	mux.HandleFunc("/api/", handleAPI)
 	mux.HandleFunc("/", handleStatic)
 
@@ -1495,6 +1524,8 @@ func main() {
 	gCloseMu.Lock()
 	gCloseBehavior = settings.CloseBehavior
 	gCloseMu.Unlock()
+	// No process or relay connection for an unset/false preference.
+	rkppRuntime.StartIfConfigured(settings)
 
 	// 迁移旧版 WebView2 数据目录（localStorage：配队/技能设置等）到用户数据目录
 	// 旧版库默认路径为 %AppData%\<exe文件名>（如 "小黑猫 Wiki.exe"）
@@ -1544,6 +1575,12 @@ func main() {
 	gRequestCloseFlush = func() {
 		wv.Eval(`(function () {
             Promise.resolve().then(function () {
+                return window.CatalogUpdater ? window.CatalogUpdater.flush() : true;
+            }).then(function (catalogOK) {
+                if (!catalogOK) throw new Error('图鉴更新正在安全完成，请稍后再关闭。');
+                return window.BattleRecordsClient ? window.BattleRecordsClient.flush() : true;
+            }).then(function (battleWritesOK) {
+                if (!battleWritesOK) throw new Error('对战记录尚未保存成功，请重试。');
                 if (!window.UserConfig) {
                     return window.__xhmCloseReady(true);
                 }
@@ -1568,6 +1605,13 @@ func main() {
 	wv.SetTitle(applicationTitle())
 	// 窗口已创建、消息循环尚未启动：直接（同线程）安装消息钩子与热键
 	installWindowHook(uintptr(wv.Window()))
+	gCloseMu.Lock()
+	gWindowDispatch = wv.Dispatch
+	gCloseMu.Unlock()
+	if err := updateBackgroundTray(settings.CloseToBackground); err != nil {
+		log.Printf("后台托盘不可用，保留安全关闭行为: %v", err)
+	}
+	defer removeBackgroundTray()
 	// 启动全局热键线程
 	go hotkeyThreadProc()
 	wv.SetSize(int(wWidth), int(wHeight), webview.HintNone)
@@ -1590,4 +1634,10 @@ func main() {
 	}
 	wv.Navigate(pageURL)
 	wv.Run()
+	// Run returns only after native close/flush acknowledgement (or a native
+	// fatal shutdown); stop the owned root before BattleService and WebView end.
+	rkppRuntime.Close()
+	gCloseMu.Lock()
+	gWindowDispatch = nil
+	gCloseMu.Unlock()
 }

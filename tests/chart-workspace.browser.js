@@ -75,12 +75,12 @@ async page => {
     check(await page.locator('[data-favorite-source]').count()===0,'no A/B provenance UI remains');
     const originalMarkers=await markers();
     check(originalMarkers.length===2&&new Set(originalMarkers.map(m=>m.id)).size===2,'one marker per curve species');
-    check((await state()).controls.atkIV.magic_attack && !(await state()).controls.atkNature.magic_attack && (await state()).controls.defIV.magic_defense,'independent attack/defense IV defaults on, nature neutral');
+    check((await state()).controls.atkIV.magic_attack && !(await state()).controls.atkNature.magic_attack && !(await state()).controls.defIV.magic_defense,'independent attack IV on, defense IV off, nature neutral');
     await clickSave('chartDoubleLifeBtn');
     const wand=(await markers()).find(m=>m.id===249);
     check(wand.hp===455,'shared double-life computes WAND-V HP455 without personal overrides');
     await page.locator('#chartAtkNatureBtn').click({button:'right'});await ready();
-    check((await state()).controls.atkNature.magic_attack===2,'curve negative nature cycle persists');
+    check((await state()).controls.atkNature.magic_attack===0,'curve right click leaves nature neutral');
     const controlsBefore=(await state()).controls, markersBefore=await markers();
     await page.evaluate(()=>{
       Object.assign(DamagePage.getState(),{atkIV:{magic_attack:true},atkNature:{magic_attack:1},defIV:{hp:true,magic_defense:true},defNature:{hp:1,magic_defense:1}});

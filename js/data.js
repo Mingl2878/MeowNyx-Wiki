@@ -1,4 +1,4 @@
-﻿/**
+/**
  * data.js — 数据加载与管理层
  * 负责从本地 JSON 加载精灵、技能、属性数据，并提供查询接口
  */
@@ -13,6 +13,43 @@ const RKData = (function () {
   let monsterById = new Map();
   let childIdsByParentId = new Map();
   let loaded = false;
+  let catalogRevision = null;
+  let catalogRecovery = '';
+
+  async function loadCatalogViews() {
+    // The Go host injects this flag. A host failure must not fall back to an old
+    // bundled catalog and subsequently overwrite a user's newer data.
+    if (typeof window !== 'undefined' && window.__MEOWNYX_NATIVE_CATALOG__ === true) {
+      const response = await fetch('/api/catalog/data');
+      const data = await response.json();
+      if (!response.ok || data.ok !== true || data.format !== 'meownyx-catalog-view/1') {
+        throw new Error(data.error || '无法读取当前图鉴版本，已停止加载以保护资料');
+      }
+      catalogRevision = data.revision;
+      catalogRecovery = data.recovery || '';
+      return [data.monsters, data.moves, data.types, data.wiki];
+    }
+    // Pure static previews and developer tools read the same compact catalog.
+    // This codec only projects OUR local schema; official importing is pure Go.
+    if (typeof CatalogData !== 'undefined') {
+      const response = await fetch('data/catalog.json');
+      if (response.ok !== false) {
+        const views = CatalogData.toLegacy(await response.json());
+        return [views.monsters, views.moves, views.types, views.wiki];
+      }
+      if (response.status !== 404) throw new Error('规范化图鉴读取失败，未退回旧资料');
+    }
+    // One-time compatibility with older installations and isolated legacy tests.
+    return Promise.all([
+      fetch('data/monsters.json').then(r => { if (r.ok === false) throw new Error('无法读取精灵资料'); return r.json(); }),
+      fetch('data/moves.json').then(r => { if (r.ok === false) throw new Error('无法读取技能资料'); return r.json(); }),
+      fetch('data/types.json').then(r => { if (r.ok === false) throw new Error('无法读取属性资料'); return r.json(); }),
+      fetch('data/wiki_monster_data.json').then(r => {
+        if (r.ok === false) throw new Error('无法读取图鉴技能数据，已停止加载以避免保存空技能');
+        return r.json();
+      })
+    ]);
+  }
 
   /** 属性中文名映射（与 types.json 的 localized.zh 一致） */
   const TYPE_ZH = {
@@ -163,28 +200,31 @@ const RKData = (function () {
   /** 获取精灵基础种族值 */
   function getBaseStat(pet, stat) {
     const map = { attack: 'base_phy_atk', magic_attack: 'base_mag_atk', defense: 'base_phy_def', magic_defense: 'base_mag_def', hp: 'base_hp', speed: 'base_spd' };
-    return Math.floor(pet[map[stat]] || 0);
+    return Math.round(pet[map[stat]] || 0);
   }
 
-  /** 计算精灵最终属性值 */
-  function getPetStat(pet, stat, nature, iv) {
+  /** Species-level default; overrides belong exclusively to configurable species. */
+  function getPetLevel(pet, optionalOverride) {
+    const policy = typeof PetLevels !== 'undefined' ? PetLevels.config(pet) : null;
+    const wolf = typeof PetLevels !== 'undefined' && PetLevels.isWolf(pet, monsters);
+    if (!wolf && !(policy ? policy.enabled : pet?.level_configurable === true)) return 60;
+    const fallback = wolf ? 60 : policy ? policy.defaultLevel : typeof pet.default_level === 'number' && Number.isFinite(pet.default_level) ? pet.default_level : 99;
+    const hasOverride = optionalOverride !== undefined && optionalOverride !== null && optionalOverride !== ''
+      && Number.isFinite(Number(optionalOverride));
+    return BattleMath.normalizeLevel(hasOverride ? optionalOverride : fallback);
+  }
+
+  /** 计算精灵最终属性值；其他页面不传覆盖，特殊精灵使用资料默认等级。 */
+  function getPetStat(pet, stat, nature, iv, level) {
     if (!pet) return 0;
-    return BattleMath.statFromBase(getBaseStat(pet, stat), stat, nature, iv);
+    return BattleMath.statFromBase(getBaseStat(pet, stat), stat, nature, iv, getPetLevel(pet, level));
   }
 
   /** 初始化：加载所有数据 */
   async function init() {
     if (loaded) return;
     try {
-      const [monRes, moveRes, typeRes, wikiRes] = await Promise.all([
-        fetch('data/monsters.json').then(r => r.json()),
-        fetch('data/moves.json').then(r => r.json()),
-        fetch('data/types.json').then(r => r.json()),
-        fetch('data/wiki_monster_data.json').then(r => {
-          if (r.ok === false) throw new Error('无法读取图鉴技能数据，已停止加载以避免保存空技能');
-          return r.json();
-        })
-      ]);
+      const [monRes, moveRes, typeRes, wikiRes] = await loadCatalogViews();
       monsters = Array.isArray(monRes) ? monRes : (monRes.data || []);
       moves = Array.isArray(moveRes) ? moveRes : (moveRes.data || []);
       types = Array.isArray(typeRes) ? typeRes : (typeRes.data || []);
@@ -271,13 +311,53 @@ const RKData = (function () {
     return monsters.find(m => m.id === id);
   }
 
-  /** 按名称搜索精灵 */
+  /** The selected entry's flat, ordered relation list; absent/empty means no members.
+   * Includes self/hidden entries for callers to filter, never infers a family from edges. */
+  function getEvolutionMembers(monsterOrId) {
+    const monster = typeof monsterOrId === 'object' ? monsterOrId : getMonsterById(monsterOrId);
+    if (!Array.isArray(monster?.evolution_members)) return [];
+    const seen = new Set();
+    return monster.evolution_members.map(id => getMonsterById(id)).filter(member => {
+      if (!member || seen.has(member.id)) return false;
+      seen.add(member.id);
+      return true;
+    });
+  }
+
+  /** Leader transformations are paired by stable ID, not shared names or dex numbers. */
+  function getLeaderBase(monsterOrId) {
+    const monster = typeof monsterOrId === 'object' ? monsterOrId : getMonsterById(monsterOrId);
+    if (!monster || (!monster.is_leader_form && monster.evolution_stage !== '首领形态')
+      || monster.leader_of_id == null || monster.leader_of_id === monster.id) return null;
+    const base = getMonsterById(monster.leader_of_id);
+    return base && !base.is_leader_form && base.evolution_stage !== '首领形态' ? base : null;
+  }
+
+  function getLeaderForms(monsterOrId) {
+    const monster = typeof monsterOrId === 'object' ? monsterOrId : getMonsterById(monsterOrId);
+    if (!monster || monster.is_leader_form || monster.evolution_stage === '首领形态') return [];
+    return monsters.filter(member => member.id !== monster.id && member.leader_of_id === monster.id
+      && (member.is_leader_form || member.evolution_stage === '首领形态'));
+  }
+
+  /** Pure local name matching. Aliases belong to this stable ID, never its learnset parent. */
+  function matchesMonsterName(monster, keyword, options = {}) {
+    if (!monster) return false;
+    const normalize = value => MonsterIdentity.normalizeName(value).toLowerCase();
+    const query = normalize(keyword);
+    if (!query) return options.exact !== true;
+    const names = [getMonsterName(monster), getMonsterDisplayName(monster)];
+    const aliases = getExactWikiData(monster)?.aliases;
+    if (Array.isArray(aliases)) names.push(...aliases);
+    // Do not strip form suffixes or resolve a name back to a guessed monster.
+    // Callers making an exact selection must still require one eligible ID.
+    return names.some(name => typeof name === 'string' && (options.exact === true ? normalize(name) === query : normalize(name).includes(query)));
+  }
+
+  /** 按当前名称、显示名及本ID的历史别名搜索精灵；不重建或修改资料。 */
   function searchMonsters(keyword) {
     if (!keyword) return monsters;
-    const kw = keyword.toLowerCase();
-    return monsters.filter(m =>
-      getMonsterName(m).toLowerCase().includes(kw)
-    );
+    return monsters.filter(m => matchesMonsterName(m, keyword));
   }
 
   /** 按属性筛选精灵 */
@@ -365,13 +445,20 @@ const RKData = (function () {
     if (monster.learnset_mode === 'own') {
       return { monster, sourceMonster: monster, wiki: ownWiki, reason: 'explicit-own' };
     }
-    const explicitId = monster.learnset_mode === 'inherit' ? monster.learnset_inherits_from_id : null;
-    if (explicitId != null) {
-      const sourceMonster = monsterById.get(explicitId);
-      const sourceWiki = getExactWikiData(sourceMonster) || getWikiData(getMonsterDisplayName(sourceMonster));
+    if (monster.learnset_mode === 'inherit') {
+      const sourceMonster = monsterById.get(monster.learnset_inherits_from_id) || null;
+      const sourceWiki = sourceMonster ? getExactWikiData(sourceMonster) || getWikiData(getMonsterDisplayName(sourceMonster)) : null;
       return { monster, sourceMonster, wiki: sourceWiki, reason: sourceMonster ? 'explicit-inherit' : 'invalid-explicit-source' };
     }
+    if (monster.learnset_mode != null) {
+      return { monster, sourceMonster: monster, wiki: ownWiki, reason: 'unknown-mode-own-fallback' };
+    }
+    return resolveLegacySkillSource(monster, ownWiki);
+  }
 
+  // Compatibility ONLY for old records without an explicit learning mode. Keep the
+  // old directed-edge fallback; neither evolution_members nor leader_of_id grants skills.
+  function resolveLegacySkillSource(monster, ownWiki) {
     // 地区主/变体与非首领高级形态使用自身精确技能面。
     if (!monster.is_leader_form && (monster.form_category === '主形态' || monster.form_category === '变体形态' || monster.evolution_stage === '高级形态')) {
       return { monster, sourceMonster: monster, wiki: ownWiki, reason: 'own-form-or-high' };
@@ -478,9 +565,13 @@ const RKData = (function () {
   function getTraitInfo(m) {
     if (!m || !m.trait) return { name: '', desc: '' };
     const zh = m.trait.localized && m.trait.localized.zh;
+    const description = (zh && zh.description) || '';
+    const notes = typeof m._trait_notes === 'string' ? m._trait_notes : '';
+    // Only these reviewed displays omit the heading; other local notes retain provenance.
+    const notesPrefix = [129, 467, 468, 469, 509, 510, 646, 647].includes(m.id) ? '\n' : '\n本地补充（非官方图鉴原文）：\n';
     return {
       name: (zh && zh.name) || '',
-      desc: (zh && zh.description) || ''
+      desc: description + (notes ? notesPrefix + notes : '')
     };
   }
 
@@ -508,30 +599,42 @@ const RKData = (function () {
    * @param {string} traitDesc
    * @returns {string} HTML
    */
-  function buildTraitDetailHtml(traitName, traitDesc) {
+  function traitDescriptionHtml(traitDesc, monsterId) {
+    const escaped = String(traitDesc || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (![646, 647].includes(monsterId)) return escaped;
+    // Only reviewed dice labels become icons. Source notes remain plain text.
+    return escaped.replace(/(点数\d+)[（(](普通|草|火|水|电|光|恶|龙|机械|冰|地|翼|幽|毒|虫|武|萌|幻)[）)]/g, (_, point, type) =>
+      `${point}（<img class="trait-point-type-icon" src="${getTypeIcon(type)}" alt="${type}" title="${type}">）`);
+  }
+
+  function buildTraitDetailHtml(traitName, traitDesc, monsterId) {
     if (!traitName) return '';
+    const descHtml = traitDescriptionHtml(traitDesc, monsterId);
     return `
       <div class="detail-trait-box">
         <div class="detail-trait-head">
           ${traitIconHtml(traitName, { className: 'detail-trait-icon', fallback: 'assets/icons/type/light.png' })}
-          <span><span class="detail-trait-name">${traitName}${traitDesc ? ':' : ''}</span>${traitDesc ? ` <span class="detail-trait-desc">${traitDesc}</span>` : ''}</span>
+          <span><span class="detail-trait-name">${traitName}${traitDesc ? ':' : ''}</span>${traitDesc ? ` <span class="detail-trait-desc">${descHtml}</span>` : ''}</span>
         </div>
       </div>`;
   }
 
   return {
     init,
+    getCatalogRevision: () => catalogRevision,
+    getCatalogRecovery: () => catalogRecovery,
     getMonsters, getMoves, getTypes,
-    getMonsterById, searchMonsters, filterMonstersByType,
+    getMonsterById, getEvolutionMembers, getLeaderForms, getLeaderBase,
+    matchesMonsterName, searchMonsters, filterMonstersByType,
     getEffectiveness, getTypeEff, getTotalStats, getEffectiveStats,
-    getBaseStat, getPetStat,
+    getBaseStat, getPetStat, getPetLevel,
     getMonsterName, getMonsterDisplayName, getMonsterDisplayNameHtml, getMoveName, getMoveDesc,
     getMoveCategoryZh, isAttackMove,
     getTypeZh, getTypeShortZh, getTypeEn, getTypeZhFull, getTypeObjZh,
     getTypeIcon, typeBadgeHtml,
     getWikiData, getExactWikiData, resolveSkillSource, getResolvedWikiData,
     buildSkillCardHtml, isVariablePowerMove,
-    getTraitInfo, traitIconHtml, buildTraitDetailHtml,
+    getTraitInfo, traitIconHtml, buildTraitDetailHtml, traitDescriptionHtml,
     TYPE_ZH, TYPE_SHORT_ZH, ZH_TO_EN, ALL_TYPES, TYPE_ZH_FULL, PILL_ORDER,
     get isLoaded() { return loaded; }
   };

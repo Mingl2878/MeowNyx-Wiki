@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { createIndex } = require('../../js/monster-identity.js');
+const { readDataFile } = require('./catalog-data.js');
 
 // root is the project directory; tests pass isolated temporary roots.
 function readJSON(file) {
@@ -17,8 +18,7 @@ function readMonsters(file) {
 }
 
 function readWikiIndex(root) {
-  const file = path.resolve(root, 'data', 'wiki_monster_data.json');
-  return createIndex(readMonsters(file), readJSON(file));
+  return createIndex(readDataFile(root, 'monsters.json'), readDataFile(root, 'wiki_monster_data.json'));
 }
 
 function readWiki(root) {
@@ -43,6 +43,9 @@ function validateSkills(wiki, moves) {
 // Destructive changes must be explicit: allowEmpty names whole monsters;
 // allowRemovedSkills names reviewed skill removals/renames/source migrations.
 function prepareWiki(root, value, { allowEmpty = [], allowRemovedSkills = [] } = {}) {
+  if (fs.existsSync(path.resolve(root, 'data', 'catalog.json'))) {
+    throw new Error('资料已迁移为 catalog.json；旧 Node 写入流程已禁用，请通过纯 Go 图鉴更新或精灵编辑保存，避免创建失效的第二套资料');
+  }
   const file = path.resolve(root, 'data', 'wiki_monster_data.json');
   if (!Array.isArray(allowEmpty) || allowEmpty.some(name => typeof name !== 'string')) {
     throw new Error('allowEmpty 必须是明确允许清空的规范名称数组');

@@ -1,7 +1,9 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
-const V=require('../js/skill-variants.js'),moves=require('../data/moves.json');
+const V=require('../js/skill-variants.js'),moves=require('./catalog-read-fixture.cjs').readProjectData('moves.json');
 const byId=id=>moves.find(m=>m.id===id);
+const pinned=require('./catalog-pinned-baseline.cjs');
+const {newSkillDispositions}=require('./catalog-s5-expectations.cjs');
 const fixed={568:{510:['70+90','90+110'],535:['90+70','90+210'],506:['95+95','95+145']},569:{510:['70+90','110+130'],535:['90+90','210+210'],506:['95+95','145+145']}};
 for(const [pet,entries]of Object.entries(fixed))for(const[id,expressions]of Object.entries(entries))test(`${pet}/${id} fixed additive display, one numeric release`,()=>{
   let state={atkPet:{id:Number(pet)},basePower:9999,comboCount:77,buff:35,starMeteor:4,fixedBonus:3,percentBonus:7,finalPowerManual:'0',mode:1};
@@ -9,7 +11,8 @@ for(const [pet,entries]of Object.entries(fixed))for(const[id,expressions]of Obje
     const next=V.select(state,byId(Number(id)),side).state;
     assert.equal(next.basePowerExpression,expressions[i]);assert.equal(next.basePower,expressions[i].split('+').reduce((s,n)=>s+Number(n),0));
     assert.equal(next.comboCount,1);for(const key of ['buff','starMeteor','fixedBonus','percentBonus','finalPowerManual','mode'])assert.equal(next[key],state[key]);
-    assert.ok(V.tooltip(byId(Number(id)),state.atkPet).includes(expressions[i]));state=next;
+    assert.ok(V.tooltip(byId(Number(id)),state.atkPet).includes(byId(Number(id)).localized.zh.description));
+    assert.doesNotMatch(V.tooltip(byId(Number(id)),state.atkPet),/左键：|右键：/);state=next;
   }
 });
 for(const [id,lp,rp]of [[501,125,185],[519,165,115],[522,135,70],[508,65,65],[526,70,70],[544,110,110]])test(`reviewed choice ${id} repeats same branch for black / other branch for white`,()=>{
@@ -20,7 +23,11 @@ for(const [id,lp,rp]of [[501,125,185],[519,165,115],[522,135,70],[508,65,65],[52
   }
 });
 test('all base-only rows both buttons restore identical original source power and initial combos',()=>{
-  const rows=V.audit(moves).rows.filter(r=>r.disposition==='base-only');assert.equal(rows.length,52);
+  const audit=V.audit(moves),rows=audit.rows.filter(r=>r.disposition==='base-only');
+  assert.equal(rows.length,audit.counts['base-only'],'aggregate matches actual dispositions');
+  assert.equal(rows.filter(r=>pinned.legacySkillIds.includes(r.id)).length,52,'original reviewed base-only cohort remains intact');
+  assert.deepEqual(rows.filter(r=>!pinned.legacySkillIds.includes(r.id)).map(r=>r.id),newSkillDispositions['base-only']);
+  assert.equal(rows.length,52+newSkillDispositions['base-only'].length);
   for(const row of rows)for(const petId of [568,569,202]){
     const seed={atkPet:{id:petId},basePower:99999,basePowerExpression:'1+99998',comboCount:22};
     const l=V.select(seed,byId(row.id),'left'),r=V.select(seed,byId(row.id),'right');

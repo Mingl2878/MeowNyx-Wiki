@@ -1,0 +1,201 @@
+{
+  "format": "meownyx-legal-sources/1",
+  "files": [
+    {
+      "file": "licenses/go/github.com/dustin/go-humanize@v1.0.1/LICENSE",
+      "component": "github.com/dustin/go-humanize@v1.0.1",
+      "source": "LICENSE",
+      "bytes": 1136,
+      "sha256": "a973b4498c13eb74baa2a8e5c351426a6826f2fcdd909916dbe53ee2e755fd71"
+    },
+    {
+      "file": "licenses/go/github.com/google/uuid@v1.6.0/LICENSE",
+      "component": "github.com/google/uuid@v1.6.0",
+      "source": "LICENSE",
+      "bytes": 1480,
+      "sha256": "0a8d61ed3cbfd5312326e8126c31ce9c627a283adc99131b56896d29ada04b2d"
+    },
+    {
+      "file": "licenses/go/github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808/LICENSE",
+      "component": "github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808",
+      "source": "LICENSE",
+      "bytes": 1117,
+      "sha256": "3f10f3374cf30076196eb239667ce6063c64e4275afd2b397f6343f69676bb79"
+    },
+    {
+      "file": "licenses/go/github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808/webviewloader/sdk/LICENSE.txt",
+      "component": "github.com/jchv/go-webview2@v0.0.0-20260205173254-56598839c808",
+      "source": "webviewloader/sdk/LICENSE.txt",
+      "bytes": 1487,
+      "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55"
+    },
+    {
+      "file": "licenses/go/github.com/jchv/go-winloader@v0.0.0-20250406163304-c1995be93bd1/LICENSE.md",
+      "component": "github.com/jchv/go-winloader@v0.0.0-20250406163304-c1995be93bd1",
+      "source": "LICENSE.md",
+      "bytes": 761,
+      "sha256": "5dd7f3cdb5d4270495fa5475adf81791fc3032a6ccae74b38f774eaa60831b21"
+    },
+    {
+      "file": "licenses/go/github.com/mattn/go-isatty@v0.0.20/LICENSE",
+      "component": "github.com/mattn/go-isatty@v0.0.20",
+      "source": "LICENSE",
+      "bytes": 1099,
+      "sha256": "08eab1118c80885fa1fa6a6dd7303f65a379fcb3733e063d20d1bbc2c76e6fa1"
+    },
+    {
+      "file": "licenses/go/github.com/ncruces/go-strftime@v0.1.9/LICENSE",
+      "component": "github.com/ncruces/go-strftime@v0.1.9",
+      "source": "LICENSE",
+      "bytes": 1068,
+      "sha256": "38ae43959daf953a393a585b2988672cb65a5a541aca0d0be5e72595a0a16883"
+    },
+    {
+      "file": "licenses/go/github.com/remyoudompheng/bigfft@v0.0.0-20230129092748-24d4a6f8daec/LICENSE",
+      "component": "github.com/remyoudompheng/bigfft@v0.0.0-20230129092748-24d4a6f8daec",
+      "source": "LICENSE",
+      "bytes": 1479,
+      "sha256": "dd26a7abddd02e2d0aba97805b31f248ef7835d9e10da289b22e3b8ab78b324d"
+    },
+    {
+      "file": "licenses/go/golang.org/x/exp@v0.0.0-20250620022241-b7579e27df2b/LICENSE",
+      "component": "golang.org/x/exp@v0.0.0-20250620022241-b7579e27df2b",
+      "source": "LICENSE",
+      "bytes": 1453,
+      "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+    },
+    {
+      "file": "licenses/go/golang.org/x/sys@v0.36.0/LICENSE",
+      "component": "golang.org/x/sys@v0.36.0",
+      "source": "LICENSE",
+      "bytes": 1453,
+      "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+    },
+    {
+      "file": "licenses/go/modernc.org/sqlite@v1.39.1/LICENSE",
+      "component": "modernc.org/sqlite@v1.39.1",
+      "source": "LICENSE",
+      "bytes": 1489,
+      "sha256": "c6fe05491a60ae13bcd223088d2705e36dede24e5587226231d2459ada5c4822"
+    },
+    {
+      "file": "licenses/go/modernc.org/sqlite@v1.39.1/SQLITE-LICENSE",
+      "component": "modernc.org/sqlite@v1.39.1",
+      "source": "SQLITE-LICENSE",
+      "bytes": 1506,
+      "sha256": "8438c9c89b849131ead81d5435cb97fcf052df5b0b286dda8a2d4c29e6cb3fd0"
+    },
+    {
+      "file": "licenses/go/modernc.org/libc@v1.66.10/LICENSE",
+      "component": "modernc.org/libc@v1.66.10",
+      "source": "LICENSE",
+      "bytes": 1482,
+      "sha256": "95ff867eb55a56935fa7492406cfa953fb7c13ca73f4c0a86ae05756b4605600"
+    },
+    {
+      "file": "licenses/go/modernc.org/libc@v1.66.10/LICENSE-GO",
+      "component": "modernc.org/libc@v1.66.10",
+      "source": "LICENSE-GO",
+      "bytes": 1479,
+      "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+    },
+    {
+      "file": "licenses/go/modernc.org/libc@v1.66.10/honnef.co/go/netdb/LICENSE",
+      "component": "modernc.org/libc@v1.66.10",
+      "source": "honnef.co/go/netdb/LICENSE",
+      "bytes": 1058,
+      "sha256": "657707d00e00d3077e4ccfac2d6a123ad908c3f503370798eb2cb52e68e135a6"
+    },
+    {
+      "file": "licenses/go/modernc.org/mathutil@v1.7.1/LICENSE",
+      "component": "modernc.org/mathutil@v1.7.1",
+      "source": "LICENSE",
+      "bytes": 1486,
+      "sha256": "bfa9bf72a72ca009fd62a8f84fca3dca67e51d93af96352723646599898b6cf5"
+    },
+    {
+      "file": "licenses/go/modernc.org/mathutil@v1.7.1/AUTHORS",
+      "component": "modernc.org/mathutil@v1.7.1",
+      "source": "AUTHORS",
+      "bytes": 412,
+      "sha256": "51fcdd68bb605f080283bb6eabb72452591289650599d3d67603381834e536af"
+    },
+    {
+      "file": "licenses/go/modernc.org/mathutil@v1.7.1/mersenne/LICENSE",
+      "component": "modernc.org/mathutil@v1.7.1",
+      "source": "mersenne/LICENSE",
+      "bytes": 1486,
+      "sha256": "c05630f9ca899ea094620d37daea6ba66f99adbf9268ea5fea9db607e1102bd9"
+    },
+    {
+      "file": "licenses/go/modernc.org/mathutil@v1.7.1/mersenne/AUTHORS",
+      "component": "modernc.org/mathutil@v1.7.1",
+      "source": "mersenne/AUTHORS",
+      "bytes": 346,
+      "sha256": "f79ff8b413938c3ce7c60db12242a663d8e840249bd838fcf58f4aaccfec5454"
+    },
+    {
+      "file": "licenses/go/modernc.org/memory@v1.11.0/LICENSE",
+      "component": "modernc.org/memory@v1.11.0",
+      "source": "LICENSE",
+      "bytes": 1484,
+      "sha256": "59895e669f48f168b6b858358f6005779cdf40a265f7828813061b56af67b496"
+    },
+    {
+      "file": "licenses/go/modernc.org/memory@v1.11.0/LICENSE-GO",
+      "component": "modernc.org/memory@v1.11.0",
+      "source": "LICENSE-GO",
+      "bytes": 1479,
+      "sha256": "2d36597f7117c38b006835ae7f537487207d8ec407aa9d9980794b2030cbc067"
+    },
+    {
+      "file": "licenses/go/modernc.org/memory@v1.11.0/LICENSE-MMAP-GO",
+      "component": "modernc.org/memory@v1.11.0",
+      "source": "LICENSE-MMAP-GO",
+      "bytes": 1518,
+      "sha256": "c2eba69f20d05414538c3a5df7694dde392e065ff70882e1625e90f5d6659fff"
+    },
+    {
+      "file": "licenses/go/modernc.org/memory@v1.11.0/LICENSE-LOGO",
+      "component": "modernc.org/memory@v1.11.0",
+      "source": "LICENSE-LOGO",
+      "bytes": 62,
+      "sha256": "5ae5bee3072a841376451b48d8cfcec7188e10543926d5870828d36c8a750dc5"
+    },
+    {
+      "file": "licenses/go/modernc.org/memory@v1.11.0/AUTHORS",
+      "component": "modernc.org/memory@v1.11.0",
+      "source": "AUTHORS",
+      "bytes": 529,
+      "sha256": "df1f424436f279309de85b82e494d548297a2570e9b5794630d7e72c9eb50b6a"
+    },
+    {
+      "file": "Apache-2.0.txt",
+      "component": "Apache-2.0 license text",
+      "source": "rkpp/python/LICENSE.txt lines 389-564; original terms, no appended invented text",
+      "bytes": 10350,
+      "sha256": "0536c944c8b9103a27f131538e3798bfbd723dfa89882a4f9120be176f049c35"
+    },
+    {
+      "file": "licenses/go-runtime/LICENSE",
+      "component": "Go runtime and standard library",
+      "source": "installed Go toolchain LICENSE",
+      "bytes": 1453,
+      "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+    },
+    {
+      "file": "licenses/frontend/chart.umd.min.js.COPYRIGHT-NOTICES.txt",
+      "component": "chart.umd.min.js",
+      "source": "js/chart.umd.min.js original /*! comments; original full JS remains bundled",
+      "bytes": 258,
+      "sha256": "4328e8e0e646c757d398f7ad6aea5a54b035963936b3d91baa31884969154c7a"
+    },
+    {
+      "file": "licenses/frontend/html2canvas.min.js.COPYRIGHT-NOTICES.txt",
+      "component": "html2canvas.min.js",
+      "source": "js/html2canvas.min.js original /*! comments; original full JS remains bundled",
+      "bytes": 1010,
+      "sha256": "abae5266f5f075cadee54178cd5866802a57ffc1f487c7203922c3bdc799cefd"
+    }
+  ]
+}

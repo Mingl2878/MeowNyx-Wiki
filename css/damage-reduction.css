@@ -1,0 +1,28 @@
+/* Damage-page percentage shortcuts; shared popover chrome, local layout only. */
+.damage-reduction-picker {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  width: 300px;
+  padding: 10px;
+}
+.damage-reduction-option {
+  min-width: 0;
+  padding: 8px 5px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  cursor: pointer;
+  font: inherit;
+}
+.damage-reduction-option:hover,
+.damage-reduction-option[aria-selected="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--bg-secondary);
+}
+.damage-reduction-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

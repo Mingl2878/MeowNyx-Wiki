@@ -1,5 +1,6 @@
 /* Curve-owned groups and controls. The only legacy import is rk_chart_fav_pets.
- * No damage favorites, personal defaults, nature or IV records are read here. */
+ * Favorites is a read-only live projection via FavoritePets.getDamageIds(), never
+ * an implicit union with curve groups. Personal controls are never read. */
 (function (root, factory) {
   'use strict';
   if (typeof module === 'object' && module.exports) module.exports = { createStore: factory };
@@ -9,44 +10,108 @@
   const KEY = 'rk_chart_workspace', UNGROUPED = 'ungrouped', ALL = 'all';
   // Reserved namespace cannot collide with user group IDs (which exclude ':').
   const PRESET_PREFIX = 'preset:';
+  const SURVIVORS = 'preset:Survivors', FAVORITES = 'preset:Favorites';
+  const CONTROLS_REVISION = 2, SURVIVOR_CAP = 100, TOO_MANY_SURVIVORS = '不可斩杀精灵过多';
+  let survivalContextProvider = null, deriving = false, survivalCache = null;
   const PRESET_TYPES = ['Normal', 'Grass', 'Fire', 'Water', 'Light', 'Ground', 'Ice', 'Dragon', 'Electric', 'Poison', 'Bug', 'Fighting', 'Flying', 'Cute', 'Ghost', 'Dark', 'Mechanical', 'Illusion'];
   const PRESET_NAMES = ['普通', '草', '火', '水', '光', '地', '冰', '龙', '电', '毒', '虫', '武', '翼', '萌', '幽', '恶', '机械', '幻'];
   const isPreset = id => typeof id === 'string' && id.startsWith(PRESET_PREFIX);
-  const validPreset = id => isPreset(id) && PRESET_TYPES.includes(id.slice(PRESET_PREFIX.length));
+  const validPreset = id => id === SURVIVORS || id === FAVORITES || (isPreset(id) && PRESET_TYPES.includes(id.slice(PRESET_PREFIX.length)));
   const dataSource = () => root.RKData || (typeof RKData !== 'undefined' ? RKData : null);
   function getPresets() {
     const order = dataSource()?.PILL_ORDER || PRESET_TYPES;
     return order.filter(type => PRESET_TYPES.includes(type)).map(type => ({ id: PRESET_PREFIX + type, type,
-      name: '所有' + PRESET_NAMES[PRESET_TYPES.indexOf(type)] + '系精灵', readonly: true }));
+      name: '所有' + PRESET_NAMES[PRESET_TYPES.indexOf(type)] + '系精灵', readonly: true }))
+      .concat({ id: SURVIVORS, name: '斩杀预设', readonly: true, dynamic: true },
+        { id: FAVORITES, name: '收藏预设', readonly: true, dynamic: true });
   }
-  function getPreset(id) {
+  function derivePreset(id) {
     if (!validPreset(id)) throw Error('预设分组不存在，请选择有效属性；已保存配置未修改');
     const type = id.slice(PRESET_PREFIX.length), seen = new Set();
     const pets = dataSource()?.getMonsters?.();
     if (!Array.isArray(pets)) throw Error('精灵资料尚未加载，预设分组暂不可用');
-    const petIds = [];
-    for (const pet of pets) {
-      if (!pet || pet.hidden || pet.evolution_stage !== '高级形态' || pet.is_leader_form
-        || !['主形态', '无多形态'].includes(pet.form_category)
-        || (pet.main_type?.name !== type && pet.sub_type?.name !== type)
-        || !petOK(pet.id) || seen.has(pet.id)) continue;
-      seen.add(pet.id); petIds.push(pet.id);
+    if (id === FAVORITES) {
+      // No storage fallback: favorites.js owns ID normalization and the current
+      // damage source. Missing service is unavailable, not a fake empty list.
+      if (typeof root.FavoritePets?.getDamageIds !== 'function') throw Error('伤害收藏上下文不可用');
+      const favorites = root.FavoritePets.getDamageIds();
+      if (!Array.isArray(favorites)) throw Error('伤害收藏数据不可用');
+      const catalog = new Set(pets.filter(p => p && petOK(p.id)).map(p => p.id));
+      const petIds = [...new Set(favorites.filter(id => petOK(id) && catalog.has(id)))];
+      return { ...getPresets().find(p => p.id === id), petIds };
     }
-    return { id, type, name: '所有' + PRESET_NAMES[PRESET_TYPES.indexOf(type)] + '系精灵', petIds, readonly: true };
+    // Provider returns an immutable evaluator of current buttons/attack parameters.
+    // It must not read groups/entries/markers. No provider means unavailable, NOT [].
+    if (deriving) throw Error('动态预设上下文递归，暂不可用');
+    deriving = true;
+    try {
+      const evaluate = id === SURVIVORS ? survivalContextProvider?.() : null;
+      if (id === SURVIVORS && typeof evaluate !== 'function') throw Error('当前曲线上下文不可用，请先设置攻守精灵和技能');
+      let petIds = [];
+      const signature = [];
+      for (const pet of pets) {
+        if (!pet || pet.hidden || pet.evolution_stage !== '高级形态' || pet.is_leader_form
+          || !['主形态', '无多形态'].includes(pet.form_category)
+          || (id !== SURVIVORS && pet.main_type?.name !== type && pet.sub_type?.name !== type)
+          || !petOK(pet.id) || seen.has(pet.id)) continue;
+        seen.add(pet.id);
+        if (evaluate) {
+          const result = evaluate(pet);
+          if (!result || !Number.isFinite(result.hp) || result.hp <= 0 || !Number.isFinite(result.damage) || result.damage < 0)
+            throw Error('当前曲线伤害或生命不可用，动态预设未生成');
+          signature.push([pet.id, result.hp, result.damage]);
+          if (result.damage >= result.hp) continue;
+        }
+        petIds.push(pet.id);
+      }
+      if (id === SURVIVORS) {
+        // No context revision token exists: re-evaluate the entire current eligible
+        // catalog before reusing a result. Function/catalog identity alone cannot
+        // validate mutable attack inputs or catalog objects. Cache the FULL result,
+        // including >100, never a truncated count or an unavailable context.
+        const key = JSON.stringify(signature);
+        if (survivalCache?.key === key) petIds = survivalCache.petIds.slice();
+        else survivalCache = { key, petIds: petIds.slice() };
+      }
+      return { ...getPresets().find(p => p.id === id), petIds };
+    } catch (e) {
+      if (id === SURVIVORS) survivalCache = null;
+      throw e;
+    } finally { deriving = false; }
   }
+  function getPresetAvailability(id) {
+    const label = getPresets().find(p => p.id === id)?.name || '预设分组不可用';
+    try {
+      const count = derivePreset(id).petIds.length;
+      const disabled = id === SURVIVORS && count > SURVIVOR_CAP;
+      return { disabled, label: disabled ? TOO_MANY_SURVIVORS : label, count,
+        reason: disabled ? TOO_MANY_SURVIVORS : '' };
+    } catch (e) {
+      return { disabled: true, label, count: null, reason: e.message };
+    }
+  }
+  function getPreset(id) {
+    const preset = derivePreset(id);
+    if (id === SURVIVORS && preset.petIds.length > SURVIVOR_CAP) throw Error(TOO_MANY_SURVIVORS);
+    return preset;
+  }
+
   const editable = id => { if (isPreset(id)) throw Error('内置预设自动更新且只读，请先复制为自建分组'); };
   const clone = value => JSON.parse(JSON.stringify(value));
   const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const idOK = id => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,80}$/.test(id) && !['__proto__', 'constructor', 'prototype', ALL].includes(id);
   const petOK = id => Number.isSafeInteger(id) && id > 0;
-  const defaults = () => ({ version: 1, activeGroupId: UNGROUPED,
+  const defaults = () => ({ version: 1, controlsRevision: CONTROLS_REVISION, activeGroupId: UNGROUPED,
     groups: [{ id: UNGROUPED, name: '未分组', petIds: [] }],
     controls: { atkIV: { attack: true, magic_attack: true }, atkNature: { attack: 0, magic_attack: 0 },
-      defIV: { defense: true, magic_defense: true }, doubleLife: false }, legacyImported: true });
+      defIV: { defense: false, magic_defense: false }, hpNature: false, doubleLife: false }, legacyImported: true });
   function validate(input) {
     if (!object(input) || input.version !== 1 || !Array.isArray(input.groups) || !object(input.controls)
       || input.legacyImported !== true) throw Error('曲线配置格式或版本不支持，旧文件未修改');
-    const state = clone(input), seen = new Set();
+    if (Object.hasOwn(input, 'controlsRevision') && (!Number.isInteger(input.controlsRevision)
+      || input.controlsRevision < 0 || input.controlsRevision > CONTROLS_REVISION))
+      throw Error('曲线控件版本不支持，旧文件未修改');
+    const state = clone(input), seen = new Set(), modern = state.controlsRevision === CONTROLS_REVISION;
     for (const g of state.groups) {
       if (!object(g) || !idOK(g.id) || seen.has(g.id) || typeof g.name !== 'string' || !g.name.trim()
         || g.name.length > 80 || !Array.isArray(g.petIds) || !g.petIds.every(petOK)
@@ -57,9 +122,18 @@
     if (state.activeGroupId !== ALL && !validPreset(state.activeGroupId) && !state.groups.some(g => g.id === state.activeGroupId)) throw Error('当前曲线分组不存在（或预设已失效），已保存配置未修改');
     const c = state.controls;
     for (const [field, keys] of Object.entries({ atkIV: ['attack', 'magic_attack'], atkNature: ['attack', 'magic_attack'], defIV: ['defense', 'magic_defense'] })) {
-      if (!object(c[field]) || !keys.every(k => field === 'atkNature' ? [0, 1, 2].includes(c[field][k]) : typeof c[field][k] === 'boolean')) throw Error('曲线控件配置无效');
+      if (!object(c[field]) || !Object.keys(c[field]).every(k => keys.includes(k)) || !keys.every(k => field === 'atkNature' ? (modern ? [0, 1] : [0, 1, 2]).includes(c[field][k]) : typeof c[field][k] === 'boolean')) throw Error('曲线控件配置无效');
     }
-    if (typeof c.doubleLife !== 'boolean') throw Error('曲线双生命配置无效');
+    if (modern && ['attack', 'magic_attack'].some(stat => c.atkNature[stat] === 1 && !c.atkIV[stat]))
+      throw Error('攻击正性格必须开启个体');
+    if (modern && (typeof c.hpNature !== 'boolean' || c.doubleLife !== c.hpNature))
+      throw Error('曲线生命性格兼容字段无效');
+    // v1 compatibility: doubleLife now aliases ONLY positive HP nature. HP IV is
+    // unconditionally true in all calculations; explicit hpNature wins on migration.
+    if (!Object.hasOwn(c, 'hpNature')) c.hpNature = c.doubleLife;
+    if (typeof c.hpNature !== 'boolean' || (Object.hasOwn(c, 'doubleLife') && typeof c.doubleLife !== 'boolean')
+      || (Object.hasOwn(c, 'hpIV') && c.hpIV !== true)) throw Error('曲线生命性格配置无效');
+    c.doubleLife = c.hpNature;
     return state;
   }
   let state = defaults(), initialized = false, initializing = null, serial = Promise.resolve(), error = '', pendingInitial = null, pendingWrite = null;
@@ -85,7 +159,10 @@
     try {
       const saved = root.UserConfig.getObject(KEY, {});
       if (!Object.hasOwn(saved, 'state')) return;
-      const next = validate(saved.state), changed = !initialized || JSON.stringify(state) !== JSON.stringify(next);
+      const next = validate(saved.state);
+      // Only init migrates old controls; queue events cannot skip the marker write.
+      if (next.controlsRevision !== CONTROLS_REVISION) return;
+      const changed = !initialized || JSON.stringify(state) !== JSON.stringify(next);
       state = next; initialized = true; pendingInitial = pendingWrite = null; error = '';
       if (changed) notify();
     } catch (e) { error = e.message; }
@@ -124,8 +201,9 @@
           if (pendingInitial) throw Error('尚未收到已提交的曲线初始配置');
           return clone(state);
         }
-        await persist(pendingInitial);
-        state = pendingInitial; pendingInitial = null; initialized = true; error = ''; notify(); return clone(state);
+        const next = clone(pendingInitial);
+        await persist(next);
+        state = next; pendingInitial = null; initialized = true; error = ''; notify(); return clone(state);
       }
       let saved;
       if (root.UserConfig) {
@@ -137,7 +215,20 @@
       }
       if (!object(saved)) throw Error('曲线存储格式无效');
       let next;
-      if (Object.hasOwn(saved, 'state')) next = validate(saved.state);
+      if (Object.hasOwn(saved, 'state')) {
+        next = validate(saved.state);
+        if (next.controlsRevision !== CONTROLS_REVISION) {
+          // Reset only curve controls, once; preserve groups, selection and metadata.
+          // The revision and reset are committed in the SAME queued atomic patch.
+          Object.assign(next.controls, defaults().controls);
+          next.controlsRevision = CONTROLS_REVISION;
+        }
+        if (JSON.stringify(next) !== JSON.stringify(saved.state) || root.UserConfig?.getStatus?.().pending > 0) {
+          pendingInitial = next;
+          await persist(next); // Reset and marker share the existing atomic/retry path.
+          pendingInitial = null;
+        }
+      }
       else {
         next = defaults();
         const raw = root.localStorage?.getItem('rk_chart_fav_pets');
@@ -175,7 +266,9 @@
     const groups = state.activeGroupId === ALL ? state.groups : state.groups.filter(g => g.id === state.activeGroupId);
     return [...new Set(groups.flatMap(g => g.petIds))].map(id => ({ id, key: `chart:${id}` }));
   }
-  return Object.freeze({ init, retry, defaults, validate, isPreset, getPresets, getPreset, getState: () => clone(state), getEntries: entries,
+  return Object.freeze({ init, retry, defaults, validate, isPreset, getPresets, getPreset, getPresetAvailability,
+    setSurvivalContextProvider(provider) { survivalContextProvider = typeof provider === 'function' ? provider : null; survivalCache = null; },
+    getState: () => clone(state), getEntries: entries,
     getStatus: () => ({ initialized, error, pendingWrite: !!pendingWrite }),
     dispose() { root.removeEventListener?.('userconfigchange', onCommitted); listeners.clear(); },
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
@@ -191,6 +284,12 @@
     copyGroup: (id, text) => transact(s => {
       const original = isPreset(id) ? getPreset(id) : group(s, id), newId = freshId(s);
       s.groups.push({ id: newId, name: name(text), petIds: [...original.petIds] }); s.activeGroupId = newId; return newId;
+    }),
+    importPreset: (presetId, targetId) => transact(s => {
+      const target = group(s, targetId), snapshot = getPreset(presetId);
+      // Append once, stable ID dedup, preserving original order and all members.
+      // Failed persistence retries this exact snapshot, never a later live membership.
+      target.petIds = [...new Set([...target.petIds, ...snapshot.petIds])];
     }),
     deleteGroup: id => transact(s => {
       if (id === UNGROUPED) throw Error('不能删除未分组');
@@ -214,8 +313,27 @@
     }),
     removePet: id => transact(s => { editable(s.activeGroupId); if (!petOK(id)) throw Error('精灵ID无效'); for (const g of s.groups) g.petIds = g.petIds.filter(p => p !== id); }),
     setControls: patch => transact(s => {
+      if (!object(patch)) throw Error('曲线控件配置无效');
+      for (const field of ['atkIV', 'atkNature', 'defIV'])
+        if (Object.hasOwn(patch, field) && !object(patch[field])) throw Error('曲线控件配置无效');
+      for (const field of ['atkIV', 'defIV'])
+        if (patch[field] && Object.values(patch[field]).some(value => typeof value !== 'boolean'))
+          throw Error('曲线控件配置无效');
+      if (patch.atkNature && Object.values(patch.atkNature).some(value => ![0, 1].includes(value)))
+        throw Error('曲线控件配置无效');
+      for (const stat of ['attack', 'magic_attack']) {
+        if (patch.atkNature?.[stat] === 1 && patch.atkIV?.[stat] === false)
+          throw Error('攻击个体与正性格配置矛盾');
+      }
       for (const field of ['atkIV', 'atkNature', 'defIV']) if (Object.hasOwn(patch, field)) s.controls[field] = { ...s.controls[field], ...patch[field] };
-      if (Object.hasOwn(patch, 'doubleLife')) s.controls.doubleLife = patch.doubleLife;
+      for (const stat of ['attack', 'magic_attack']) {
+        if (patch.atkNature?.[stat] === 1) s.controls.atkIV[stat] = true;
+        if (patch.atkIV?.[stat] === false) s.controls.atkNature[stat] = 0;
+      }
+      if (Object.hasOwn(patch, 'hpNature')) s.controls.hpNature = patch.hpNature;
+      else if (Object.hasOwn(patch, 'doubleLife')) s.controls.hpNature = patch.doubleLife;
+      s.controls.doubleLife = s.controls.hpNature;
+      if (Object.hasOwn(patch, 'hpIV') && patch.hpIV !== true) throw Error('生命个体固定开启');
     })
   });
 });

@@ -81,6 +81,7 @@ async page => {
     await page.locator('#basePower').fill('180');
     const after=await page.evaluate(()=>{const r=DamagePage.CalcEngine.calculate();return r&&{total:r.totalDamage,normal:r.normalDamage,meteor:r.starMeteorDamage,power:r.skillFinalPower};});
     check(before!==null&&JSON.stringify(before)===JSON.stringify(after),'summed expression is one release including meteor');
+    check(await page.evaluate(()=>UserConfig.flush()),'all expression writes committed before leaving fixture');
     check(errors.length===0,'no page errors: '+errors.join('; '));
     return {passed:checks.length,checks};
   }finally{page.off('pageerror',onError);}

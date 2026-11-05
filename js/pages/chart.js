@@ -4,6 +4,101 @@
  */
 /* Pure helpers, independent of Chart.js and event ownership. */
 const ChartFavoriteMath = Object.freeze({
+  selectedValuesMatch(values, selected) {
+    return ['atkIV', 'atkNature', 'defIV', 'defNature', 'hpNature'].every(key => values[key] === selected[key]);
+  },
+  visibleDamageRows(chart) {
+    return chart ? chart.data.datasets.filter((ds, i) => !ds.reference && !ds.favoriteMarker
+      && ds.type !== 'scatter' && chart.isDatasetVisible(i)) : [];
+  },
+  visibleDamageConfig(chart) {
+    const rows = this.visibleDamageRows(chart);
+    return rows.length === 1 ? rows[0].damageConfig || null : null;
+  },
+  survival(result) {
+    return result && Number.isFinite(result.hp) && result.hp > 0 && Number.isFinite(result.damage) && result.damage >= 0
+      ? result.damage >= result.hp ? 'kill' : 'survive' : 'neutral';
+  },
+  attackLevel(context, data, math) {
+    return math.normalizeLevel(context.attackerLevel ?? data.getPetLevel(context.atkPet));
+  },
+  operatingPoint(context, pet, values, data, math) {
+    if (!context?.atkPet || !pet || !values) return null;
+    const atk = context.attackType, def = atk === 'magic_attack' ? 'magic_defense' : 'defense';
+    const hp = data.getPetStat(pet, 'hp', (values.hpNature ?? context.hpNature) ? 1 : 0, true);
+    const defense = data.getPetStat(pet, def, values.defNature, values.defIV);
+    const effect = data.getTypeEff(context.skillAttr, pet.main_type?.name || '', pet.sub_type?.name || '');
+    const level = this.attackLevel(context, data, math);
+    // Curve-owned IV/nature, but the damage card's effective attacker level.
+    // Use the raw base directly: RKData's generic stat API intentionally ignores
+    // overrides for ordinary species, which may have a battle-snapshot level here.
+    // A tiny legacy adapter without raw bases may still supply its own stat API.
+    const attack = context.mode === 'defense'
+      ? typeof data.getBaseStat === 'function'
+        ? math.statFromBase(data.getBaseStat(context.atkPet, atk), atk, values.atkNature, values.atkIV, level)
+        : data.getPetStat(context.atkPet, atk, values.atkNature, values.atkIV, level)
+      : math.statFromBase(context.qualification, atk, values.atkNature, values.atkIV, level);
+    // Effect scope is unchanged: defense uses skill/buff/combo; the attack sweep
+    // uses standalone power + same-type. No reduction, starMeteor or manual final.
+    const power = context.mode === 'defense'
+      ? math.finalPower(context.basePower, context.fixedBonus, context.percentBonus, context.sameType, 1, context.buff)
+      : math.finalPower(context.power, 0, 0, context.sameType);
+    const damage = math.normalDamage(attack, power, defense, 1, context.mode === 'defense' ? context.comboCount : 1, level, effect);
+    return { hp, damage, defense, effect, attack, power, level };
+  },
+  curveConfigurations(selected, showAll = false) {
+    const values = { ...selected, atkNature: selected.atkIV && selected.atkNature === 1 ? 1 : 0, defNature: 0 };
+    if (!showAll || !(values.atkIV && values.atkNature === 1 && values.defIV && values.hpNature)) return [values];
+    return [[false, 0], [true, 0], [true, 1]].flatMap(([atkIV, atkNature]) =>
+      [false, true].flatMap(defIV => [false, true].map(hpNature => ({ atkIV, atkNature, defIV, defNature: 0, hpNature }))));
+  },
+  tooltipLines(context, pet, rows, data, math) {
+    if (!context || !pet) return [];
+    const flag = value => value ? '✓' : '×';
+    return rows.flatMap(row => {
+      const v = row.damageConfig;
+      if (!v) return [];
+      const r = this.operatingPoint(context, pet, v, data, math);
+      const hpNature = v.hpNature ?? context.hpNature;
+      const ratio = r.hp > 0 ? (r.damage / r.hp * 100).toFixed(2) : '—';
+      const last = `⑥ 伤害占比 = ${r.damage} ÷ ${r.hp} (✓个体&${flag(hpNature)}性格) = ${ratio}%`;
+      // Visible rows retain legend order; hidden rows never contribute a summary.
+      if (rows.length !== 1) return [last];
+      const defenseMode = context.mode === 'defense', combo = defenseMode ? context.comboCount : 1;
+      const raw = defenseMode ? context.basePower : context.power;
+      const fixed = defenseMode ? context.fixedBonus : 0, percent = defenseMode ? context.percentBonus : 0;
+      const buff = defenseMode ? context.buff : 0, base = math.basePower(raw, fixed, percent);
+      const name = p => data.getMonsterDisplayName?.(p) || p.localized?.zh?.name || p.name || '精灵';
+      const attrZh = data.getTypeZh?.(context.skillAttr) || context.skillAttr;
+      const attr = data.getTypeZhFull?.(attrZh) || attrZh;
+      let baseText = defenseMode && context.basePowerExpression ? context.basePowerExpression : String(raw);
+      if (fixed !== 0) baseText += ` + ${fixed}`;
+      if (percent !== 0) baseText = `(${baseText}) × ${(1 + percent / 100).toFixed(2)}`;
+      if (fixed !== 0 || percent !== 0 || (defenseMode && context.basePowerExpression)) baseText += ` = ${base}`;
+      const powerParts = [String(base)];
+      if (context.sameType !== 1) powerParts.push(`本系${context.sameType}`);
+      if (buff !== 0) powerParts.push(buff > 0 ? `BUFF${math.buffMultiplier(buff).toFixed(2)}` : `BUFF÷${(1 / math.buffMultiplier(buff)).toFixed(2)}`);
+      const finalText = powerParts.length > 1 ? `${powerParts.join(' × ')} = ${r.power}` : String(r.power);
+      const attackBase = defenseMode ? data.getBaseStat?.(context.atkPet, context.attackType) : context.qualification;
+      const nature = v.atkNature === 1 ? 1.2 : v.atkNature === 2 ? 0.9 : 1;
+      const attackText = Number.isFinite(attackBase)
+        ? `R((R((${r.level} ÷ 100 + 0.5) × (${attackBase} + ${v.atkIV ? 30 : 0})) + 10) × ${nature}) + 50 = ${r.attack}`
+        : String(r.attack);
+      const factor = `等级系数B[(1000 + 45 × ${r.level}) ÷ 4100]`;
+      const damageParts = [`${r.power} × (${r.attack} ÷ ${r.defense})`, factor];
+      if (r.effect !== 1) damageParts.push(`克制${r.effect}`);
+      // Exact coefficient, floor each hit first, then multiply the hit count.
+      const damageText = `⌊${damageParts.join(' × ')}⌋` + (combo !== 1 ? ` × ${combo}连击` : '');
+      return [
+        `① ${name(context.atkPet)}${context.attackType === 'attack' ? '物攻' : '魔攻'}（Lv${r.level}） = ${attackText} (${flag(v.atkIV)}个体&${flag(v.atkNature === 1)}性格${Number.isFinite(attackBase) ? '；R=四舍五入' : ''})`,
+        `② ${name(pet)}${context.attackType === 'attack' ? '物防' : '魔防'} = ${r.defense} (${flag(v.defIV)}个体&×性格)`,
+        `③ 技能基础威力 = ${baseText}，技能属性 = ${attr}`,
+        `④ 技能最终威力 = ${finalText}`,
+        `⑤ 最终伤害 = ${damageText} = ${r.damage}`,
+        last
+      ];
+    });
+  },
   contentSize(container, style) {
     const px = value => Number.parseFloat(value) || 0;
     // client dimensions are layout CSS pixels, not CSS-zoom visual pixels.
@@ -23,18 +118,17 @@ const ChartFavoriteMath = Object.freeze({
   },
   configuration(entry, state, configs, sharedDefender, pet, resolver) {
     // Compatibility signature only: never inspect damage or personal configuration.
-    return { iv: { ...sharedDefender.iv }, nature: { ...sharedDefender.nature },
+    return { iv: { ...sharedDefender.iv, hp: true }, nature: { ...sharedDefender.nature },
       source: '曲线共用防守方设置' };
   },
   equivalentLife(hp, effect) {
     if (!Number.isFinite(effect) || effect < 0) return { y: null, reason: '属性倍率无效' };
     if (effect === 0) return { y: null, reason: '属性免疫，无法击杀（不绘制无限等效生命）' };
-    // For integer neutral damage n: ceil(n*E)>=HP iff n*E>HP-1.
-    // Thus T=floor((HP-1)/E)+1, NOT ceil(HP/E). Search the actual JS operation
-    // to avoid floating-point division boundary errors. Combo restricts attainable
-    // n to multiples, but n>=T remains an exact predicate for those values too.
-    const result = ChartFavoriteMath.minimumInteger(hp, n => Math.ceil(n * effect));
-    return { y: result.x, ...(result.reason ? { reason: result.reason } : {}) };
+    if (!Number.isFinite(hp) || hp < 0) return { y: null, reason: '目标生命无效' };
+    // Continuous neutral reference, not a shortcut through an already-floored hit.
+    // Actual survival is always evaluated by normalDamage(..., effectiveness).
+    const y = hp / effect;
+    return Number.isFinite(y) ? { y } : { y: null, reason: '等效生命超出可绘制范围' };
   },
   defenseMinimum(markers) {
     // Low-defense favorites (e.g. Dragon327 physical 69) keep their real x. Extend
@@ -104,20 +198,20 @@ const ChartPage = (function () {
     mode: 'defense', axisSwapped: false, sameType: false,
     attackType: 'attack', power: 200, qualification: 120,
     sourceType: null,
-    overrides: { atkIV: {}, atkNature: {}, defIV: {} }, doubleLife: false,
-    hidden: {}, markersVisible: true
+    overrides: { atkIV: {}, atkNature: {}, defIV: {} }, hpNature: false,
+    hidden: {}, markersVisible: true, showAll: false
   };
   let instance = null;
   let active = false;
   let resizeFrame = null, imageFrame = null, resizeObserver = null;
-  let unsubscribeFavorites = null, favoriteSearch = null, closePresetPicker = null;
+  let unsubscribeDamageFavorites = null, unsubscribeFavorites = null, favoriteSearch = null, closePresetPicker = null;
   const activePreset = () => !!window.ChartWorkspace?.isPreset(window.ChartWorkspace.getState().activeGroupId);
   let workspaceReady = false, workspaceBusy = false, workspaceError = '', retryWorkspace = null;
-  let selectedFavoriteId = null;
+  let selectedFavoriteId = null, visibilitySignature = '', entriesError = '';
   const avatarCache = new Map();
   const AVATAR_LIMIT = 64;
   let pageScrollTop = 0;
-  const COLORS = ['#11998e', '#e67e22', '#4a90e2', '#8e44ad', '#3d7e1b', '#c0392b', '#9b59b6', '#d35400'];
+  const COLORS = ['#11998e', '#e67e22', '#4a90e2', '#8e44ad', '#3d7e1b', '#c0392b', '#9b59b6', '#d35400', '#00838f', '#ad1457', '#546e7a', '#827717'];
   const copy = value => JSON.parse(JSON.stringify(value));
   const damageState = () => DamagePage.getState();
   const getPetName = pet => RKData.getMonsterDisplayName(pet);
@@ -142,8 +236,11 @@ const ChartPage = (function () {
 
   function applyWorkspace() {
     const c = window.ChartWorkspace.getState().controls;
+    if (JSON.stringify(view.overrides) !== JSON.stringify({ atkIV: c.atkIV, atkNature: c.atkNature, defIV: c.defIV }) || view.hpNature !== c.hpNature) {
+      view.hidden = {}; view.showAll = false;
+    }
     view.overrides = { atkIV: { ...c.atkIV }, atkNature: { ...c.atkNature }, defIV: { ...c.defIV } };
-    view.doubleLife = c.doubleLife;
+    view.hpNature = c.hpNature;
   }
 
   function syncBaseline() {
@@ -165,16 +262,57 @@ const ChartPage = (function () {
     }
   }
 
+  function presetAvailability(id) {
+    const store = window.ChartWorkspace;
+    if (!store?.isPreset?.(id)) return { disabled: false };
+    const preset = store.getPresets().find(p => p.id === id);
+    // Older embedded test adapters did not expose availability.
+    if (!store.getPresetAvailability) return { disabled: false, label: preset?.name, count: null, reason: '' };
+    try { return store.getPresetAvailability(id); }
+    catch (error) { return { disabled: true, label: preset?.name, count: null, reason: error.message }; }
+  }
+
+  function requirePreset(id) {
+    const availability = presetAvailability(id);
+    if (availability.disabled) throw new Error(availability.reason || availability.label);
+  }
+
+  function presetOverLimit(id, availability) {
+    return id === 'preset:Survivors' && Number.isFinite(availability.count) && availability.count > 100;
+  }
+
+  function syncPresetButtons() {
+    const descriptors = window.ChartWorkspace?.getPresets() || [];
+    document.querySelectorAll('#chartPresetPicker [data-preset-id]').forEach(button => {
+      const id = button.dataset.presetId, a = presetAvailability(id);
+      const overLimit = presetOverLimit(id, a);
+      const name = descriptors.find(p => p.id === id)?.name || a.label;
+      button.disabled = workspaceBusy || !workspaceReady || !!window.ChartWorkspace?.getStatus().pendingWrite || (!!a.disabled && !overLimit);
+      if (!overLimit) delete button.dataset.feedback;
+      const text = button.dataset.feedback ? '不可斩杀精灵过多' : name;
+      button.title = a.disabled && !overLimit ? a.reason || name : text;
+      button.setAttribute('aria-label', text);
+      if (button.classList.contains('chart-preset-dynamic')) button.textContent = text;
+    });
+  }
+
   function syncWorkspaceStatus() {
     if (!active) return;
     const disabled = workspaceBusy || !workspaceReady || !!window.ChartWorkspace?.getStatus().pendingWrite;
     document.querySelectorAll('#chartControls button, #chartGroupToolbar select, #chartGroupToolbar button, #chartGroupManager input, #chartGroupManager button, #chartGroupManager select')
       .forEach(node => { node.disabled = disabled; });
     const readonly = activePreset();
-    for (const id of ['chartGroupRename', 'chartGroupUp', 'chartGroupDown', 'chartGroupDelete', 'chartGroupMove', 'chartGroupMoveTarget']) {
+    for (const id of ['chartGroupRename', 'chartGroupUp', 'chartGroupDown', 'chartGroupDelete', 'chartGroupMove', 'chartGroupMoveTarget', 'chartGroupImport', 'chartGroupImportPreset']) {
       const node = element(id);
-      if (node) { node.disabled = disabled || readonly; node.dataset.presetReadonly = String(readonly); }
+      if (node) { node.disabled = disabled || readonly || (['chartGroupImport', 'chartGroupImportPreset'].includes(id) && window.ChartWorkspace?.getState().activeGroupId === 'all'); node.dataset.presetReadonly = String(readonly); }
     }
+    const store = window.ChartWorkspace;
+    if (store) {
+      const copyButton = element('chartGroupCopy'), importButton = element('chartGroupImport');
+      if (copyButton) copyButton.disabled = disabled || store.getState().activeGroupId === 'all' || !!presetAvailability(store.getState().activeGroupId).disabled;
+      if (importButton) importButton.disabled ||= !!presetAvailability(element('chartGroupImportPreset').value).disabled;
+    }
+    syncPresetButtons();
     if (favoriteSearch) {
       favoriteSearch.input.disabled = disabled || readonly;
       favoriteSearch.input.placeholder = readonly ? '内置预设只读，可复制为自建分组后添加' : '搜索精灵并加入当前曲线分组';
@@ -190,7 +328,7 @@ const ChartPage = (function () {
   function defenseType() { return selectedType() === 'magic_attack' ? 'magic_defense' : 'defense'; }
   function baselineValue(field, stat) {
     // Fixed curve defaults, never damage-page IV/nature (including defense nature).
-    return field.endsWith('IV') ? true : 0;
+    return field === 'atkIV' ? true : field === 'defIV' ? false : 0;
   }
   function comparisonValue(field, stat) {
     return Object.hasOwn(view.overrides[field], stat) ? view.overrides[field][stat] : baselineValue(field, stat);
@@ -198,9 +336,9 @@ const ChartPage = (function () {
 
   function sharedDefenderConfiguration() {
     return {
-      iv: { hp: view.doubleLife, defense: comparisonValue('defIV', 'defense'), magic_defense: comparisonValue('defIV', 'magic_defense') },
-      // Atomic curve-owned switch, never inherited from individual profiles.
-      nature: { hp: view.doubleLife ? 1 : 0, defense: 0, magic_defense: 0 }
+      iv: { hp: true, defense: comparisonValue('defIV', 'defense'), magic_defense: comparisonValue('defIV', 'magic_defense') },
+      // HP IV is fixed on; only HP positive nature is switchable.
+      nature: { hp: view.hpNature ? 1 : 0, defense: 0, magic_defense: 0 }
     };
   }
 
@@ -228,12 +366,13 @@ const ChartPage = (function () {
           <div class="chart-control-group" role="group" aria-label="攻击方设置">
             <span class="chart-control-label">攻击方：</span>
             <button id="chartAtkIVBtn" class="chart-control-btn">个体</button>
-            <button id="chartAtkNatureBtn" class="chart-control-btn" title="左键：性格+ | 右键：性格-">性格</button>
+            <button id="chartAtkNatureBtn" class="chart-control-btn" title="切换攻击正性格（开启时同时开启攻击个体）">性格</button>
           </div>
           <div class="chart-control-group" role="group" aria-label="防守方设置">
             <span class="chart-control-label">防守方：</span>
-            <button id="chartIVBtn" class="chart-control-btn">防御</button>
-            <button id="chartDoubleLifeBtn" class="chart-control-btn" title="同时切换生命个体与生命正性格">双生命</button>
+            <button id="chartIVBtn" class="chart-control-btn">防御个体</button>
+            <button id="chartDoubleLifeBtn" class="chart-control-btn" title="仅切换生命正性格；生命个体固定开启">生命性格</button>
+            <button id="chartAllBtn" class="chart-control-btn chart-all-toggle" title="展开12种配置选项，初始仅显示当前曲线；关闭后返回单线" aria-pressed="false" hidden>all</button>
           </div>
         </div>
         <section class="chart-favorites" aria-label="曲线收藏">
@@ -252,6 +391,8 @@ const ChartPage = (function () {
               <button type="button" id="chartGroupCreate">新建</button>
               <button type="button" id="chartGroupRename">重命名</button>
               <button type="button" id="chartGroupCopy" title="复制成员列表，仍共用一套配置，全部组不重复头像">复制组</button>
+              <select id="chartGroupImportPreset" aria-label="选择要导入的内置预设"></select>
+              <button type="button" id="chartGroupImport" title="追加当前预设成员快照，保留原成员并去重">导入预设</button>
               <button type="button" id="chartGroupUp" aria-label="分组上移">↑</button>
               <button type="button" id="chartGroupDown" aria-label="分组下移">↓</button>
               <button type="button" id="chartGroupDelete">删除组</button>
@@ -309,13 +450,19 @@ const ChartPage = (function () {
       const nature = comparisonValue(field, stat());
       const button = element(id);
       button.dataset.nature = String(nature);
-      button.textContent = nature === 1 ? '性格+' : nature === 2 ? '性格-' : '性格';
+      button.textContent = nature === 1 ? '性格+' : '性格';
       button.classList.toggle('active-positive', nature === 1);
-      button.classList.toggle('active-negative', nature === 2);
+      button.setAttribute('aria-pressed', String(nature === 1));
     }
     element('chartIVBtn').title = `切换${defenseType() === 'defense' ? '物防' : '魔防'}个体（原曲线与曲线收藏共用）`;
-    element('chartDoubleLifeBtn').classList.toggle('active-positive', view.doubleLife);
-    element('chartDoubleLifeBtn').setAttribute('aria-pressed', String(view.doubleLife));
+    element('chartDoubleLifeBtn').classList.toggle('active-positive', view.hpNature);
+    element('chartDoubleLifeBtn').setAttribute('aria-pressed', String(view.hpNature));
+    const eligible = allControlsEnabled();
+    if (!eligible && view.showAll) { view.showAll = false; view.hidden = {}; }
+    const allButton = element('chartAllBtn');
+    allButton.hidden = !eligible;
+    allButton.classList.toggle('active-iv', view.showAll);
+    allButton.setAttribute('aria-pressed', String(view.showAll));
   }
 
   function bindEvents() {
@@ -344,32 +491,63 @@ const ChartPage = (function () {
         workspaceAction(() => window.ChartWorkspace.setControls({ [field]: { [key]: next } }));
       };
       element(id).addEventListener('click', () => change(1));
-      element(id).addEventListener('contextmenu', event => { event.preventDefault(); change(2); });
+      element(id).addEventListener('contextmenu', event => { event.preventDefault(); });
     }
     element('chartDoubleLifeBtn').addEventListener('click', () => {
-      const next = !view.doubleLife;
-      workspaceAction(() => window.ChartWorkspace.setControls({ doubleLife: next }));
+      const next = !view.hpNature;
+      workspaceAction(() => window.ChartWorkspace.setControls({ hpNature: next }));
     });
     element('chartDoubleLifeBtn').addEventListener('contextmenu', event => event.preventDefault());
+    element('chartAllBtn').addEventListener('click', () => {
+      if (!workspaceReady || workspaceBusy || !allControlsEnabled()) return;
+      view.showAll = !view.showAll; view.hidden = {};
+      renderChart();
+    });
+  }
+
+  function allControlsEnabled() {
+    const values = selectedValues();
+    return values.atkIV && values.atkNature === 1 && values.defIV && values.hpNature;
+  }
+
+  function selectedValues() {
+    return { atkIV: comparisonValue('atkIV', selectedType()), atkNature: comparisonValue('atkNature', selectedType()),
+      defIV: comparisonValue('defIV', defenseType()), defNature: 0, hpNature: view.hpNature };
+  }
+
+  function currentAttackLevel(s) {
+    // Read only the effective level, not damage-page IV/nature or computed stats.
+    // The engine owns native level controls, wolf modes and temporary snapshots.
+    const level = typeof DamagePage.CalcEngine?.effectiveLevel === 'function'
+      ? DamagePage.CalcEngine.effectiveLevel('attacker') : RKData.getPetLevel(s.atkPet);
+    return BattleMath.normalizeLevel(level);
+  }
+
+  function operatingContext(s) {
+    if (!s.atkPet || !s.defPet || !s.skillAttr || !['attack', 'magic_attack'].includes(selectedType())) return null;
+    return { mode: view.mode, atkPet: s.atkPet, attackerLevel: currentAttackLevel(s), skillAttr: s.skillAttr, attackType: selectedType(), hpNature: view.hpNature,
+      qualification: view.qualification, power: view.power, basePower: s.basePower, basePowerExpression: s.basePowerExpression, fixedBonus: s.fixedBonus,
+      percentBonus: s.percentBonus, buff: s.buff, comboCount: s.comboCount,
+      sameType: (view.mode === 'defense' ? DamagePage.CalcEngine.isSameType(s.atkPet, s.skillAttr) : view.sameType) ? 1.25 : 1 };
+  }
+
+  function survivalContext() {
+    const context = operatingContext(damageState()), values = selectedValues();
+    return context ? pet => ChartFavoriteMath.operatingPoint(context, pet, values, RKData, BattleMath) : null;
+  }
+
+  function currentEntries() {
+    entriesError = '';
+    if (!workspaceReady || !window.ChartWorkspace) return [];
+    try { requirePreset(window.ChartWorkspace.getState?.().activeGroupId); return window.ChartWorkspace.getEntries(); }
+    catch (error) { entriesError = error.message; return []; }
   }
 
   function variants() {
-    const atk = selectedType(), def = defenseType();
-    const baseline = { atkIV: baselineValue('atkIV', atk), atkNature: baselineValue('atkNature', atk),
-      defIV: baselineValue('defIV', def), defNature: baselineValue('defNature', def) };
-    let rows = [{ key: 'baseline', values: baseline }];
-    for (const [field, stat] of [['atkIV', atk], ['atkNature', atk], ['defIV', def]]) {
-      const value = comparisonValue(field, stat);
-      if (value === baseline[field]) continue;
-      rows = rows.concat(rows.map(row => ({
-        key: `${row.key}/${field}:${value}`, values: { ...row.values, [field]: value }
-      })));
-    }
-    // Stable keys retain comparison visibility semantics; labels describe actual values.
-    const natureLabel = value => value === 2 ? '负性格' : CommonUI.enabledText(value === 1, '性格');
-    const sideLabel = (iv, nature) => `${CommonUI.enabledText(iv, '个体')}&${natureLabel(nature)}`;
-    return rows.map(row => ({ ...row,
-      label: `攻：${sideLabel(row.values.atkIV, row.values.atkNature)} / 防：${sideLabel(row.values.defIV, row.values.defNature)}`
+    return ChartFavoriteMath.curveConfigurations(selectedValues(), view.showAll).map(values => ({
+      key: [values.atkIV, values.atkNature, values.defIV, values.hpNature].join(':'), values,
+      selected: ChartFavoriteMath.selectedValuesMatch(values, selectedValues()),
+      label: `攻：${CommonUI.enabledText(values.atkIV, '个体')}&${CommonUI.enabledText(values.atkNature === 1, '性格')} / 防：${CommonUI.enabledText(values.defIV, '个体')}&${CommonUI.enabledText(values.hpNature, '生命性格')}`
     }));
   }
 
@@ -379,7 +557,8 @@ const ChartPage = (function () {
     syncBaseline();
     syncControls();
     const s = damageState();
-    renderFavorites(s);
+    window.ChartWorkspace?.setSurvivalContextProvider?.(survivalContext);
+    renderFavorites(s, false);
     if (!s.atkPet || !s.defPet) {
       element('chartInfo').textContent = '请在「伤害计算」页面设置精灵和技能，然后回到此页面查看曲线';
       if (instance) instance.destroy();
@@ -393,19 +572,18 @@ const ChartPage = (function () {
   function renderDefenseChart(canvas, s) {
     const minimum = ChartFavoriteMath.defenseMinimum(favoriteMarkers(s));
     const labels = Array.from({ length: (200 - minimum) / 2 + 1 }, (_, i) => minimum + i * 2);
-    const atkStat = s.skillType, defStat = defenseType();
+    const atkStat = s.skillType, defStat = defenseType(), level = currentAttackLevel(s);
     const sameType = DamagePage.CalcEngine.isSameType(s.atkPet, s.skillAttr) ? 1.25 : 1;
     const power = BattleMath.finalPower(s.basePower, s.fixedBonus, s.percentBonus, sameType, 1, s.buff);
     // Deliberately exclude reduction, defenseMod, starMeteor and finalPowerManual.
     const rows = variants().map(row => ({ ...row, data: labels.map(base => {
-      const attack = RKData.getPetStat(s.atkPet, atkStat, row.values.atkNature, row.values.atkIV);
-      const defense = BattleMath.statFromBase(base, defStat, row.values.defNature, row.values.defIV);
-      return Math.ceil(BattleMath.normalDamage(attack, power, defense, 1, s.comboCount));
+      const attack = BattleMath.statFromBase(getBaseStat(s.atkPet, atkStat), atkStat, row.values.atkNature, row.values.atkIV, level);
+      const defense = BattleMath.statFromBase(base, defStat, row.values.defNature, row.values.defIV, RKData.getPetLevel(s.defPet));
+      return BattleMath.normalDamage(attack, power, defense, 1, s.comboCount, level);
     }) }));
-    element('chartInfo').textContent = `攻击方：${getPetName(s.atkPet)} | 技能属性：${s.skillAttr} | 最终威力：${power} | 连击数：${s.comboCount} | 本系×${sameType}`;
+    element('chartInfo').textContent = `攻击方：${getPetName(s.atkPet)}（Lv${level}） | 技能属性：${s.skillAttr} | 最终威力：${power} | 连击数：${s.comboCount} | 本系×${sameType}`;
     draw(canvas, labels, rows, {
-      xTitle: '防御资质', current: getBaseStat(s.defPet, defStat), step: 5,
-      threshold: 400, thresholdLabel: '400伤害参考线', reverseCrossing: true, crossingPrefix: '资质'
+      xTitle: '防御资质', current: getBaseStat(s.defPet, defStat), step: 5
     });
   }
 
@@ -413,7 +591,7 @@ const ChartPage = (function () {
     const labels = view.axisSwapped
       ? Array.from({ length: 101 }, (_, i) => i * 6)
       : Array.from({ length: 61 }, (_, i) => 80 + i * 2);
-    const atkStat = view.attackType, defStat = defenseType();
+    const atkStat = view.attackType, defStat = defenseType(), level = currentAttackLevel(s);
     const sameType = view.sameType ? 1.25 : 1;
     const effect = RKData.getTypeEff(s.skillAttr, s.defPet.main_type?.name || '', s.defPet.sub_type?.name || '');
     const sharedDefender = sharedDefenderConfiguration();
@@ -421,29 +599,34 @@ const ChartPage = (function () {
     const rows = variants().map(row => ({ ...row, data: labels.map(x => {
       const attackBase = view.axisSwapped ? view.qualification : x;
       const rawPower = view.axisSwapped ? x : view.power;
-      const attack = BattleMath.statFromBase(attackBase, atkStat, row.values.atkNature, row.values.atkIV);
+      const attack = BattleMath.statFromBase(attackBase, atkStat, row.values.atkNature, row.values.atkIV, level);
       const defense = RKData.getPetStat(s.defPet, defStat, row.values.defNature, row.values.defIV);
-      // Preserve standalone power and un-ceiled final effectiveness in this mode.
+      // Standalone power remains independent; include type before the sole damage floor.
       const power = BattleMath.finalPower(rawPower, 0, 0, sameType);
-      return BattleMath.normalDamage(attack, power, defense) * effect;
+      return BattleMath.normalDamage(attack, power, defense, 1, 1, level, effect);
     }) }));
-    element('chartInfo').textContent = `防守方：${getPetName(s.defPet)} | ${defStat === 'defense' ? '物防' : '魔防'}资质：${getBaseStat(s.defPet, defStat)} | 参考生命：${hp} | ${view.axisSwapped ? '攻击资质' : '技能威力'}：${view.axisSwapped ? view.qualification : view.power} | ${atkStat === 'attack' ? '物攻' : '魔攻'} | 本系×${sameType}`;
+    element('chartInfo').textContent = `防守方：${getPetName(s.defPet)} | ${defStat === 'defense' ? '物防' : '魔防'}资质：${getBaseStat(s.defPet, defStat)} | 参考生命：${hp} | ${view.axisSwapped ? '攻击资质' : '技能威力'}：${view.axisSwapped ? view.qualification : view.power} | ${atkStat === 'attack' ? '物攻' : '魔攻'} | 本系×${sameType} | 攻击方等级：Lv${level} | 当前判定点：资质${view.qualification} / 威力${view.power}`;
     draw(canvas, labels, rows, {
       xTitle: view.axisSwapped ? '技能威力' : '攻击资质',
-      current: view.axisSwapped ? null : getBaseStat(s.atkPet, atkStat),
-      step: view.axisSwapped ? 60 : 5, threshold: hp, thresholdLabel: `斩杀线(${hp})`,
-      reverseCrossing: false, crossingPrefix: view.axisSwapped ? '威力:' : '资质'
+      current: view.axisSwapped ? view.power : view.qualification,
+      step: view.axisSwapped ? 60 : 5, targetHP: hp,
+      crossingPrefix: view.axisSwapped ? '威力:' : '资质'
     });
   }
 
   function draw(canvas, labels, rows, options) {
     const palette = chartPalette();
+    const signature = JSON.stringify([view.mode, selectedType(), selectedValues(), view.axisSwapped, view.showAll]);
+    if (signature !== visibilitySignature) { view.hidden = {}; visibilitySignature = signature; }
+    const context = operatingContext(damageState());
     const datasets = rows.map((row, index) => {
       const color = COLORS[index % COLORS.length];
       const key = `${view.mode}:${selectedType()}:${row.key}`;
       return {
-        label: row.label, data: row.data, viewKey: key,
-        hidden: view.hidden[key] ?? (rows.length > 4 && index > 0),
+        label: row.label, shortLabel: `曲线${index + 1}`, data: row.data, viewKey: key, damageConfig: { ...row.values },
+        // ALL exposes the other configurations in the legend, not on the plot.
+        // Explicit legend choices (including hiding the selected line) win on redraw.
+        hidden: view.hidden[key] ?? (view.showAll && !row.selected),
         borderColor: color, backgroundColor: color, borderWidth: 2,
         tension: 0.2, cubicInterpolationMode: 'monotone', fill: false,
         pointRadius: context => options.current != null && Math.abs(Number(labels[context.dataIndex]) - options.current) <= 3 ? 6 : 2,
@@ -451,10 +634,10 @@ const ChartPage = (function () {
       };
     });
     const maxDamage = Math.max(...rows.flatMap(row => row.data));
-    if (maxDamage >= options.threshold) datasets.push({
-      label: options.thresholdLabel, reference: true, viewKey: `${view.mode}:reference`,
+    if (options.targetHP != null && maxDamage >= options.targetHP) datasets.push({
+      label: `斩杀线(${options.targetHP})`, reference: true, viewKey: `${view.mode}:reference`,
       hidden: view.hidden[`${view.mode}:reference`] ?? false,
-      data: labels.map(() => options.threshold), borderColor: '#e43316', backgroundColor: 'transparent',
+      data: labels.map(() => options.targetHP), borderColor: '#e43316', backgroundColor: 'transparent',
       borderWidth: 1.5, borderDash: [6, 4], tension: 0, fill: false, pointRadius: 0, pointHoverRadius: 0
     });
     const markers = favoriteMarkers(damageState());
@@ -481,14 +664,13 @@ const ChartPage = (function () {
     if (axis.guarded) return; // No Chart.js tick allocation; source math/data stay intact.
     instance = new Chart(canvas.getContext('2d'), {
       type: 'line', data: { labels, datasets },
-      plugins: [favoriteAvatarPlugin(images, palette), { id: 'crossLabel', afterDatasetsDraw(chart) {
-        if (maxDamage < options.threshold) return;
+      plugins: [favoriteAvatarPlugin(images, palette, context), ...(options.targetHP == null ? [] : [{ id: 'killLabel', afterDatasetsDraw(chart) {
+        if (maxDamage < options.targetHP) return;
         const visible = chart.data.datasets.map((ds, i) => ({ ds, meta: chart.getDatasetMeta(i) }))
           .filter(({ ds, meta }) => !ds.reference && !ds.favoriteMarker && !meta.hidden);
         if (!visible.length || visible.length > 3) return;
         for (const { ds, meta } of visible) {
-          const matches = ds.data.map((value, i) => value >= options.threshold ? i : -1).filter(i => i >= 0);
-          const index = options.reverseCrossing ? matches.at(-1) : matches[0];
+          const index = ds.data.findIndex(value => value >= options.targetHP);
           const point = meta.data[index];
           if (!point) continue;
           const c = chart.ctx;
@@ -498,7 +680,7 @@ const ChartPage = (function () {
           c.strokeText(text, point.x, point.y - 12); c.fillText(text, point.x, point.y - 12);
           c.beginPath(); c.arc(point.x, point.y, 5, 0, Math.PI * 2); c.fill(); c.restore();
         }
-      }}],
+      }}])],
       options: {
         responsive: false, maintainAspectRatio: false, animation: false, color: palette.text, interaction: { mode: 'nearest', intersect: false },
         plugins: {
@@ -537,8 +719,23 @@ const ChartPage = (function () {
     scheduleResize();
   }
 
-  function favoriteAvatarPlugin(images, palette) {
-    const border = () => palette.border;
+  function favoriteAvatarPlugin(images, palette, context) {
+    const border = marker => marker.survival === 'kill' ? '#dc2626' : marker.survival === 'survive' ? '#16a34a' : palette.border;
+    function applySurvival(chart) {
+      const values = ChartFavoriteMath.visibleDamageConfig(chart);
+      const resultFor = pet => values ? ChartFavoriteMath.operatingPoint(context, pet, values, RKData, BattleMath) : null;
+      for (const ds of chart.data.datasets) if (ds.favoriteMarker) for (const marker of ds.data) {
+        marker.visibleResult = resultFor(marker.pet);
+        marker.survival = ChartFavoriteMath.survival(marker.visibleResult);
+      }
+      document.querySelectorAll('#chartFavoriteGrid [data-chart-favorite]').forEach(node => {
+        const pet = RKData.getMonsterById(Number(node.dataset.chartFavorite));
+        node.dataset.survival = ChartFavoriteMath.survival(resultFor(pet));
+        node.title = pet ? [getPetName(pet), ...ChartFavoriteMath.tooltipLines(context, pet,
+          ChartFavoriteMath.visibleDamageRows(chart), RKData, BattleMath)].join('\n') : `精灵 #${node.dataset.chartFavorite}（资料不存在）`;
+        node.setAttribute('aria-label', node.title);
+      });
+    }
     return {
       id: 'favoriteAvatars',
       beforeEvent(chart, args) {
@@ -548,6 +745,7 @@ const ChartPage = (function () {
         args.inChartArea = chart.isPointInArea(args.event);
       },
       afterUpdate(chart) {
+        applySurvival(chart);
         const index = chart.data.datasets.findIndex(ds => ds.favoriteMarker);
         if (index < 0) return;
         const meta = chart.getDatasetMeta(index), markers = chart.data.datasets[index].data;
@@ -625,6 +823,7 @@ const ChartPage = (function () {
     resizeObserver?.disconnect(); resizeObserver = null;
     closePresetPicker?.(); closePresetPicker = null;
     unsubscribeFavorites?.(); unsubscribeFavorites = null;
+    unsubscribeDamageFavorites?.(); unsubscribeDamageFavorites = null;
     favoriteSearch?.destroy(); favoriteSearch = null;
     for (const event of ['resize', 'appzoomchange', 'appwindowstatechange']) window.removeEventListener(event, scheduleResize);
     for (const event of ['appfontchange', 'appthemechange']) window.removeEventListener(event, refreshAppearance);
@@ -702,6 +901,7 @@ const ChartPage = (function () {
         applyWorkspace(); renderChart();
       }
     });
+    unsubscribeDamageFavorites = window.FavoritePets?.subscribe?.(() => { if (active) renderChart(); });
     bindGroups(store);
     favoriteSearch = CommonUI.createSearchBox({
       placeholder: '搜索精灵并加入当前曲线分组', limit: 10,
@@ -720,9 +920,9 @@ const ChartPage = (function () {
     if (workspaceBusy || !workspaceReady) return;
     const anchor = element('chartGroupPresets'), layer = document.createElement('div');
     layer.id = 'chartPresetPicker'; layer.className = 'bloodline-hdropdown chart-preset-picker';
-    layer.setAttribute('role', 'dialog'); layer.setAttribute('aria-label', '自动更新的18属性预设分组');
+    layer.setAttribute('role', 'dialog'); layer.setAttribute('aria-label', '自动更新的18属性、不可斩杀及收藏预设分组');
     const selected = store.getState().activeGroupId;
-    const presets = store.getPresets();
+    const presets = store.getPresets().filter(p => p.type);
     for (let i = 0; i < presets.length; i += 6) {
       const row = document.createElement('div'); row.className = 'bloodline-hdropdown-row';
       for (const preset of presets.slice(i, i + 6)) {
@@ -732,23 +932,51 @@ const ChartPage = (function () {
         button.setAttribute('aria-label', preset.name); button.setAttribute('aria-pressed', String(preset.id === selected));
         const img = document.createElement('img'); img.className = 'bloodline-hdropdown-icon'; img.alt = '';
         img.src = `assets/icons/type/${preset.type.toLowerCase()}.png`; button.appendChild(img);
-        button.addEventListener('click', () => { closePresetPicker?.(); workspaceAction(() => store.selectGroup(preset.id)); });
+        button.addEventListener('click', () => { closePresetPicker?.(); workspaceAction(() => { requirePreset(preset.id); return store.selectGroup(preset.id); }); });
         row.appendChild(button);
       }
       layer.appendChild(row);
     }
+    const dynamicRow = document.createElement('div'); dynamicRow.className = 'chart-preset-dynamic-row';
+    const feedbackTimers = new Map();
+    for (const dynamic of store.getPresets().filter(p => !p.type)) {
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'chart-preset-dynamic';
+      button.dataset.presetId = dynamic.id; button.textContent = dynamic.name;
+      button.setAttribute('aria-pressed', String(dynamic.id === selected));
+      button.setAttribute('aria-live', 'polite');
+      button.addEventListener('click', () => {
+        if (!layer.isConnected || button.disabled || workspaceBusy) return;
+        const availability = presetAvailability(dynamic.id);
+        if (presetOverLimit(dynamic.id, availability)) {
+          clearTimeout(feedbackTimers.get(button));
+          button.dataset.feedback = 'over-limit'; syncPresetButtons();
+          feedbackTimers.set(button, setTimeout(() => {
+            feedbackTimers.delete(button);
+            if (!layer.isConnected) return;
+            delete button.dataset.feedback; syncPresetButtons();
+          }, 2000));
+          return; // A limit notice is not a selection or a failed save.
+        }
+        if (availability.disabled) { syncPresetButtons(); return; }
+        closePresetPicker?.(); workspaceAction(() => { requirePreset(dynamic.id); return store.selectGroup(dynamic.id); });
+      });
+      dynamicRow.appendChild(button);
+    }
+    layer.appendChild(dynamicRow);
     document.body.appendChild(layer); anchor.setAttribute('aria-expanded', 'true');
     const close = CommonUI.bindAnchoredLayer(anchor, layer, () => {
       const ownedFocus = layer.contains(document.activeElement);
       window.removeEventListener('appfontchange', close); window.removeEventListener('appthemechange', close);
+      feedbackTimers.forEach(timer => clearTimeout(timer)); feedbackTimers.clear();
       layer.remove(); closePresetPicker = null; anchor.setAttribute('aria-expanded', 'false');
       if (ownedFocus && anchor.isConnected) anchor.focus();
     });
     closePresetPicker = close;
     window.addEventListener('appfontchange', close); window.addEventListener('appthemechange', close);
-    const buttons = Array.from(layer.querySelectorAll('button'));
+    syncPresetButtons();
+    const enabledButtons = () => Array.from(layer.querySelectorAll('button')).filter(button => !button.disabled);
     layer.addEventListener('keydown', event => {
-      const index = buttons.indexOf(document.activeElement);
+      const buttons = enabledButtons(), index = buttons.indexOf(document.activeElement);
       if (index < 0) return;
       let next;
       if (event.key === 'ArrowRight') next = (index + 1) % buttons.length;
@@ -762,6 +990,7 @@ const ChartPage = (function () {
       event.preventDefault(); buttons[next].focus();
     });
     CommonUI.positionAnchoredLayer(anchor, layer);
+    const buttons = enabledButtons();
     (buttons.find(button => button.dataset.presetId === selected) || buttons[0])?.focus({ preventScroll: true });
   }
 
@@ -775,7 +1004,7 @@ const ChartPage = (function () {
     };
     element('chartGroupSelect').addEventListener('change', event => {
       const id = event.target.value;
-      workspaceAction(() => store.selectGroup(id));
+      workspaceAction(() => { requirePreset(id); return store.selectGroup(id); });
     });
     element('chartGroupPresets').addEventListener('click', () => openPresetPicker(store));
     element('chartGroupPresets').addEventListener('keydown', event => {
@@ -788,7 +1017,12 @@ const ChartPage = (function () {
     element('chartGroupCreate').addEventListener('click', () => { const text = name(); workspaceAction(() => store.createGroup(text)); });
     element('chartGroupRename').addEventListener('click', () => { const text = name(); withGroup(id => store.renameGroup(id, text)); });
     element('chartGroupCopy').addEventListener('click', () => {
-      const text = name(); withGroup(id => store.copyGroup(id, text || (store.isPreset(id) ? store.getPreset(id) : store.getState().groups.find(g => g.id === id)).name + ' 副本'));
+      const text = name(); withGroup(id => { requirePreset(id); return store.copyGroup(id, text || (store.isPreset(id) ? store.getPreset(id) : store.getState().groups.find(g => g.id === id)).name + ' 副本'); });
+    });
+    element('chartGroupImportPreset').addEventListener('change', syncWorkspaceStatus);
+    element('chartGroupImport').addEventListener('click', () => {
+      const presetId = element('chartGroupImportPreset').value;
+      withGroup(id => { requirePreset(presetId); return store.importPreset(presetId, id); });
     });
     element('chartGroupUp').addEventListener('click', () => withGroup(id => store.orderGroup(id, -1)));
     element('chartGroupDown').addEventListener('click', () => withGroup(id => store.orderGroup(id, 1)));
@@ -810,10 +1044,17 @@ const ChartPage = (function () {
     if (!store) return;
     const state = store.getState(), escape = window.FavoritePets.escapeHTML;
     const select = element('chartGroupSelect');
-    const preset = store.isPreset(state.activeGroupId) ? store.getPreset(state.activeGroupId) : null;
+    const preset = store.isPreset(state.activeGroupId) ? store.getPresets().find(p => p.id === state.activeGroupId) : null;
+    const availability = preset ? presetAvailability(preset.id) : null;
     select.innerHTML = '<option value="all">全部组</option>' + state.groups.map(g => `<option value="${escape(g.id)}">${escape(g.name)} (${g.petIds.length})</option>`).join('')
-      + (preset ? `<option value="${escape(preset.id)}">${escape(preset.name)} (${entries.length}) · 内置</option>` : '');
+      + (preset ? `<option value="${escape(preset.id)}"${availability.disabled ? ' disabled' : ''}>${escape(availability.label || preset.name)} (${availability.disabled || entriesError ? '不可用' : entries.length}) · 内置</option>` : '');
     select.value = state.activeGroupId;
+    const imports = element('chartGroupImportPreset'), importValue = imports.value;
+    imports.innerHTML = store.getPresets().map(p => {
+      const a = presetAvailability(p.id);
+      return `<option value="${escape(p.id)}"${a.disabled ? ' disabled' : ''}>${escape(a.label || p.name)}${a.count != null ? ` (${a.count})` : a.disabled ? '（不可用）' : ''}</option>`;
+    }).join('');
+    if (store.getPresets().some(p => p.id === importValue)) imports.value = importValue;
     const move = element('chartGroupMoveTarget'), previous = move.value;
     move.innerHTML = state.groups.map(g => `<option value="${escape(g.id)}">${escape(g.name)}</option>`).join('');
     if (state.groups.some(g => g.id === previous)) move.value = previous;
@@ -825,64 +1066,50 @@ const ChartPage = (function () {
   }
 
   function favoriteMarkers(s) {
-    if (!s.atkPet || !s.defPet || !window.ChartWorkspace || !workspaceReady) return [];
+    if (!s.atkPet || !s.defPet || !window.ChartWorkspace || !workspaceReady || !operatingContext(s)) return [];
     const atkStat = selectedType(), defStat = defenseType();
-    const sharedDefender = sharedDefenderConfiguration();
-    return window.ChartWorkspace.getEntries().map(entry => {
+    const context = operatingContext(s), values = selectedValues(), level = context.attackerLevel;
+    return currentEntries().map(entry => {
       const pet = RKData.getMonsterById(entry.id);
       if (!pet) return { ...entry, pet: null, name: `精灵 #${entry.id}`, x: null, reason: '精灵数据不存在', source: '曲线共用防守方设置' };
-      const config = sharedDefender;
-      const hp = RKData.getPetStat(pet, 'hp', config.nature.hp || 0, !!config.iv.hp);
-      const defense = RKData.getPetStat(pet, defStat, config.nature[defStat] || 0, !!config.iv[defStat]);
-      const effect = RKData.getTypeEff(s.skillAttr, pet.main_type?.name || '', pet.sub_type?.name || '');
+      const { hp, defense, effect, damage: currentDamage } = ChartFavoriteMath.operatingPoint(context, pet, values, RKData, BattleMath);
       const marker = { ...entry, pet, name: getPetName(pet), hp, defense, effect, source: '曲线共用防守方设置' };
       const attackNature = comparisonValue('atkNature', atkStat), attackIV = comparisonValue('atkIV', atkStat);
       if (view.mode === 'defense') {
         const sameType = DamagePage.CalcEngine.isSameType(s.atkPet, s.skillAttr) ? 1.25 : 1;
         const power = BattleMath.finalPower(s.basePower, s.fixedBonus, s.percentBonus, sameType, 1, s.buff);
-        const attack = RKData.getPetStat(s.atkPet, atkStat, attackNature, attackIV);
+        const attack = BattleMath.statFromBase(getBaseStat(s.atkPet, atkStat), atkStat, attackNature, attackIV, level);
         // Same arithmetic/order and selected effects as the ordinary defense curve.
-        const damage = Math.ceil(BattleMath.normalDamage(attack, power, defense, 1, s.comboCount) * effect);
+        const damage = currentDamage;
         const referenceDefense = BattleMath.statFromBase(getBaseStat(pet, defStat), defStat,
-          baselineValue('defNature', defStat), comparisonValue('defIV', defStat));
-        // Type-only equivalent life preserves neutral HP exactly. Different defenses
-        // have different ceil bins; do not pretend HP/E also rescales those bins.
+          baselineValue('defNature', defStat), comparisonValue('defIV', defStat), RKData.getPetLevel(s.defPet));
+        // Reference curve uses the selected target species' default level. A marker
+        // can belong to another level; flag differing defense as well as configuration.
+        // HP/E is a continuous guide, never a substitute for exact per-hit flooring.
         return { ...marker, x: getBaseStat(pet, defStat), ...ChartFavoriteMath.equivalentLife(hp, effect), damage,
-          referenceDefense, referenceDamage: BattleMath.normalDamage(attack, power, referenceDefense, 1, s.comboCount),
+          referenceDefense, referenceDamage: BattleMath.normalDamage(attack, power, referenceDefense, 1, s.comboCount, level),
+          referenceRawDamage: BattleMath.normalDamageRaw(attack, power, referenceDefense, 1, level) * s.comboCount,
           defenseMismatch: defense !== referenceDefense };
       }
       const damageAt = x => {
-        const attack = BattleMath.statFromBase(view.axisSwapped ? view.qualification : x, atkStat, attackNature, attackIV);
+        const attack = BattleMath.statFromBase(view.axisSwapped ? view.qualification : x, atkStat, attackNature, attackIV, level);
         const power = BattleMath.finalPower(view.axisSwapped ? x : view.power, 0, 0, view.sameType ? 1.25 : 1);
-        return BattleMath.normalDamage(attack, power, defense) * effect;
+        return BattleMath.normalDamage(attack, power, defense, 1, 1, level, effect);
       };
       const result = effect <= 0 || (!view.axisSwapped && view.power <= 0)
         ? { x: null, reason: effect <= 0 ? '属性免疫，无法击杀' : '技能威力为零，无法击杀' }
         : ChartFavoriteMath.minimumInteger(hp, damageAt);
-      return { ...marker, ...result, y: hp, damage: result.x === null ? null : damageAt(result.x) };
+      return { ...marker, ...result, y: hp, damage: currentDamage };
     });
   }
 
   function markerTooltip(marker) {
-    if (!marker.pet) return [marker.reason, `配置来源：${marker.source}`];
-    const title = view.mode === 'defense' ? '真实防御资质' : view.axisSwapped ? '最低整数技能威力' : '最低整数攻击资质';
-    const damageKnown = Number.isFinite(marker.damage);
-    return [
-      marker.x === null ? marker.reason : `${title}：${marker.x}`,
-      ...(view.mode === 'defense' ? [
-        Number.isFinite(marker.y) ? `等效生命：${marker.y}（中性整数伤害斩杀门槛）` : marker.reason,
-        '仅可与相同攻击及防御配置的参考曲线比较',
-        '曲线每2资质采样并插值；真实逐步取整伤害以本提示为准',
-        ...(marker.defenseMismatch ? [`防御配置不同：实际防御${marker.defense} / 共用参考防御${marker.referenceDefense}，请以实际伤害及生存结论为准`] : [])
-      ] : []),
-      `HP：${marker.hp}`, `伤害：${damageKnown ? marker.damage : '无可用击杀点'}`,
-      `剩余HP：${damageKnown ? Math.max(0, marker.hp - marker.damage) : '无可用击杀点'}`,
-      `能否扛住：${damageKnown ? marker.damage < marker.hp ? '能' : '不能' : '搜索范围内能'}`,
-      `实际属性克制：×${marker.effect}`, `配置来源：${marker.source}`
-    ];
+    if (!marker.pet) return [marker.reason];
+    return ChartFavoriteMath.tooltipLines(operatingContext(damageState()), marker.pet,
+      ChartFavoriteMath.visibleDamageRows(instance), RKData, BattleMath);
   }
 
-  function renderFavorites(s) {
+  function renderFavorites(s, updateLegend = true) {
     const api = window.FavoritePets, grid = element('chartFavoriteGrid');
     const button = element('chartFavoriteToggle');
     const label = view.markersVisible ? '隐藏图上头像标注' : '显示图上头像标注';
@@ -896,7 +1123,7 @@ const ChartPage = (function () {
     const markers = favoriteMarkers(s), byKey = new Map(markers.map(marker => [marker.key, marker]));
     const min = view.mode === 'defense' ? ChartFavoriteMath.defenseMinimum(markers) : view.axisSwapped ? 0 : 80;
     const max = view.mode === 'attack' && view.axisSwapped ? 600 : 200;
-    const entries = workspaceReady ? window.ChartWorkspace.getEntries() : [];
+    const entries = currentEntries();
     renderGroups(entries);
     let notes = 0;
     grid.innerHTML = entries.map(entry => {
@@ -906,17 +1133,18 @@ const ChartPage = (function () {
       const note = !marker ? '请先设置攻守精灵' : marker.reason
         || (out ? `真实坐标 ${marker.x}，超出横轴 ${min}–${max}` : '');
       if (note) notes++;
-      const action = activePreset() ? '内置预设：随资料自动更新；需编辑时先复制为自建分组' : '左键：选中以移动分组；右键或Delete：从曲线收藏取消';
-      const tooltip = [name, action, ...(marker ? markerTooltip(marker) : []), note].filter(Boolean).join('\n');
-      return `<div class="chart-favorites-item quick-pet-item${selectedFavoriteId === entry.id ? ' chart-favorite-selected' : ''}" data-chart-favorite="${entry.id}" data-favorite-key="${entry.key}" data-favorite-note="${api.escapeHTML(note)}" tabindex="0" title="${api.escapeHTML(tooltip)}" aria-label="${api.escapeHTML(tooltip)}">
+      const tooltip = [name, ...(marker ? markerTooltip(marker) : [])].join(String.fromCharCode(10));
+      return `<div class="chart-favorites-item quick-pet-item${selectedFavoriteId === entry.id ? ' chart-favorite-selected' : ''}" data-survival="neutral" data-chart-favorite="${entry.id}" data-favorite-key="${entry.key}" data-favorite-note="${api.escapeHTML(note)}" tabindex="0" title="${api.escapeHTML(tooltip)}" aria-label="${api.escapeHTML(tooltip)}">
         <div class="chart-favorites-avatar quick-pet-img-wrapper">
           ${api.avatarUrl(pet) ? api.avatarHTML(pet, name) : `<span class="quick-pet-initial">${api.escapeHTML(name.charAt(0))}</span>`}
         </div>
         <span class="quick-pet-name">${api.escapeHTML(name)}</span>
       </div>`;
     }).join('');
-    element('chartFavoriteStatus').textContent = !entries.length ? (activePreset() ? '当前资料中没有符合条件的高阶主形态精灵。' : '暂无收藏，可搜索精灵加入。')
-      : notes ? `${notes}只精灵暂无可见标注（超出横轴或无法击倒等），悬停头像查看详情。` : '';
+    element('chartFavoriteStatus').textContent = entriesError || (!entries.length ? (activePreset() ? '当前预设没有符合条件的精灵。' : '暂无收藏，可搜索精灵加入。')
+      : notes ? `${notes}只精灵暂无可见标注（超出横轴或无法击倒等），悬停头像查看详情。` : '');
+    // Rebuilt grid (selection/move focus) must keep current legend colors as well.
+    if (updateLegend) instance?.update('none');
   }
 
   function pruneAvatars(markers) {
@@ -947,6 +1175,7 @@ const ChartPage = (function () {
     const scroller = document.querySelector('.chart-page');
     if (scroller) pageScrollTop = scroller.scrollTop;
     active = false;
+    window.ChartWorkspace?.setSurvivalContextProvider?.(null);
     cleanupFeatures();
     if (instance) instance.destroy();
     instance = null;

@@ -66,12 +66,12 @@ async page => {
     const baseline = await state();
     check(baseline.atkIV.attack && baseline.atkNature.attack === 1 && baseline.defNature.defense === 2, 'search selection restores each monster personal nature/IV memory');
     await go('chart');
-    check(await page.evaluate(() => document.getElementById('chartAtkIVBtn').classList.contains('active-iv') && document.getElementById('chartAtkNatureBtn').dataset.nature === '0' && document.getElementById('chartIVBtn').classList.contains('active-iv')), 'chart controls use independent defaults rather than damage-page nature');
+    check(await page.evaluate(() => document.getElementById('chartAtkIVBtn').classList.contains('active-iv') && document.getElementById('chartAtkNatureBtn').dataset.nature === '0' && !document.getElementById('chartIVBtn').classList.contains('active-iv')), 'chart controls use independent defaults rather than damage-page nature');
     check(await page.evaluate(() => {
       const s = DamagePage.getState(), chart = Chart.getChart(document.getElementById('defenseChart'));
       const i = chart.data.labels.indexOf(100);
       const power = BattleMath.finalPower(s.basePower, s.fixedBonus, s.percentBonus, DamagePage.CalcEngine.isSameType(s.atkPet, s.skillAttr) ? 1.25 : 1, 1, s.buff);
-      const expected = BattleMath.normalDamage(RKData.getPetStat(s.atkPet,'attack',0,true), power, BattleMath.statFromBase(100,'defense',0,true),1,s.comboCount);
+      const expected = BattleMath.normalDamage(RKData.getPetStat(s.atkPet,'attack',0,true), power, BattleMath.statFromBase(100,'defense',0,false),1,s.comboCount);
       return chart.data.datasets[0].data[i] === expected;
     }), 'baseline curve uses independent nature and IV in actual calculations');
     const beforeCompare = await state();
@@ -127,7 +127,17 @@ async page => {
     await page.locator('#basePower').fill('600');
     await go('chart');
     if ((await page.evaluate(() => ChartPage.getState())).mode !== 'defense') await page.locator('#chartModeBtn').click();
-    check((await chartData()).some(d => d.reference && d.label === '400伤害参考线'), 'fixed 400 line is named 400伤害参考线');
+    check(!(await chartData()).some(d => d.reference), 'defense mode no longer generates a fixed reference line even at high damage');
+    check(await page.evaluate(() => !Chart.getChart(document.getElementById('defenseChart')).config.plugins.some(p => p.id === 'crossLabel' || p.id === 'killLabel')), 'defense mode has no threshold crossing-label plugin');
+    await page.locator('#chartModeBtn').click();
+    await page.evaluate(() => { const v=ChartPage.getState(); if(v.axisSwapped)document.getElementById('chartSwapAxisBtn').click(); });
+    await page.locator('#chartPowerInput').fill('600');
+    check(await page.evaluate(() => {
+      const c=Chart.getChart(document.getElementById('defenseChart')),v=ChartPage.getState(),s=DamagePage.getState();
+      const hp=RKData.getPetStat(s.defPet,'hp',v.hpNature?1:0,true),max=Math.max(...c.data.datasets.filter(d=>d.damageConfig).flatMap(d=>d.data));
+      const ref=c.data.datasets.find(d=>d.reference);
+      return c.config.plugins.some(p=>p.id==='killLabel')&&(max<hp?!ref:!!ref&&ref.label===`斩杀线(${hp})`&&ref.data.every(y=>y===hp));
+    }), 'attack mode retains actual target HP kill-line behavior');
     check(errors.length === 0, `no browser runtime errors (${errors.join('; ')})`);
     return { passed: checks.length, checks };
   } finally { page.off('pageerror', onError); }

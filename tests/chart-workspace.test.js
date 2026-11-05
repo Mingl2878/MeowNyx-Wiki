@@ -15,7 +15,7 @@ test('imports only old chart favorites once with independent defaults; A and per
   const e = fixture(); await e.store.init();
   assert.deepEqual(e.store.getEntries().map(e=>e.id), [249,327]);
   assert.deepEqual(e.reads, ['rk_chart_fav_pets']);
-  assert.deepEqual(e.store.getState().controls, { atkIV: {attack:true,magic_attack:true}, atkNature:{attack:0,magic_attack:0}, defIV:{defense:true,magic_defense:true},doubleLife:false });
+  assert.deepEqual(e.store.getState().controls, { atkIV: {attack:true,magic_attack:true}, atkNature:{attack:0,magic_attack:0}, defIV:{defense:false,magic_defense:false},hpNature:false,doubleLife:false });
   assert.equal(e.saved().state.legacyImported, true);
   await e.store.removePet(249); await e.store.removePet(327);
   const next = createStore(e.root); await next.init();
@@ -44,7 +44,7 @@ test('CRUD, group copy uses independent member arrays but a single shared contro
   await e.store.renameGroup(two, '<分组>'); await e.store.orderGroup(two,-1);
   assert.deepEqual(e.store.getState().groups.map(g=>g.name), ['未分组','<分组>','甲']);
   await e.store.orderGroup(two,1); assert.equal(e.store.getState().groups[2].id,two);
-  await e.store.setControls({atkIV:{attack:false}, atkNature:{magic_attack:2}, doubleLife:true});
+  await e.store.setControls({atkIV:{attack:false}, atkNature:{magic_attack:1}, doubleLife:true});
   await e.store.selectGroup(one); const controls = e.store.getState().controls;
   await e.store.selectGroup(two); assert.deepEqual(e.store.getState().controls,controls);
   assert.equal(Object.hasOwn(e.store.getState().groups[1],'controls'),false);

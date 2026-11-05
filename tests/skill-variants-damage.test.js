@@ -3,7 +3,7 @@
 // No server, filesystem writes, application launch, or real personal configuration.
 const test=require('node:test'), assert=require('node:assert/strict');
 const fs=require('node:fs'), path=require('node:path'), vm=require('node:vm');
-const moves=require('../data/moves.json'), V=require('../js/skill-variants.js'), BattleMath=require('../js/battle-math.js');
+const moves=require('./catalog-read-fixture.cjs').readProjectData('moves.json'), V=require('../js/skill-variants.js'), BattleMath=require('../js/battle-math.js');
 const source=fs.readFileSync(path.join(__dirname,'../js/pages/damage.js'),'utf8');
 const plain=x=>JSON.parse(JSON.stringify(x));
 const decode=x=>x.replaceAll('&quot;','"').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&amp;','&');
@@ -50,7 +50,7 @@ function harness({mode=0,emptyWiki=false,savedProfile=null}={}){
     isAttackMove:m=>!!m&&['Physical Attack','Magic Attack'].includes(m.move_category),
     getResolvedWikiData:()=>({skills:emptyWiki?[]:moves.filter(m=>['Physical Attack','Magic Attack'].includes(m.move_category)).map(m=>({name:m.localized.zh.name,source:m.id===420?'血脉':'普通',type:m.move_category==='Physical Attack'?'物攻':'魔攻',element:m.move_type.localized.zh}))})};
   const events={};
-  const box=vm.createContext({document,RKData,BattleMath,SkillVariants:V,
+  const box=vm.createContext({document,RKData,BattleMath,SkillVariants:V,SkillSimulation:require('../js/skill-simulation.js'),
     PetConfiguration:require('../js/pet-configuration.js'),
     CommonUI:{StatBox:{syncButtons(){},refreshValues(){}}},
     window:{UserConfig,addEventListener:(name,callback)=>events[name]=callback},
@@ -76,7 +76,8 @@ for(const mode of [0,1])test(`actual renderer: all groups, both buttons, persist
     for(const [k,v]of Object.entries(h.modifiers))assert.equal(h.state[k],v,k);
     assert.deepEqual(plain(h.profile.rk_pet_configs),originalPet);
     assert.equal(h.storage.get('rk_team_config'),team);
-    assert.ok(item.attrs.title.includes('左键：')&&item.attrs['aria-label'].includes('右键：'));
+    assert.ok(item.attrs.title.includes('基础威力：')&&item.attrs['aria-label'].includes('效果：'));
+    assert.ok(!item.attrs.title.includes('左键：'));
     return item;
   };
   for(const [id,group,lp,lc,rp,rc]of [[535,'基础技能',90,1,210,1],[535,'过山车技能',90,1,210,1],[420,'血脉技能',20,3,20,5],[420,'过山车技能',20,3,20,5],[29,'基础技能',30,2,30,4],[337,'基础技能',35,2,35,6]]){
@@ -126,7 +127,7 @@ test('existing speed/physical-defense difference auto behavior stays dynamic aft
     for(const type of ['click','contextmenu']){
       h.icon(id).fire(type);
       assert.equal(h.state.basePower,BattleMath.differencePower(h.state.atkPet.stats[stat]-h.state.defPet.stats[stat]));
-      h.state.atkPet.stats[stat]=300;h.page.calculate();assert.equal(h.state.basePower,200);
+      h.state.atkPet.stats[stat]=300;h.page.calculate();assert.equal(h.state.basePower,BattleMath.differencePower(300-h.state.defPet.stats[stat]));
       h.state.atkPet.stats[stat]=70;h.page.calculate();assert.equal(h.state.basePower,60);
     }
   }

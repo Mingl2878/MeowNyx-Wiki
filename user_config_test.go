@@ -751,7 +751,14 @@ func TestUserConfigBrowserFixture(t *testing.T) {
 		t.Fatal(err)
 	}
 	token := hex.EncodeToString(tokenBytes)
+	battleMux := http.NewServeMux()
+	closeBattleRecords := RegisterBattleRecordRoutes(battleMux, filepath.Join(dir, "profile", "battle-records.sqlite"))
+	defer closeBattleRecords()
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/battles/") {
+			battleMux.ServeHTTP(w, r)
+			return
+		}
 		switch r.URL.Path {
 		case "/__fixture/info":
 			writeJSON(w, 200, []byte(`{"isolated":true}`))
@@ -842,9 +849,17 @@ func TestUserConfigBrowserFixture(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Printf("XHM_BROWSER_FIXTURE_READY %s\n", ready)
+	minutes := 25
+	if configured := os.Getenv("XHM_BROWSER_FIXTURE_MINUTES"); configured != "" {
+		value, err := strconv.Atoi(configured)
+		if err != nil || value < 1 || value > 120 {
+			t.Fatal("invalid fixture lifetime")
+		}
+		minutes = value
+	}
 	select {
 	case <-stop:
-	case <-time.After(25 * time.Minute):
+	case <-time.After(time.Duration(minutes) * time.Minute):
 		t.Fatal("fixture timed out waiting for stop endpoint")
 	}
 }

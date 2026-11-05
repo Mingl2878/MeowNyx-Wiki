@@ -154,9 +154,9 @@ test('effective-speed preference commits only after success and all consumers sh
 test('coaster returns no status, defense, other-category or unknown quick cards', async () => {
   const context = { console: { log() {}, error() {} },
     localStorage: { getItem: key => key === 'rk_team_config' ? JSON.stringify({ activeGroupId: 'test', groups: [{ id: 'test', team: [501,434], petSkills: { 501: ['防御','魔法增效','械斗','磁暴','不存在的技能'] } }] }) : null },
-    fetch: async file => ({ ok: true, json: async () => JSON.parse(fs.readFileSync(path.join(ROOT,file),'utf8')) }) };
+    fetch: async file => ({ ok: true, json: async () => JSON.parse(require('./catalog-read-fixture.cjs').readResource(ROOT, file)) }) };
   vm.createContext(context);
-  for (const file of ['js/battle-math.js','js/monster-identity.js','js/data.js']) vm.runInContext(fs.readFileSync(path.join(ROOT,file),'utf8'),context);
+  for (const file of ['js/battle-math.js','js/monster-identity.js','js/data.js','js/skill-simulation.js']) vm.runInContext(fs.readFileSync(path.join(ROOT,file),'utf8'),context);
   await vm.runInContext('RKData.init()', context);
   const code = fs.readFileSync(path.join(ROOT,'js/pages/damage.js'),'utf8').replace('return { render, onLeave, getState: () => state, CalcEngine };','return { render, onLeave, getState: () => state, CalcEngine, getCoasterSkills };');
   vm.runInContext(code,context);

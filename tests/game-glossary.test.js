@@ -86,7 +86,10 @@ class Events {
 class Node extends Events {
   constructor(doc, type = 1, tag = '') { super(); this.ownerDocument = doc; this.nodeType = type; this.tagName = tag.toLowerCase(); this.children = []; this.parentElement = null; this.className = ''; this.dataset = {}; this.attrs = {}; this.style = {}; this.scrollTop = 0; this.value = ''; this.hidden = false; }
   get isConnected() { return this === this.ownerDocument?.body || !!this.parentElement?.isConnected; }
-  contains(node) { return this === node || this.children.some(child => child.contains(node)); }
+  contains(node) { if (this.ownerDocument.metrics) this.ownerDocument.metrics.contains++; return this === node || this.children.some(child => child.contains(node)); }
+  get innerHTML() {
+    return this.children.map(n => n.nodeType === 3 ? n.nodeValue : `<${n.tagName} class="${n.className}" attrs='${JSON.stringify(n.attrs)}'>${n.innerHTML}</${n.tagName}>`).join('');
+  }
   get textContent() { return this.nodeType === 3 ? this.nodeValue : this.children.map(n => n.textContent).join(''); }
   set textContent(value) { if (this.nodeType === 3) this.nodeValue = String(value); else this.replaceChildren(this.ownerDocument.createTextNode(String(value))); }
   appendChild(node) {
@@ -127,6 +130,7 @@ class Node extends Events {
 }
 function runtime(rows = entries) {
   const doc = new Events(); doc.records = []; doc.observer = null; doc.activeElement = null;
+  doc.metrics = { walks: 0, contains: 0, tokenizes: 0 };
   doc.notify = record => { if (doc.observer && record.target.isConnected) doc.records.push(record); };
   doc.createElement = tag => new Node(doc, 1, tag);
   doc.createTextNode = text => { const n = new Node(doc, 3); n.nodeValue = text; return n; };
@@ -134,6 +138,7 @@ function runtime(rows = entries) {
   doc.body = doc.createElement('body');
   doc.querySelector = selector => doc.body.querySelector(selector);
   doc.createTreeWalker = root => {
+    doc.metrics.walks++;
     const all = []; const visit = node => { if (node.nodeType === 3) all.push(node); else node.children.forEach(visit); }; visit(root);
     let i = 0; return { nextNode() { this.currentNode = all[i++]; return !!this.currentNode; } };
   };
@@ -150,7 +155,11 @@ function runtime(rows = entries) {
     }
   });
   const context = vm.createContext({ window: global, console, setTimeout, clearTimeout });
-  for (const file of ['js/data.js', 'js/game-glossary.js', 'js/pages/game-description.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), context);
+  for (const file of ['js/data.js', 'js/game-glossary.js', 'js/pages/game-description.js']) {
+    let code = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    if (file === 'js/game-glossary.js') code = code.replace('const parts = matcher.tokenize(text.nodeValue);', 'doc.metrics.tokenizes++; const parts = matcher.tokenize(text.nodeValue);');
+    vm.runInContext(code, context);
+  }
   function flush() {
     let turns = 0;
     while (doc.records.length || frames.size) {
@@ -307,4 +316,55 @@ test('failed load rejects and can retry without a partial global lifecycle', asy
   await assert.rejects(r.api.init(), /503/); assert.equal(r.stats().listeners, 0);
   r.global.fetch = async () => ({ ok: true, json: async () => entries });
   await r.api.init(); assert.equal(r.api.getEntries().length, 54); r.api.destroy();
+});
+
+
+test('bulk siblings coalesce without pairwise contains; moved decorated regions do not walk/tokenize', async () => {
+  const r = runtime(); await r.api.init();
+  const host = r.node('div', 'host');
+  const rows = Array.from({length: 506}, (_, i) => r.node('div', 'detail-trait-desc', `行${i} 中毒印记`, host));
+  r.flush();
+  assert.equal(host.querySelectorAll('.game-glossary-term').length, 506);
+  assert.equal(r.doc.metrics.contains, 0, 'queue dedup never calls contains');
+  const originalTerms = rows.map(row => row.querySelector('.game-glossary-term'));
+  const metrics = {...r.doc.metrics};
+  for (let round = 0; round < 5; round++) {
+    rows.slice(203).forEach(row => row.remove()); r.flush();
+    rows.slice(203).forEach(row => host.appendChild(row)); r.flush();
+  }
+  assert.equal(r.doc.metrics.walks, metrics.walks);
+  assert.equal(r.doc.metrics.tokenizes, metrics.tokenizes);
+  rows.forEach((row, i) => assert.equal(row.querySelector('.game-glossary-term'), originalTerms[i]));
+  rows[250].textContent = '灼烧'; r.flush();
+  assert.equal(r.doc.metrics.walks, metrics.walks + 1);
+  assert.equal(r.doc.metrics.tokenizes, metrics.tokenizes + 1);
+  assert.equal(rows[250].querySelector('.game-glossary-term').textContent, '灼烧');
+  // Same literal text but raw replacement while detached is not a cache hit.
+  rows[250].remove(); r.flush(); rows[250].textContent = '灼烧'; host.appendChild(rows[250]); r.flush();
+  assert.equal(rows[250].querySelectorAll('.game-glossary-term').length, 1);
+  assert.equal(r.doc.metrics.tokenizes, metrics.tokenizes + 2);
+  r.api.destroy();
+});
+
+test('visibility never scans descriptions, but hides anchors; eligibility and character edits remain incremental', async () => {
+  const r = runtime(); await r.api.init();
+  const host = r.node('div', 'host'), desc = r.node('div', 'detail-trait-desc', '无匹配正文', host);
+  r.flush(); const before = {...r.doc.metrics};
+  const text = desc.children[0]; text.nodeValue = '中毒';
+  r.doc.notify({type:'characterData',target:text}); r.flush();
+  assert.equal(desc.querySelector('.game-glossary-term').textContent, '中毒');
+  r.doc.emit('focusin', desc.querySelector('.game-glossary-term'));
+  host.hidden = true;
+  r.doc.notify({type:'attributes',attributeName:'hidden',target:host}); r.flush();
+  assert.equal(r.doc.querySelector('.game-glossary-tooltip').hidden, true);
+  assert.equal(r.doc.metrics.walks, before.walks + 1);
+  host.hidden = false;
+  r.doc.notify({type:'attributes',attributeName:'style',target:host}); r.flush();
+  assert.equal(r.doc.metrics.walks, before.walks + 1);
+  const editor = r.node('div', 'detail-trait-desc', '灼烧', host); editor.setAttribute('contenteditable','true'); r.flush();
+  assert.equal(editor.querySelectorAll('.game-glossary-term').length, 0);
+  editor.setAttribute('contenteditable','false');
+  r.doc.notify({type:'attributes',attributeName:'contenteditable',target:editor}); r.flush();
+  assert.equal(editor.querySelectorAll('.game-glossary-term').length, 1);
+  r.api.destroy();
 });

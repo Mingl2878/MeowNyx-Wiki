@@ -2,15 +2,13 @@
  * 审计学习面继承元数据与月蚀传说专属。
  * 用法：node scripts/audit_skill_sources.js
  */
-const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
 const ROOT = path.join(__dirname, '..');
-const monsters = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/monsters.json'), 'utf8'));
-const moves = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/moves.json'), 'utf8'));
-const { readWikiIndex } = require('./lib/wiki-data.js');
-const wikiIndex = readWikiIndex(ROOT);
+const { monsters, moves, wiki: rawWiki } = require('./lib/catalog-data.js').readLegacy(ROOT);
+const { createIndex } = require('../js/monster-identity.js');
+const wikiIndex = createIndex(monsters, rawWiki);
 const wiki = wikiIndex.wiki;
 const byId = new Map(monsters.map(monster => [monster.id, monster]));
 const moveNames = new Set(moves.map(move => move.localized?.zh?.name));
@@ -29,6 +27,11 @@ function checkLearnset(monster, owner) {
   // Keep the same exact-ID-first / legacy winter base-name fallback as RKData.
   const entry = wikiIndex.getByMonster(owner) || wikiIndex.getByName(nameOf(owner));
   if (!entry?.skills?.length) {
+    // Explicit user-requested level-test placeholder, not a general exemption for
+    // accidentally emptied existing species. No invented or inherited moves.
+    if (monster.id === 619 && owner.id === 619 && nameOf(monster) === '冥古龙'
+      && monster.data_status === 'placeholder' && entry?.monster_id === 619
+      && Array.isArray(entry.skills) && entry.skills.length === 0) return;
     errors.push(`${displayName(monster)} 的学习面来源 ${displayName(owner)} 缺少学习面`);
     return;
   }
@@ -69,14 +72,17 @@ for (const monster of monsters) {
   else checkLearnset(monster, current);
 }
 
-const newMoon = monsters.find(monster => nameOf(monster) === '新月鸷');
-const pigeon = monsters.find(monster => nameOf(monster) === '月辉鸠');
-const envoy = monsters.find(monster => nameOf(monster) === '月使鸷纳');
+const newMoon = byId.get(615);
+const pigeon = byId.get(606);
+const envoy = byId.get(604);
+for (const [pet, currentName, oldName] of [[newMoon, '新月鹭', '新月鸷'], [pigeon, '月辉鹭', '月辉鸠'], [envoy, '月使鹭纳', '月使鸷纳']]) {
+  if (!pet || nameOf(pet) !== currentName || wikiIndex.getByName(oldName)?.monster_id !== pet.id) errors.push(`${currentName}正式名或旧名别名绑定丢失`);
+}
 if (!newMoon || !pigeon || !envoy || newMoon.dex_number !== 446 || pigeon.evolves_from_id !== newMoon.id || envoy.evolves_from_id !== pigeon.id) {
-  errors.push('新月鸷 → 月辉鸠 → 月使鸷纳 进化链错误');
+  errors.push('新月鹭 → 月辉鹭 → 月使鹭纳 进化链错误');
 }
 if (newMoon?.learnset_inherits_from_id !== envoy?.id || pigeon?.learnset_inherits_from_id !== envoy?.id) {
-  errors.push('新月鸷或月辉鸠未显式继承月使鸷纳学习面');
+  errors.push('新月鹭或月辉鹭未显式继承月使鹭纳学习面');
 }
 
 const eclipse = moves.filter(move => move.localized?.zh?.name === '月蚀');
@@ -97,5 +103,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(`[OK] 学习面审计通过：inherit=${inheritCount}，own=${ownCount}。`);
-console.log(`[OK] 新月鸷链与月蚀传说专属均通过验证。`);
-console.log(`monsters SHA-256=${crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, 'data/monsters.json'))).digest('hex')}`);
+console.log(`[OK] 新月鹭链、历史别名与月蚀传说专属均通过验证。`);
+console.log(`monsters projection SHA-256=${crypto.createHash('sha256').update(JSON.stringify(monsters)).digest('hex')}`);

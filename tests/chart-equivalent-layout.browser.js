@@ -47,18 +47,20 @@ async page => {
     if (await page.evaluate(() => ChartPage.getState().mode !== 'defense')) await page.locator('#chartModeBtn').click();
     if (!await page.evaluate(() => ChartPage.getState().markersVisible)) await page.locator('#chartFavoriteToggle').click();
     check(await page.locator('#chartCritBtn,#chartCritBtnDef').count() === 0, 'manual type controls absent');
+    await page.evaluate(async()=>ChartWorkspace.setControls({atkIV:{attack:true},atkNature:{attack:0},defIV:{defense:true},hpNature:false}));
+    await page.waitForFunction(()=>!document.getElementById('chartIVBtn').disabled);
     check(await page.evaluate(() => !('typeEffect' in ChartPage.getState()) && !/克制\/抵抗/.test(document.getElementById('chartInfo').textContent)), 'no hidden manual factor or header multiplier');
     check(await page.evaluate(() => {
       const c = Chart.getChart(document.getElementById('defenseChart')), m = c.data.datasets.find(d => d.favoriteMarker).data.find(m => m.key === 'chart:327');
       return m.pet.base_hp === 112 && m.pet.base_phy_atk === 91 && m.pet.base_mag_atk === 190 && m.effect === 0.5 && m.x === 69 && c.scales.x.min <= 69
-        && m.y === m.hp * 2 - 1 && m.damage < m.hp && m.y > m.referenceDamage && !m.defenseMismatch
+        && m.y === m.hp * 2 && m.damage < m.hp && m.y > m.referenceDamage && !m.defenseMismatch
         && c.options.scales.y.title.text.includes('等效生命');
     }), 'real Water202 / Dragon327: actual resistance, raw x69, surviving equivalent life above neutral reference');
-    check(await item('chart:327').getAttribute('title').then(t => !/伤害收藏/.test(t) && /逐步取整/.test(t) && /剩余HP/.test(t)), 'curve-only tooltip retains exact-rounding precision and HP information');
+    check(await item('chart:327').getAttribute('title').then(t => !/伤害收藏|剩余HP|配置来源/.test(t) && /⑤ 最终伤害 = .* = \d/.test(t) && /⑥ 伤害占比 = \d+ ÷ \d+ /.test(t)), 'curve-only tooltip uses requested concise damage and HP arithmetic');
     check(await page.evaluate(() => {
       const c = Chart.getChart(document.getElementById('defenseChart')), m = c.data.datasets.find(d => d.favoriteMarker).data.find(m => m.key === 'chart:249');
       const p = RKData.getMonsterById(249);
-      return m.hp === RKData.getPetStat(p, 'hp', 0, false);
+      return m.hp === RKData.getPetStat(p, 'hp', 0, true);
     }), 'all curve favorites use independent shared curve defaults');
     await page.evaluate(() => { DamagePage.getState().skillAttr = '光'; window.dispatchEvent(new Event('appthemechange')); });
     const baseline = await ordinary();
@@ -153,8 +155,8 @@ async page => {
       const c = Chart.getChart(document.getElementById('defenseChart')), s = DamagePage.getState(), v = ChartPage.getState();
       const first = c.data.labels[0], effect = RKData.getTypeEff(s.skillAttr, s.defPet.main_type.name, s.defPet.sub_type?.name || '');
       return c.data.datasets[0].data[0] === BattleMath.normalDamage(BattleMath.statFromBase(v.axisSwapped ? v.qualification : first, v.attackType, 0, true),
-        BattleMath.finalPower(v.axisSwapped ? first : v.power, 0, 0, v.sameType ? 1.25 : 1), RKData.getPetStat(s.defPet, 'defense', 0, true)) * effect;
-    }), 'attack baseline automatically uses selected Dragon target resistance, with original rounding');
+        BattleMath.finalPower(v.axisSwapped ? first : v.power, 0, 0, v.sameType ? 1.25 : 1), RKData.getPetStat(s.defPet, 'defense', 0, true),1,1,RKData.getPetLevel(s.atkPet),effect);
+    }), 'attack baseline automatically uses selected Dragon target resistance, with type before final floor');
     // With independent attack IV enabled, 600 already kills this target below
     // x=80 (correctly omitted from visible markers). Use an in-range test case.
     await page.locator('#chartPowerInput').fill('200');
@@ -165,7 +167,7 @@ async page => {
         const markers = c.data.datasets.find(d => d.favoriteMarker)?.data || [];
         return markers.length > 0 && markers.every(m => {
           const damage = x => BattleMath.normalDamage(BattleMath.statFromBase(v.axisSwapped ? v.qualification : x, v.attackType, 0, true),
-            BattleMath.finalPower(v.axisSwapped ? x : v.power, 0, 0, v.sameType ? 1.25 : 1), m.defense) * m.effect;
+            BattleMath.finalPower(v.axisSwapped ? x : v.power, 0, 0, v.sameType ? 1.25 : 1), m.defense,1,1,RKData.getPetLevel(DamagePage.getState().atkPet),m.effect);
           return m.y === m.hp && damage(m.x) >= m.hp && (m.x === 0 || damage(m.x - 1) < m.hp);
         });
       }), `attack ${swap ? 'power' : 'qualification'} markers retain exact integer minima`);

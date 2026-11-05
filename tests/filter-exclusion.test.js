@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '..');
-const read = name => fs.readFileSync(path.join(root, name), 'utf8');
+const read = name => require('./catalog-read-fixture.cjs').readResource(root, name);
 const common = read('js/common.js');
 class Pill {
   constructor(dimension, value) {
@@ -56,6 +56,118 @@ test('energy zero, 10+ and original power buckets retain exact boundaries', () =
   for (const value of [0, 20, 41, null]) assert.ok(F.matches(s, { power: value }));
   F.toggle(s, 'power', '140+', true); assert.equal(F.matches(s, { power: 140 }), false);
   assert.ok(F.matches(s, { power: 139 }));
+});
+test('opt-in power single value is exact and two unordered endpoints form a closed range', () => {
+  const F = runtime(), s = F.create({ powerRange: true });
+  F.toggle(s, 'power', '40');
+  for (const power of [0, 21, 30, 39, 41, 60, null, undefined, '?', NaN, Infinity]) {
+    assert.equal(F.matches(s, { power }), false, String(power));
+  }
+  assert.ok(F.matches(s, { power: 40 }));
+  assert.ok(F.matches(s, { power: '40' }));
+  F.toggle(s, 'power', '60');
+  for (const power of [40, 45, 50, 59, 60]) assert.ok(F.matches(s, { power }));
+  for (const power of [39, 61, 80, null, '?']) assert.equal(F.matches(s, { power }), false);
+  const reverse = F.create({ powerRange: true });
+  F.toggle(reverse, 'power', '60'); F.toggle(reverse, 'power', '40');
+  for (let power = 0; power <= 160; power++) assert.equal(F.matches(reverse, { power }), F.matches(s, { power }));
+  F.toggle(s, 'power', '40');
+  assert.equal(F.matches(s, { power: 50 }), false); assert.ok(F.matches(s, { power: 60 }));
+  F.toggle(s, 'power', '60');
+  for (const power of [0, 20, 40, 160, null, '?']) assert.ok(F.matches(s, { power }));
+});
+test('140+ is an open upper endpoint alone and in either selection order', () => {
+  const F = runtime();
+  for (const endpoints of [['140+'], ['60', '140+'], ['140+', '60']]) {
+    const s = F.create({ powerRange: true });
+    endpoints.forEach(v => F.toggle(s, 'power', v));
+    const min = endpoints.length === 1 ? 140 : 60;
+    for (const power of [0, 59, 60, 139, 140, 141, 180, 999]) assert.equal(F.matches(s, { power }), power >= min);
+    for (const power of [null, undefined, '', '?', NaN, Infinity]) assert.equal(F.matches(s, { power }), false);
+  }
+});
+test('third power endpoint is a no-op until an existing endpoint is removed', () => {
+  const F = runtime(), s = F.create({ powerRange: true });
+  F.toggle(s, 'power', '40'); F.toggle(s, 'power', '60');
+  assert.equal(F.toggle(s, 'power', '80'), false);
+  assert.deepEqual([...s.include.power], ['40', '60']);
+  F.toggle(s, 'power', '80', true);
+  assert.equal(F.toggle(s, 'power', '80'), false);
+  assert.ok(s.exclude.power.has('80'), 'blocked include must not clear a right-click exclusion');
+  F.toggle(s, 'power', '40'); F.toggle(s, 'power', '80');
+  assert.deepEqual([...s.include.power], ['60', '80']); assert.equal(s.exclude.power.size, 0);
+  assert.ok(F.matches(s, { power: 70 }));
+});
+test('range opt-in does not change other filters, right-click buckets or default callers', () => {
+  const F = runtime(), s = F.create({ powerRange: true });
+  F.toggle(s, 'power', '40'); F.toggle(s, 'power', '100');
+  F.toggle(s, 'power', '60', true);
+  for (const power of [41, 50, 60]) assert.equal(F.matches(s, { power }), false);
+  for (const power of [40, 61, 80, 100]) assert.ok(F.matches(s, { power }));
+  for (const elem of ['水', '火', '草']) F.toggle(s, 'elem', elem);
+  assert.equal(s.include.elem.size, 3);
+  assert.ok(F.matches(s, { power: 80, elem: '水' }));
+  assert.equal(F.matches(s, { power: 80, elem: '光' }), false);
+  const original = F.create();
+  for (const power of ['40', '60', '100']) F.toggle(original, 'power', power);
+  assert.equal(original.include.power.size, 3);
+  assert.ok(F.matches(original, { power: 30 }));
+  assert.equal(F.matches(original, { power: 70 }), false);
+  assert.match(read('js/pages/moves.js'), /FilterExclusion\.create\(\{ powerRange: true \}\)/);
+  assert.ok(!read('js/pages/petdex.js').includes('powerRange: true'));
+  assert.ok(!read('js/pages/team.js').includes('powerRange: true'));
+});
+test('full range locks all unselected include controls, preserves right-click and restores on rebind', () => {
+  const F = runtime(), s = F.create({ powerRange: true });
+  const buttons = ['40', '60', '80', '140+'].map(value => new Pill('power', value));
+  let calls = 0;
+  const cleanup = F.bind({ querySelectorAll: () => buttons }, s, () => calls++);
+  buttons[0].send('click'); buttons[1].send('keydown', { key: 'Enter' });
+  for (const b of buttons.slice(2)) {
+    assert.ok(b.classes.has('filter-include-locked'));
+    assert.equal(b.dataset.filterIncludeBlocked, 'true');
+    assert.match(b.getAttribute('aria-label'), /先左键取消一个/);
+    assert.notEqual(b.getAttribute('aria-disabled'), 'true', 'right-click still usable');
+  }
+  assert.ok(!buttons[0].classes.has('filter-include-locked'));
+  buttons[2].send('click'); buttons[2].send('keydown', { key: ' ' });
+  assert.equal(calls, 2); assert.deepEqual([...s.include.power], ['40', '60']);
+  buttons[2].send('keydown', { key: 'Enter', shiftKey: true });
+  assert.ok(s.exclude.power.has('80')); assert.equal(calls, 3);
+  buttons[0].send('click');
+  for (const b of buttons) assert.equal(b.dataset.filterIncludeBlocked, 'false');
+  buttons[2].send('click'); assert.deepEqual([...s.include.power], ['60', '80']);
+  assert.equal(s.exclude.power.size, 0);
+  cleanup();
+  for (const b of buttons) assert.equal(Object.keys(b.listeners).length, 0);
+  const returned = ['40', '60', '80', '140+'].map(value => new Pill('power', value));
+  const cleanupReturned = F.bind({ querySelectorAll: () => returned }, s, () => calls++);
+  assert.equal(returned[0].dataset.filterIncludeBlocked, 'true');
+  assert.equal(returned[1].getAttribute('aria-pressed'), 'true');
+  assert.equal(returned[2].getAttribute('aria-pressed'), 'true');
+  returned[1].send('contextmenu');
+  assert.deepEqual([...s.include.power], ['80']); assert.ok(s.exclude.power.has('60'));
+  returned[3].send('click'); assert.deepEqual([...s.include.power], ['80', '140+']);
+  cleanupReturned();
+  assert.match(read('css/listing-ui.css'), /#move-power-pills \.type-pill\.filter-include-locked/);
+});
+test('power range combines with actual move render search/sorting and does not mutate skills', () => {
+  const F = runtime(), valueFilters = F.create({ powerRange: true });
+  const moves = [30, 40, 45, 50, 60, 80, 140, 180].map((power, i) => ({ id: i, name: power === 45 ? 'other' : 'keep', power }));
+  const before = JSON.stringify(moves), emitted = [], list = { innerHTML: '' };
+  const context = vm.createContext({ valueFilters, currentFilter: { keyword: 'keep' }, EXCLUDED_MOVES: [],
+    activeSortKey: 'power', activeSortState: 1, CommonUI: { FilterExclusion: F },
+    getMoveTypeZh: () => '物攻', getMoveElemZh: () => '水',
+    document: { getElementById: id => id === 'move-list-container' ? list : null },
+    RKData: { getMoves: () => moves, getMoveName: m => m.name, getMoveDesc: () => '',
+      buildSkillCardHtml: m => { emitted.push(m.power); return `<div>${m.power}</div>`; } } });
+  const page = read('js/pages/moves.js');
+  vm.runInContext(page.slice(page.indexOf('  function renderList()'), page.indexOf('  function toggleRefraction()')) + '\nglobalThis.render = renderList;', context);
+  F.toggle(valueFilters, 'power', '40'); context.render(); assert.deepEqual(emitted.splice(0), [40]);
+  F.toggle(valueFilters, 'power', '60'); context.render(); assert.deepEqual(emitted.splice(0), [60, 50, 40]);
+  F.toggle(valueFilters, 'power', '40'); F.toggle(valueFilters, 'power', '140+');
+  context.render(); assert.deepEqual(emitted.splice(0), [180, 140, 80, 60]);
+  assert.equal(JSON.stringify(moves), before);
 });
 test('search + exclusions never mutate master moves or source data', () => {
   const F = runtime(), s = F.create(); const moves = JSON.parse(read('data/moves.json'));

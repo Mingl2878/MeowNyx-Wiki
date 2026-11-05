@@ -1,0 +1,17 @@
+[
+  {"id":"rain","name":"雨天","monsterIds":[17,202]},
+  {"id":"snow","name":"雪天","monsterIds":[246,472]},
+  {"id":"star","name":"星陨","monsterIds":[231],"anyOf":[[443,444,445]]},
+  {"id":"poison","name":"毒队","monsterIds":[387,390]},
+  {"id":"cute","name":"萌队","monsterIds":[167,296]},
+  {"id":"bugs","name":"虫队","monsterIds":[192,432]},
+  {"id":"earth-martial","name":"地武","monsterIds":[],"anyOf":[[311,312]]},
+  {"id":"fire","name":"火队","monsterIds":[343,393]},
+  {"id":"thunderstorm","name":"雷暴","monsterIds":[385,170]},
+  {"id":"wolf","name":"狼王","monsterIds":[233],"anyOf":[[111,109]]},
+  {"id":"fire-god","name":"火神","monsterIds":[13]},
+  {"id":"stilt","name":"高脚","monsterIds":[363]},
+  {"id":"dream","name":"三三","monsterIds":[322]},
+  {"id":"electric-deer","name":"电鹿","monsterIds":[356]},
+  {"id":"luoyin","name":"罗隐","monsterIds":[199]}
+]

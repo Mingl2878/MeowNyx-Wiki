@@ -24,10 +24,10 @@ async page => {
         s.atkPet=RKData.getMonsterById(434);s.defPet=RKData.getMonsterById(602);
         Object.assign(s,{atkNature:{},atkIV:{},defNature:{},defIV:{},skillType:'attack',skillAttr:'火',basePower:100,fixedBonus:0,percentBonus:0,buff:0,comboCount:1,defenseMod:'0',debuffPercent:'0',finalPowerManual:'',starMeteor:2});
         const fire=DamagePage.CalcEngine.calculate();s.skillAttr='幻';const illusion=DamagePage.CalcEngine.calculate();
-        const expected=Math.ceil(Math.ceil(Math.ceil(Math.ceil(28*fire.atkStat*(37/41))*1)*fire.starMeteorTypeEff)/fire.defStat);
+        const expected=Math.floor(28*fire.atkStat*37*fire.starMeteorTypeEff/(41*fire.defStat));
         return fire.starMeteorTriggered&&fire.starMeteorDamage===expected&&fire.starMeteorTypeEff===RKData.getTypeEff('幻',s.defPet.main_type.name,s.defPet.sub_type.name)&&illusion.starMeteorDamage===0&&BattleMath.DAMAGE_FACTOR===37/41;
       }finally{Object.assign(s,old);}
-    });check(calculations,'meteor uses 37/41, actual Illusion matchup and no Illusion-skill trigger');
+    });check(calculations,'meteor uses one final floor, 37/41 at level60, actual Illusion matchup and no Illusion-skill trigger');
     await go('settings');await page.waitForSelector('#set-effective-speed [data-speed-mode]');
     await page.evaluate(()=>AppPreferences.setEffectiveIncludeSpeed(true));
     check(await page.locator('#set-effective-speed button').count()===3,'three effective-speed buttons, no radio menu');
@@ -79,6 +79,7 @@ async page => {
   }finally{
     await page.unroute('**/api/settings');page.off('pageerror',onError);
     await page.evaluate(s=>{localStorage.clear();for(const [k,v]of Object.entries(s.storage))localStorage.setItem(k,v);AppPreferences.setMaxZoom(s.zoom);},saved);
-    await page.reload();
+    const flushed=await page.evaluate(()=>UserConfig.flush());
+    if(flushed)await page.reload();
   }
 }

@@ -1,0 +1,25 @@
+/* Isolated battle snapshots/inference; existing skill rows and stat grid are untouched. */
+.battle-snapshot-panel[hidden], .battle-inference [hidden] { display: none; }
+.battle-snapshot-panel .battle-snapshot-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.battle-snapshot-panel .battle-note, .battle-inference .battle-note { color: var(--text-secondary); font-size: 12px; line-height: 1.65; margin: 8px 0; overflow-wrap: anywhere; }
+.battle-snapshot-panel .battle-roster { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
+.battle-snapshot-panel .battle-roster > strong { width: 100%; font-size: 12px; color: var(--text-secondary); }
+.battle-snapshot-panel .battle-roster-pet { display: flex; align-items: center; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 4px; font-size: 12px; min-width: 0; max-width: 100%; }
+.battle-snapshot-panel .battle-roster-pet > span { overflow-wrap: anywhere; }
+.battle-snapshot-panel .btn, .battle-inference .btn { border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 5px 8px; font: inherit; color: var(--text-primary); background: var(--bg-secondary); cursor: pointer; }
+.battle-snapshot-panel .btn:disabled, .battle-inference .btn:disabled { opacity: .5; cursor: not-allowed; }
+.battle-snapshot-panel .btn:hover:not(:disabled), .battle-inference .btn:hover:not(:disabled) { background: var(--bg-hover); }
+.battle-snapshot-panel .battle-snapshot-status, .battle-inference .battle-inference-status { color: var(--orange); font-size: 12px; line-height: 1.6; margin: 8px 0; overflow-wrap: anywhere; }
+.battle-snapshot-panel .battle-snapshot-values { border-top: 1px solid var(--border); padding: 8px 0; font-size: 12px; }
+.battle-snapshot-panel summary, .battle-inference summary { cursor: pointer; line-height: 1.6; }
+.battle-snapshot-panel .battle-snapshot-stat { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 5px 8px; margin: 8px 0; }
+.battle-snapshot-panel label, .battle-inference label { display: flex; flex-direction: column; gap: 5px; min-width: 0; font-size: 12px; }
+.battle-snapshot-panel small { grid-column: 1 / -1; color: var(--text-secondary); overflow-wrap: anywhere; }
+.battle-snapshot-panel input, .battle-snapshot-panel select, .battle-inference input:not([type=checkbox]), .battle-inference select { width: 100%; min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 6px; background: var(--bg-secondary); color: var(--text-primary); font: inherit; }
+.battle-snapshot-panel input[aria-invalid=true] { border-color: var(--danger); }
+.battle-inference { padding: 12px 0; border-top: 1px solid var(--border); }
+.battle-inference .battle-inference-form { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(170px,100%),1fr)); gap: 10px; align-items: end; }
+.battle-inference .battle-wide { grid-column: 1 / -1; }
+.battle-inference .battle-confirm { flex-direction: row; align-items: flex-start; line-height: 1.5; }
+.battle-inference .battle-confirm input { flex: 0 0 auto; margin-top: 3px; }
+.battle-inference .battle-inference-results { font-size: 12px; color: var(--text-secondary); overflow-wrap: anywhere; line-height: 1.7; }

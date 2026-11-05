@@ -1,9 +1,8 @@
-﻿/**
+/**
  * updatedata.js — 数据更新页面
  * 复用 style.css 的控件外观；表单排列只由本页面限定的规则负责。
  */
 const UpdateDataPage = (function () {
-  const GITHUB_URL = 'https://github.com/akikocc/desktop-tutorial';
   let currentTab = 'home';
   let currentEditorMonster = null;
   let editorSkillList = [];   // [{name, source}]
@@ -15,7 +14,8 @@ const UpdateDataPage = (function () {
   // 地区形态 & 进化关系状态
   let editorFormCategory = '无多形态';
   let editorMainFormName = '';
-  let editorEvolvesFromID = null;   // null=无, number=上游精灵ID
+  let editorEvolvesFromID = null;   // 明确普通前置
+  let editorLeaderOfID = null;      // 独立首领化来源，不混入普通进化
   let addPetFormCategory = '无多形态';
   let addPetMainFormName = '';
   let addPetEvolvesFromID = null;
@@ -47,7 +47,7 @@ const UpdateDataPage = (function () {
     /* 属性选择网格 — 缩小 */
     .ud-type-grid {
       display: grid;
-      grid-template-columns: repeat(9, 40px);
+      grid-template-columns: repeat(9, minmax(0, 40px));
       gap: 6px;
       justify-content: center;
     }
@@ -140,9 +140,9 @@ const UpdateDataPage = (function () {
       align-items: center;
       justify-content: center;
     }
-    .detail-skill-tag { margin: 1px !important; }
-    .detail-skill-item { position: relative !important; padding-right: 22px !important; }
-    .detail-skill-energy {
+    #ud-tab-content .detail-skill-tag { margin: 1px !important; }
+    #ud-tab-content .detail-skill-item { position: relative !important; padding-right: 22px !important; }
+    #ud-tab-content .detail-skill-energy {
       border: 1px solid #ccc !important;
       background: #fff !important;
       color: #000 !important;
@@ -157,7 +157,7 @@ const UpdateDataPage = (function () {
       justify-content: center !important;
       gap: 2px !important;
     }
-    .detail-skill-tag.type-物攻, .detail-skill-tag.type-魔攻, .detail-skill-tag.type-防御, .detail-skill-tag.type-状态 {
+    #ud-tab-content .detail-skill-tag.type-物攻, #ud-tab-content .detail-skill-tag.type-魔攻, #ud-tab-content .detail-skill-tag.type-防御, #ud-tab-content .detail-skill-tag.type-状态 {
       border: 1px solid #ccc !important;
       background: #fff !important;
       color: #000 !important;
@@ -166,7 +166,7 @@ const UpdateDataPage = (function () {
       font-size: 11px !important;
       font-weight: 600 !important;
     }
-    .detail-skill-tag.detail-skill-power {
+    #ud-tab-content .detail-skill-tag.detail-skill-power {
       border: 1px solid #ccc !important;
       background: #fff !important;
       color: #000 !important;
@@ -184,8 +184,11 @@ const UpdateDataPage = (function () {
       margin-bottom: 8px;
     }
     /* Tab 栏 */
-    .ud-tabs {
+    #ud-page .ud-tabs {
       display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 100%;
       gap: 8px;
       margin: 0 auto 24px;
       padding: 6px;
@@ -222,7 +225,8 @@ const UpdateDataPage = (function () {
   </style>`;
 
   function render(container) {
-    container.innerHTML = `<div class="calc-root"><div class="scroll-container" style="padding:8px 24px 40px;">
+    window.CatalogUpdater?.unmount();
+    container.innerHTML = `<div class="calc-root" id="ud-page"><div class="scroll-container" style="padding:8px 24px 40px;">
       ${PAGE_STYLE}
       <h3 style="font-size:1.3em;font-weight:700;margin-bottom:16px;text-align:center;">数据更新</h3>
       <div class="ud-tabs">
@@ -231,8 +235,22 @@ const UpdateDataPage = (function () {
         <a class="ud-tab" data-tab="addPet">新增精灵</a>
         <a class="ud-tab" data-tab="addMove">新增技能</a>
       </div>
+      <div class="ud-catalog-toolbar">
+        <button type="button" class="btn btn-secondary" id="ud-reload-catalog">重新载入资料</button>
+        <span id="ud-reload-result" role="status"></span>
+      </div>
       <div id="ud-tab-content"></div>
     </div></div>`;
+    document.getElementById('ud-reload-catalog').addEventListener('click', async () => {
+      const button = document.getElementById('ud-reload-catalog');
+      const result = document.getElementById('ud-reload-result');
+      if (!window.CatalogUpdater) { result.textContent = '更新组件未载入；请保留完整程序文件后重试。'; return; }
+      button.disabled = true;
+      result.textContent = '正在确认任务状态并等待保存…';
+      const ok = await window.CatalogUpdater.reload();
+      button.disabled = false;
+      if (!ok) result.textContent = '未重新载入（取消、任务进行中或保存未成功）。草稿仍在；请在“更新与工具”查看状态，确认保存后重试。';
+    });
     bindTabEvents();
     renderTab();
   }
@@ -260,6 +278,8 @@ const UpdateDataPage = (function () {
   function renderTab() {
     const el = document.getElementById('ud-tab-content');
     if (!el) return;
+    window.CatalogUpdater?.unmount();
+    if (typeof CommonUI !== 'undefined') CommonUI.destroyWithin?.(el);
     if (currentTab === 'home')       { el.innerHTML = renderHome();       bindHome(); }
     else if (currentTab === 'editor')  { el.innerHTML = renderEditor();     bindEditor(); if (currentEditorMonster) { editorSkillList = getMonsterSkillNames(currentEditorMonster).slice(); editorTypeSel = new Set(); if (currentEditorMonster.main_type) editorTypeSel.add(currentEditorMonster.main_type.name); if (currentEditorMonster.sub_type) editorTypeSel.add(currentEditorMonster.sub_type.name); renderEditorForm(currentEditorMonster); } }
     else if (currentTab === 'addPet')  { el.innerHTML = renderAddPet();     bindAddPet(); }
@@ -267,24 +287,25 @@ const UpdateDataPage = (function () {
   }
 
   // ─── 通用组件 ───
+  const escapeText = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
   function statField(label, id, val) {
     return `<div class="input-group" style="flex:0 0 auto;min-width:auto;">
       <label class="accent-label">${label}</label>
-      <input type="number" id="${id}" class="ud-stat-input" value="${val || 0}" min="0" max="999">
+      <input type="number" id="${id}" class="ud-stat-input" value="${escapeText(val || 0)}" min="0" max="999">
     </div>`;
   }
 
   function textField(label, id, val, placeholder) {
     return `<div class="input-group" style="flex:1;">
       <label class="accent-label">${label}</label>
-      <input type="text" id="${id}" value="${val || ''}" placeholder="${placeholder || ''}">
+      <input type="text" id="${id}" value="${escapeText(val || '')}" placeholder="${escapeText(placeholder || '')}">
     </div>`;
   }
 
   function textareaField(label, id, val, placeholder) {
     return `<div class="input-group" style="flex:1 1 100%;">
       <label class="accent-label">${label}</label>
-      <textarea id="${id}" rows="3" placeholder="${placeholder || ''}">${val || ''}</textarea>
+      <textarea id="${id}" rows="3" placeholder="${escapeText(placeholder || '')}">${escapeText(val || '')}</textarea>
     </div>`;
   }
 
@@ -311,7 +332,7 @@ const UpdateDataPage = (function () {
       <div id="${prefix}-mainform-wrap" style="${currentCat === '变体形态' ? '' : 'display:none;'}margin-top:8px;">
         <div class="input-group" style="flex:0 0 auto;min-width:auto;">
           <label class="accent-label">主形态名称</label>
-          <input type="text" id="${prefix}-mainform-name" value="${mainFormName || ''}" placeholder="填写主形态的形态名，如"蓬松的样子"" style="width:260px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;">
+          <input type="text" id="${prefix}-mainform-name" value="${escapeText(mainFormName || '')}" placeholder="填写主形态的形态名，如：蓬松的样子" style="width:260px;padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;">
         </div>
       </div>
     </div>`;
@@ -334,7 +355,7 @@ const UpdateDataPage = (function () {
   }
 
   // ─── 进化/退化关系选择器 ───
-  function evolutionRelHtml(prefix, evolvesFromID) {
+  function evolutionRelHtml(prefix, evolvesFromID, label = '普通进化前置') {
     const hasEvo = evolvesFromID != null;
     let parentName = '';
     if (hasEvo) {
@@ -342,16 +363,16 @@ const UpdateDataPage = (function () {
       if (parent) parentName = RKData.getMonsterDisplayName(parent);
     }
     return `<div class="skill-section">
-      <h4>进化/退化关系</h4>
+      <h4>${escapeText(label)}</h4>
       <div class="ud-evo-pills" id="${prefix}-evorel-pills">
-        <span class="ud-evo-pill ${!hasEvo ? 'active' : ''}" data-evo="none">无进化关系</span>
-        <span class="ud-evo-pill ${hasEvo ? 'active' : ''}" data-evo="has">有进化关系</span>
+        <span class="ud-evo-pill ${!hasEvo ? 'active' : ''}" data-evo="none">无关联</span>
+        <span class="ud-evo-pill ${hasEvo ? 'active' : ''}" data-evo="has">有关联</span>
       </div>
       <div id="${prefix}-evorel-wrap" style="${hasEvo ? '' : 'display:none;'}margin-top:8px;">
         <div style="text-align:center;">
           <div style="margin-bottom:8px;color:var(--text-secondary);font-size:13px;">从下方搜索选择上游（进化前）精灵：</div>
           <div id="${prefix}-evorel-slot" style="position:relative;text-align:center;"></div>
-          ${hasEvo && parentName ? `<div style="margin-top:8px;font-size:14px;color:var(--text-primary);">当前上游：<b>${parentName}</b>（ID: ${evolvesFromID}）</div>` : ''}
+          ${hasEvo && parentName ? `<div style="margin-top:8px;font-size:14px;color:var(--text-primary);">当前上游：<b>${escapeText(parentName)}</b>（ID: ${evolvesFromID}）</div>` : ''}
         </div>
       </div>
     </div>`;
@@ -359,7 +380,7 @@ const UpdateDataPage = (function () {
 
   let evoRelSearchState = {};   // prefix -> { currentParentId, searchBox }
 
-  function bindEvolutionRel(prefix, getEvoID, setEvoID) {
+  function bindEvolutionRel(prefix, getEvoID, setEvoID, extraFilter = () => true) {
     const pills = document.getElementById(prefix + '-evorel-pills');
     if (!pills) return;
 
@@ -374,24 +395,25 @@ const UpdateDataPage = (function () {
         setEvoID(null);
         evoRelSearchState[prefix].currentParentId = null;
         if (wrap) wrap.style.display = 'none';
-        pills.innerHTML = `<span class="ud-evo-pill active" data-evo="none">无进化关系</span><span class="ud-evo-pill" data-evo="has">有进化关系</span>`;
+        pills.innerHTML = `<span class="ud-evo-pill active" data-evo="none">无关联</span><span class="ud-evo-pill" data-evo="has">有关联</span>`;
       } else {
         if (wrap) wrap.style.display = '';
-        pills.innerHTML = `<span class="ud-evo-pill" data-evo="none">无进化关系</span><span class="ud-evo-pill active" data-evo="has">有进化关系</span>`;
+        pills.innerHTML = `<span class="ud-evo-pill" data-evo="none">无关联</span><span class="ud-evo-pill active" data-evo="has">有关联</span>`;
         // 创建搜索框
         const slot = document.getElementById(prefix + '-evorel-slot');
         if (slot) {
           slot.innerHTML = '';
           const sb = CommonUI.createSearchBox({
-            placeholder: '搜索上游精灵名称...',
+            placeholder: '搜索关联来源...',
             limit: 15,
+            extraFilter,
             onSelect: (pet) => {
               setEvoID(pet.id);
               evoRelSearchState[prefix].currentParentId = pet.id;
               const pname = RKData.getMonsterDisplayName(pet);
               const info = document.createElement('div');
               info.style.cssText = 'margin-top:8px;font-size:14px;color:var(--text-primary);';
-              info.innerHTML = `当前上游：<b>${pname}</b>（ID: ${pet.id}）`;
+              info.innerHTML = `当前上游：<b>${escapeText(pname)}</b>（ID: ${pet.id}）`;
               slot.innerHTML = '';
               slot.appendChild(sb.wrapper);
               slot.appendChild(info);
@@ -404,20 +426,21 @@ const UpdateDataPage = (function () {
       }
     };
 
-    // 如果初始有进化关系，创建搜索框
+    // 如果初始有关联，创建搜索框
     if (getEvoID() != null) {
       const slot = document.getElementById(prefix + '-evorel-slot');
       if (slot) {
         const sb = CommonUI.createSearchBox({
-          placeholder: '搜索上游精灵名称...',
+          placeholder: '搜索关联来源...',
           limit: 15,
+          extraFilter,
           onSelect: (pet) => {
             setEvoID(pet.id);
             evoRelSearchState[prefix].currentParentId = pet.id;
             const pname = RKData.getMonsterDisplayName(pet);
             const info = document.createElement('div');
             info.style.cssText = 'margin-top:8px;font-size:14px;color:var(--text-primary);';
-            info.innerHTML = `当前上游：<b>${pname}</b>（ID: ${pet.id}）`;
+            info.innerHTML = `当前上游：<b>${escapeText(pname)}</b>（ID: ${pet.id}）`;
             slot.innerHTML = '';
             slot.appendChild(sb.wrapper);
             slot.appendChild(info);
@@ -486,7 +509,7 @@ const UpdateDataPage = (function () {
       const label = SKILL_SOURCE_LABEL[src] || src;
       const items = groups[src];
       return `<div class="ud-skill-source-group">
-        <div class="ud-skill-source-title">${label} (${items.length})</div>
+        <div class="ud-skill-source-title">${escapeText(label)} (${items.length})</div>
         <div class="detail-skill-list" style="grid-template-columns: repeat(4, 1fr); gap: 8px;">${items.map(({ name, idx }) => {
           const mv = findMoveByName(name);
           const card = RKData.buildSkillCardHtml({
@@ -631,37 +654,13 @@ const UpdateDataPage = (function () {
 
   // ─── Tab 1: 更新与工具 ───
   function renderHome() {
-    return `<div style="width:100%;">
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-header"><h3>在线更新</h3></div>
-        <div class="card-body" style="padding:20px;">
-          <p style="color:var(--text-secondary);margin-bottom:16px;line-height:1.8;">
-            点击下方按钮跳转 GitHub 下载最新数据库文件，覆盖本地 <code>data/</code> 目录下的对应文件即可完成更新。
-          </p>
-          <button class="btn btn-primary ud-btn-lg" id="ud-open-github">前往 GitHub 下载</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h3>离线更新工具</h3></div>
-        <div class="card-body" style="padding:20px;">
-          <p style="color:var(--text-secondary);line-height:1.8;">
-            万一我弃坑不再更新了，留下了工具，你可以自己更新。
-          </p>
-        </div>
-      </div>
-    </div>`;
+    return '<div id="ud-official-catalog" class="card"><p>正在载入官方图鉴更新工具…</p></div>';
   }
   function bindHome() {
-    const btn = document.getElementById('ud-open-github');
-    if (btn) btn.addEventListener('click', async () => {
-      try {
-        await fetch('/api/open-url', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: GITHUB_URL })
-        });
-      } catch (e) {}
-    });
+    const host = document.getElementById('ud-official-catalog');
+    if (!host) return;
+    if (window.CatalogUpdater) void window.CatalogUpdater.mount(host);
+    else host.textContent = '官方图鉴更新组件未载入，请保留完整程序文件后重试。此时不会更新任何资料，仍可进入手工 Tab。';
   }
 
   // ─── Tab 2: 编辑精灵 ───
@@ -703,21 +702,45 @@ const UpdateDataPage = (function () {
     }
   }
 
+  function editorLevelSettings(m) {
+    const policy = PetLevels.config(m);
+    return { enabled: m.level_configurable === true, default: policy.defaultLevel, min: policy.min, max: policy.max, step: policy.step };
+  }
+  function levelSettingsHtml(settings) {
+    return `<div class="skill-section ud-level-settings"><h4>等级调节</h4>
+      <label class="ud-level-enable"><input type="checkbox" id="ud-level-enabled" ${settings.enabled ? 'checked' : ''}>手动开启（特性含“等级”时自动开启）</label>
+      <div class="input-row">${[['默认等级','default',99],['最低等级','min',99],['最高等级','max',99],['步进','step',98]].map(([label,key,max]) => `<div class="input-group"><label for="ud-level-${key}">${label}</label><input type="number" id="ud-level-${key}" min="1" max="${max}" step="1" value="${settings[key]}"></div>`).join('')}</div>
+      <small>以默认等级为步进基准，保留范围两端。</small></div>`;
+  }
+  function readEditorLevelSettings() {
+    const result = { enabled: document.getElementById('ud-level-enabled').checked };
+    for (const key of ['default','min','max','step']) result[key] = Number(document.getElementById('ud-level-' + key).value);
+    PetLevels.steps({ min: result.min, max: result.max, step: result.step, defaultLevel: result.default });
+    return result;
+  }
+
   function renderEditorForm(m) {
     const el = document.getElementById('ud-editor-form');
     if (!el || !m) return;
     const skillsLoaded = Array.isArray(RKData.getResolvedWikiData(m)?.skills);
     const originalSkillList = JSON.stringify(editorSkillList);
+    const initialLevels = editorLevelSettings(m);
     const traitName = (m.trait && m.trait.localized && m.trait.localized.zh && m.trait.localized.zh.name) || '';
     const traitDesc = (m.trait && m.trait.localized && m.trait.localized.zh && m.trait.localized.zh.description) || '';
 
     // 读取当前精灵的形态和进化数据
     editorFormCategory = m.form_category || '无多形态';
     editorMainFormName = m.main_form_name || '';
-    editorEvolvesFromID = (m.evolves_from_id != null && m.evolves_from_id !== undefined) ? m.evolves_from_id : null;
+    editorEvolvesFromID = m.evolves_from_id ?? null;
+    editorLeaderOfID = m.leader_of_id ?? null;
+    const originalPredecessor = editorEvolvesFromID;
+    const originalLeaderBase = editorLeaderOfID;
+    const memberText = Array.isArray(m.evolution_members)
+      ? m.evolution_members.map(id => { const pet = RKData.getMonsters().find(item => item.id === id); return pet ? RKData.getMonsterDisplayName(pet) : `ID ${id}`; }).join('、') || '无'
+      : '未提供';
 
     el.innerHTML = `<div class="card">
-      <div class="card-header"><h3>编辑 — ${RKData.getMonsterDisplayName(m)}</h3></div>
+      <div class="card-header"><h3>编辑 — ${escapeText(RKData.getMonsterDisplayName(m))}</h3></div>
       <div class="card-body" style="padding:20px;">
         <div id="ud-save-result" style="margin-bottom:16px;"></div>
         <div class="skill-section">
@@ -740,7 +763,9 @@ const UpdateDataPage = (function () {
           <div id="ud-evo-pills"></div>
         </div>
         ${formCategoryHtml('ud-editor', editorFormCategory, editorMainFormName)}
+        <div class="skill-section"><h4>进化关联成员</h4><p>${escapeText(memberText)}</p></div>
         ${evolutionRelHtml('ud-editor', editorEvolvesFromID)}
+        ${m.is_leader_form || editorLeaderOfID != null ? evolutionRelHtml('ud-editor-leader', editorLeaderOfID, '首领化来源') : ''}
         <div class="skill-section">
           <h4>特性</h4>
           <div class="input-row">
@@ -750,6 +775,7 @@ const UpdateDataPage = (function () {
             ${textareaField('特性描述','ud-trait-desc',traitDesc,'特性描述')}
           </div>
         </div>
+        ${levelSettingsHtml(initialLevels)}
         <div class="skill-section">
           <h4>技能列表</h4>
           <div class="input-row" style="margin-bottom:12px;">
@@ -771,14 +797,20 @@ const UpdateDataPage = (function () {
     // 属性 pill
     renderTypePills('ud-editor-type-pills', editorTypeSel, 2);
     // 进化阶段 pill
-    renderEvoPills('ud-evo-pills', ['基础形态','高级形态','首领形态'], m.evolution_stage);
+    const editorStages = ['基础形态','高级形态','首领形态'];
+    if (m.evolution_stage === '未确认') editorStages.push('未确认');
+    renderEvoPills('ud-evo-pills', editorStages, m.evolution_stage);
     // 地区形态
     bindFormCategory('ud-editor',
       () => editorFormCategory, v => editorFormCategory = v,
       () => editorMainFormName, v => editorMainFormName = v);
     // 进化关系
     bindEvolutionRel('ud-editor',
-      () => editorEvolvesFromID, v => editorEvolvesFromID = v);
+      () => editorEvolvesFromID, v => editorEvolvesFromID = v,
+      candidate => candidate.id !== m.id && (!Array.isArray(m.evolution_members) || m.evolution_members.includes(candidate.id)));
+    bindEvolutionRel('ud-editor-leader',
+      () => editorLeaderOfID, v => editorLeaderOfID = v,
+      candidate => candidate.id !== m.id && !candidate.is_leader_form && candidate.evolution_stage !== '首领形态');
     // 技能搜索
     bindSkillAdder('ud-editor-skill-slot', 'ud-editor-skill-list', editorSkillList);
 
@@ -792,6 +824,8 @@ const UpdateDataPage = (function () {
     document.getElementById('ud-save-btn').addEventListener('click', async () => {
       const r = document.getElementById('ud-save-result');
       const typeArr = [...editorTypeSel];
+      let levels;
+      try { levels = readEditorLevelSettings(); } catch (err) { if (r) r.textContent = err.message; return; }
       const skillsChanged = JSON.stringify(editorSkillList) !== originalSkillList;
       if (skillsChanged && !skillsLoaded) {
         if (r) r.textContent = '技能数据未成功关联，已阻止覆盖。请修复数据并刷新后重试。';
@@ -800,6 +834,8 @@ const UpdateDataPage = (function () {
       const allowEmptySkills = skillsChanged && editorSkillList.length === 0;
       if (allowEmptySkills && !window.confirm('确认清空这只精灵的全部技能？此操作只修改当前精灵，不会清空它的进化来源。')) return;
       const payload = {
+        // Version belongs to the data currently loaded by RKData, never to the latest update status.
+        ...(typeof RKData !== 'undefined' && RKData.getCatalogRevision ? { base_revision: RKData.getCatalogRevision?.() || null } : {}),
         id: m.id,
         base_hp: +document.getElementById('ud-base_hp').value || 0,
         base_phy_atk: +document.getElementById('ud-base_phy_atk').value || 0,
@@ -812,9 +848,11 @@ const UpdateDataPage = (function () {
         evolution_stage: getEvoValue(),
         form_category: editorFormCategory,
         main_form_name: document.getElementById('ud-editor-mainform-name') ? document.getElementById('ud-editor-mainform-name').value.trim() : '',
-        evolves_from_id: editorEvolvesFromID,
+        ...(editorEvolvesFromID !== originalPredecessor ? { evolves_from_id: editorEvolvesFromID } : {}),
+        ...(editorLeaderOfID !== originalLeaderBase ? { leader_of_id: editorLeaderOfID } : {}),
         trait_name: document.getElementById('ud-trait-name').value.trim(),
         trait_desc: document.getElementById('ud-trait-desc').value.trim(),
+        ...(JSON.stringify(levels) !== JSON.stringify(initialLevels) ? { level_controls: levels } : {}),
         // 未编辑技能时不回传列表，避免查询失败或旧页面状态覆盖已有学习面。
         ...(skillsChanged ? { skillList: editorSkillList, allowEmptySkills } : {})
       };
@@ -822,11 +860,11 @@ const UpdateDataPage = (function () {
       try {
         const res = await fetch('/api/edit/monster', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
         const data = await res.json();
-        if (r) r.innerHTML = data.ok
-          ? '<span style="color:var(--success);font-weight:600;">✓ 保存成功！刷新页面后生效</span>'
-          : `<span style="color:var(--danger);">保存失败: ${data.error}</span>`;
+        if (r) r.textContent = data.ok && res.ok !== false
+          ? '✓ 保存成功！点击“重新载入资料”后生效；当前草稿不会自动清除。'
+          : `保存失败: ${data.error || '服务返回异常'}。若资料版本已变化，请先确认重新载入后再编辑。`;
       } catch (err) {
-        if (r) r.innerHTML = `<span style="color:var(--danger);">请求失败: ${err.message}</span>`;
+        if (r) r.textContent = `请求失败: ${err.message}`;
       }
     });
 
@@ -874,7 +912,7 @@ const UpdateDataPage = (function () {
             <div id="ud-addpet-evo-pills"></div>
           </div>
           ${formCategoryHtml('ud-addpet', addPetFormCategory, addPetMainFormName)}
-          ${evolutionRelHtml('ud-addpet', addPetEvolvesFromID)}
+          ${evolutionRelHtml('ud-addpet', addPetEvolvesFromID, '普通进化前置／首领化来源（按阶段保存）')}
           <div class="skill-section">
             <h4>特性</h4>
             <div class="input-row">
@@ -922,11 +960,14 @@ const UpdateDataPage = (function () {
       const r = document.getElementById('ud-addpet-result');
       const typeArr = [...addPetTypeSel];
       const payload = {
+        // Version belongs to the data currently loaded by RKData, never to the latest update status.
+        ...(typeof RKData !== 'undefined' && RKData.getCatalogRevision ? { base_revision: RKData.getCatalogRevision?.() || null } : {}),
         name: document.getElementById('ud-addpet-name').value.trim(),
         evolution_chain_name: '',
         form_category: addPetFormCategory,
         main_form_name: addPetMainFormName,
-        evolves_from_id: addPetEvolvesFromID,
+        evolves_from_id: getEvoValue() === '首领形态' ? null : addPetEvolvesFromID,
+        leader_of_id: getEvoValue() === '首领形态' ? addPetEvolvesFromID : null,
         base_hp: +document.getElementById('ud-addpet-hp').value || 0,
         base_phy_atk: +document.getElementById('ud-addpet-phy').value || 0,
         base_mag_atk: +document.getElementById('ud-addpet-mag').value || 0,
@@ -945,11 +986,11 @@ const UpdateDataPage = (function () {
       try {
         const res = await fetch('/api/add/monster', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
         const data = await res.json();
-        r.innerHTML = data.ok
-          ? '<span style="color:var(--success);font-weight:600;">✓ 添加成功！刷新页面后生效</span>'
-          : `<span style="color:var(--danger);">添加失败: ${data.error}</span>`;
+        r.textContent = data.ok && res.ok !== false
+          ? '✓ 添加成功！点击“重新载入资料”后生效；当前草稿不会自动清除。'
+          : `添加失败: ${data.error || '服务返回异常'}。若资料版本已变化，请先确认重新载入后再编辑。`;
       } catch (err) {
-        r.innerHTML = `<span style="color:var(--danger);">请求失败: ${err.message}</span>`;
+        r.textContent = `请求失败: ${err.message}`;
       }
     });
   }
@@ -1023,6 +1064,8 @@ const UpdateDataPage = (function () {
       const r = document.getElementById('ud-addmove-result');
       const typeArr = [...addMoveTypeSel];
       const payload = {
+        // Version belongs to the data currently loaded by RKData, never to the latest update status.
+        ...(typeof RKData !== 'undefined' && RKData.getCatalogRevision ? { base_revision: RKData.getCatalogRevision?.() || null } : {}),
         name: document.getElementById('ud-addmove-name').value.trim(),
         type: typeArr[0] || '',
         category: addMoveCatValue,
@@ -1036,14 +1079,15 @@ const UpdateDataPage = (function () {
       try {
         const res = await fetch('/api/add/move', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
         const data = await res.json();
-        r.innerHTML = data.ok
-          ? '<span style="color:var(--success);font-weight:600;">✓ 添加成功！刷新页面后生效</span>'
-          : `<span style="color:var(--danger);">添加失败: ${data.error}</span>`;
+        r.textContent = data.ok && res.ok !== false
+          ? '✓ 添加成功！点击“重新载入资料”后生效；当前草稿不会自动清除。'
+          : `添加失败: ${data.error || '服务返回异常'}。若资料版本已变化，请先确认重新载入后再编辑。`;
       } catch (err) {
-        r.innerHTML = `<span style="color:var(--danger);">请求失败: ${err.message}</span>`;
+        r.textContent = `请求失败: ${err.message}`;
       }
     });
   }
 
-  return { render };
+  function onLeave() { window.CatalogUpdater?.unmount(); }
+  return { render, onLeave };
 })();

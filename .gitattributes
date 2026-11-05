@@ -1,0 +1,4 @@
+# Preserve vendored runtime and manifest-verified third-party bytes on every checkout.
+rkpp/** -text
+legal/licenses/** -text
+legal/Apache-2.0.txt -text

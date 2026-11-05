@@ -4,11 +4,11 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
-const monsters=JSON.parse(fs.readFileSync(path.join(root,'data/monsters.json'),'utf8'));
+const monsters=require('./catalog-read-fixture.cjs').readProjectData('monsters.json');
 const byId=new Map(monsters.map(m=>[m.id,m]));
 
 test('reviewed pre-evolutions are not mislabeled high: source metadata, not a page blacklist',()=>{
-  for(const [id,name,child] of [[197,'阿米樱',198],[436,'吸泥鸥',437],[608,'焰米龙',603]]){
+  for(const [id,name,child] of [[197,'阿米樱',199],[436,'吸泥鸥',438],[608,'焰米龙',603]]){
     const m=byId.get(id),next=byId.get(child);
     assert.equal(m.localized.zh.name,name);assert.equal(m.evolution_stage,'基础形态');
     assert.equal(next.evolves_from_id,id);assert.notEqual(next.dex_number,m.dex_number);
@@ -17,12 +17,18 @@ test('reviewed pre-evolutions are not mislabeled high: source metadata, not a pa
   assert.equal(byId.get(198).evolution_stage,'首领形态');
   assert.equal(byId.get(437).evolution_stage,'首领形态');
   assert.equal(byId.get(603).evolution_stage,'高级形态');
+  assert.equal(byId.get(198).leader_of_id,199);
+  assert.equal(byId.get(437).leader_of_id,438);
+  assert.equal(byId.get(198).evolves_from_id,null);
+  assert.equal(byId.get(437).evolves_from_id,null);
+  assert.deepEqual(byId.get(198).evolution_members,[196,197,199]);
+  assert.deepEqual(byId.get(437).evolution_members,[436,438]);
   assert.equal(byId.get(198).learnset_inherits_from_id,197);
   assert.equal(byId.get(437).learnset_inherits_from_id,436);
 });
 
 test('runtime high filter uses corrected source classification and keeps all IDs/own learnsets',async()=>{
-  const context={console:{log(){},error(){}},fetch:async f=>({ok:true,json:async()=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'))})};
+  const context={console:{log(){},error(){}},fetch:async f=>({ok:true,json:async()=>JSON.parse(require('./catalog-read-fixture.cjs').readResource(root, f))})};
   vm.createContext(context);
   for(const file of ['js/battle-math.js','js/monster-identity.js','js/data.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context);
   const api=vm.runInContext('RKData',context);await api.init();

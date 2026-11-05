@@ -5,9 +5,9 @@
   else root.UserConfig = api;
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
   'use strict';
-  const KEYS = Object.freeze(['rk_pet_configs', 'rk_speed_pet_priority', 'rk_speed_form_overrides', 'rk_damage_selection', 'rk_damage_skill_configs', 'rk_damage_view', 'rk_chart_workspace']);
+  const KEYS = Object.freeze(['rk_pet_configs', 'rk_speed_pet_priority', 'rk_speed_form_overrides', 'rk_damage_selection', 'rk_damage_skill_configs', 'rk_damage_view', 'rk_chart_workspace', 'rk_damage_levels', 'rk_skill_simulation']);
   // rk_speed_view is intentionally not read, cached or imported by this client.
-  const UPGRADE_KEYS = new Set(['rk_damage_skill_configs', 'rk_damage_view', 'rk_chart_workspace']);
+  const UPGRADE_KEYS = new Set(['rk_damage_skill_configs', 'rk_damage_view', 'rk_chart_workspace', 'rk_damage_levels', 'rk_skill_simulation']);
   const keySet = new Set(KEYS), forbidden = new Set(['__proto__', 'prototype', 'constructor']);
   const clone = value => JSON.parse(JSON.stringify(value));
   const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);

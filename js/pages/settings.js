@@ -1,4 +1,4 @@
-﻿/**
+/**
  * settings.js — 用户设置页面
  */
 const SettingsPage = (function () {
@@ -180,10 +180,17 @@ const SettingsPage = (function () {
         gap: 12px;
         margin-top: 24px;
       }
+      .settings-trick-room { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer; color: var(--text-primary); }
+      .settings-trick-room input { accent-color: var(--accent); cursor: pointer; }
+      .settings-checkbox { display: inline-flex; align-items: center; gap: 8px; padding-top: 8px; color: var(--text-primary); cursor: pointer; }
+      .settings-checkbox input { flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
+      .settings-legacy-close[hidden] { display: none; }
     </style>`;
 
   const DEFAULT_SETTINGS = {
     close_behavior: 'close',
+    rkpp_autostart: false,
+    close_to_background: false,
     window_width: 1280,
     window_height: 800,
     window_maximized: false,
@@ -192,6 +199,7 @@ const SettingsPage = (function () {
     effective_include_speed: true,
     effective_speed_mode: 'include',
     effective_speed_threshold: 80,
+    trick_room: false,
     hotkey_mods: 0,
     hotkey_vk: 0,
     font_family: ''
@@ -285,6 +293,9 @@ const SettingsPage = (function () {
       if (settings.default_route === 'game-description') settings.default_route = 'petdex';
       settings.font_family = settings.font_family || '';
       Object.assign(settings, speedSettings(data));
+      settings.trick_room = data.trick_room === true;
+      settings.rkpp_autostart = data.rkpp_autostart === true;
+      settings.close_to_background = data.close_to_background === true;
       savedFontFamily = settings.font_family;
       if (window.AppPreferences) settings.default_max_zoom = Math.round(window.AppPreferences.getMaxZoom() * 100);
       applyFontPreview(settings.font_family);
@@ -330,6 +341,7 @@ const SettingsPage = (function () {
         localStorage.setItem('xwiki-max-zoom', String(committedZoom));
       } catch (e) { cacheFailed = true; }
       window.AppPreferences?.setEffectiveSpeedPolicy?.(proposal.effective_speed_mode, proposal.effective_speed_threshold);
+      window.AppPreferences?.setTrickRoom?.(proposal.trick_room === true);
       savedFontFamily = proposal.font_family || '';
       if (revision === submittedRevision) clearDirty();
       if (r) r.innerHTML = data.hotkey_failed
@@ -353,6 +365,10 @@ const SettingsPage = (function () {
   }
 
   function bindSpeedSettings() {
+    document.getElementById('set-trick-room')?.addEventListener('change', event => {
+      settings.trick_room = event.target.checked === true;
+      markDirty();
+    });
     const buttons = document.querySelectorAll('#set-effective-speed [data-speed-mode]');
     const thresholdControl = document.getElementById('set-effective-threshold-control');
     const slider = document.getElementById('set-effective-threshold');
@@ -395,11 +411,25 @@ const SettingsPage = (function () {
       +   '</div>'
       + '</div>'
 
-      // 关闭行为
+      // 启动偏好只在显式保存后生效；页面载入不启动外部服务。
+      + '<div class="settings-card">'
+      +   '<div class="settings-card-header">启动行为</div>'
+      +   '<div class="settings-card-body"><div class="settings-row">'
+      +     '<div class="settings-label">RKPP</div><div class="settings-control">'
+      +       '<label class="settings-checkbox"><input type="checkbox" id="set-rkpp-autostart"' + (settings.rkpp_autostart === true ? ' checked' : '') + '><span>启动软件时自动启动RKPP并且连接</span></label>'
+      +     '</div></div></div>'
+      + '</div>'
+
+      // 后台选项优先；取消后继续使用原关闭/最小化选择，不覆盖旧记忆。
       + '<div class="settings-card">'
       +   '<div class="settings-card-header">窗口关闭行为</div>'
       +   '<div class="settings-card-body">'
       +     '<div class="settings-row">'
+      +       '<div class="settings-label">后台运行</div><div class="settings-control">'
+      +         '<label class="settings-checkbox"><input type="checkbox" id="set-close-to-background"' + (settings.close_to_background === true ? ' checked' : '') + '><span>关闭窗口之后放在后台而不是关闭</span></label>'
+      +       '</div>'
+      +     '</div>'
+      +     '<div class="settings-row settings-legacy-close" id="set-close-legacy-row"' + (settings.close_to_background === true ? ' hidden' : '') + '>'
       +       '<div class="settings-label">关闭窗口时的行为</div>'
       +       '<div class="settings-control">'
       +         '<div class="settings-pills" id="set-close-pills">'
@@ -501,6 +531,7 @@ const SettingsPage = (function () {
       + '</div><label class="settings-speed-threshold" id="set-effective-threshold-control"' + (settings.effective_speed_mode === 'threshold' ? '' : ' hidden') + '>'
       + '<span>门槛</span><input type="range" id="set-effective-threshold" min="40" max="120" step="1" value="' + settings.effective_speed_threshold + '">'
       + '<output id="set-effective-threshold-value" for="set-effective-threshold">' + settings.effective_speed_threshold + '</output></label>'
+      + '<label class="settings-trick-room"><input type="checkbox" id="set-trick-room"' + (settings.trick_room === true ? ' checked' : '') + '><span>霞光梦境</span></label>'
       + '</div></div></div></div>'
 
       // Explicit personal reset, independent of settings drafts and chart/team data.
@@ -558,6 +589,18 @@ const SettingsPage = (function () {
         markDirty();
       });
     }
+
+    // 两项新增偏好仅编辑设置草稿，沿既有保存队列提交。
+    document.getElementById('set-rkpp-autostart')?.addEventListener('change', event => {
+      settings.rkpp_autostart = event.target.checked === true;
+      markDirty();
+    });
+    document.getElementById('set-close-to-background')?.addEventListener('change', event => {
+      settings.close_to_background = event.target.checked === true;
+      const legacyRow = document.getElementById('set-close-legacy-row');
+      if (legacyRow) legacyRow.hidden = settings.close_to_background;
+      markDirty();
+    });
 
     // 关闭行为
     var closePills = document.getElementById('set-close-pills');

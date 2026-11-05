@@ -22,20 +22,19 @@ test('shared stat arithmetic exactly preserves all existing rounding steps', () 
   }
 });
 
-test('confirmed special-power tier boundaries are unchanged', () => {
-  for (const [diff, power] of [[-999,60],[-1,60],[0,100],[14,100],[15,130],[29,130],[30,140],[44,140],[45,150],[59,150],[60,160],[74,160],[75,170],[89,170],[90,180],[104,180],[105,190],[119,190],[120,194],[134,194],[135,200],[999,200]]) {
+test('new speed/physical-defense tier boundaries include zero and exact endpoints', () => {
+  for (const [diff, power] of [[-999,60],[-1,60],[0,60],[1,80],[30,80],[31,100],[60,100],[61,120],[90,120],[91,140],[120,140],[121,150],[150,150],[151,160],[180,160],[181,170],[210,170],[211,180],[240,180],[241,190],[270,190],[271,200],[999,200]]) {
     assert.equal(MathCore.differencePower(diff), power, String(diff));
   }
 });
 
-test('shared normal damage preserves main-page rounding and combo ordering', () => {
+test('normal damage floors only after the complete per-hit expression, then multiplies combo', () => {
   for (const attack of [60, 99, 170, 277, 513]) for (const power of [0, 1, 63, 125, 399]) {
     for (const defense of [60, 103, 199, 372]) for (const reduction of [1, .3, .5, .75]) for (const combo of [1, 2, 5]) {
-      const expected = Math.ceil(Math.ceil(Math.ceil(Math.ceil(attack * power) * 37 / 41) * reduction) / defense) * combo;
-      // Match the existing JS coefficient evaluation, including FP multiplication order.
-      const legacy = Math.ceil(Math.ceil(Math.ceil(Math.ceil(attack * power) * (37 / 41)) * reduction) / defense) * combo;
-      assert.equal(MathCore.normalDamage(attack, power, defense, reduction, combo), legacy);
-      assert.ok(Number.isFinite(expected));
+      // Exact integer oracle for the supplied decimal reductions, not a copy of FP order.
+      const numerator = BigInt(attack * power * 37) * BigInt(Math.round(reduction * 100));
+      const expected = Number(numerator / BigInt(41 * defense * 100)) * combo;
+      assert.equal(MathCore.normalDamage(attack, power, defense, reduction, combo), expected);
     }
   }
 });
@@ -49,7 +48,7 @@ test('zero power remains zero, including base/final power helpers', () => {
 test('positive and negative BUFF retain asymmetric rules', () => {
   assert.equal(MathCore.buffMultiplier(50), 1.5);
   assert.equal(MathCore.buffMultiplier(-50), 1 / 1.5);
-  assert.equal(MathCore.finalPower(100, 20, 25, 1.25, 2, -50), Math.floor(150 * 1.25 * 2 / 1.5));
+  assert.equal(MathCore.finalPower(100, 20, 25, 1.25, 2, -50), Math.round(150 * 1.25 * 2 / 1.5));
 });
 
 async function runtime() {
@@ -61,10 +60,10 @@ async function runtime() {
   const context = {
     console: { log() {}, error() {} }, localStorage: { getItem: () => null },
     document: { getElementById: element, querySelectorAll: () => [], querySelector: () => null },
-    window: {}, fetch: async file => ({ ok: true, json: async () => JSON.parse(fs.readFileSync(path.join(ROOT, file), 'utf8')) })
+    window: {}, fetch: async file => ({ ok: true, json: async () => JSON.parse(require('./catalog-read-fixture.cjs').readResource(ROOT, file)) })
   };
   vm.createContext(context);
-  for (const file of ['js/battle-math.js', 'js/monster-identity.js', 'js/data.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), context);
+  for (const file of ['js/battle-math.js', 'js/monster-identity.js', 'js/data.js', 'js/skill-simulation.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), context);
   await vm.runInContext('RKData.init()', context);
   const code = fs.readFileSync(path.join(ROOT, 'js/pages/damage.js'), 'utf8').replace(
     'return { render, onLeave, getState: () => state, CalcEngine };',
@@ -112,10 +111,10 @@ test('skill-type setter updates internal state and both radio buttons', async ()
   assert.equal(element('skillTypeAttack').checked, true);
 });
 
-test('meteor uses exact shared coefficient and separate rounded buff/type stages', () => {
+test('meteor has one final floor including buff, type and reduction', () => {
   assert.equal(MathCore.DAMAGE_FACTOR, 37 / 41);
   for (const type of [3, 2, 1, .5, .25]) {
-    const expected = Math.ceil(Math.ceil(Math.ceil(Math.ceil(73 * 217 * (37 / 41)) * 1.2) * type * .8) / 193);
+    const expected = Math.floor(73 * 217 * 37 * 12 * (type * 4) * 8 / (41 * 10 * 4 * 10 * 193));
     assert.equal(MathCore.starMeteorDamage(73, 217, 193, 1.2, type, .8), expected);
   }
 });
@@ -145,7 +144,7 @@ test('meteor wording distinguishes resistance from weakness without changing ari
     const result = {...base, atkStat:202,defStat:231,starMeteorTypeEff:eff,starMeteorDamage:damage,totalDamage:100+damage};
     const frozen = JSON.stringify(result);
     const text = engine.buildSteps(result).find(line=>line.includes('星陨追加伤害')).replace(/<[^>]*>/g,'').trim();
-    if (eff === .5) assert.equal(text, '星陨追加伤害 = 4层星陨印记（幻系，基础威力88） × (202 ÷ 231) × 0.9 × 幻系抵抗0.5 = 35');
+    if (eff === .5) assert.equal(text, '星陨追加伤害 = 4层星陨印记（幻系，基础威力88） × (202 ÷ 231) × 0.9 × 幻系抵抗0.5 = 34');
     if (eff !== 1) assert.match(text, new RegExp('幻系'+(eff < 1 ? '抵抗' : '克制')+eff));
     else assert.doesNotMatch(text, /幻系克制|幻系抵抗/);
     assert.equal(JSON.stringify(result), frozen);
@@ -158,9 +157,9 @@ test('damage page still includes mitigation, defense changes, manual power and s
   Object.assign(s, { atkPet: pet(1), defPet: pet(2), atkIV: {}, atkNature: {}, defIV: {}, defNature: {},
     skillType: 'attack', skillAttr: '火', basePower: 100, fixedBonus: 0, percentBonus: 0, buff: 0, comboCount: 1,
     defenseMod: '0', debuffPercent: '0', finalPowerManual: '', starMeteor: 0 });
-  assert.equal(page.CalcEngine.calculate().totalDamage, 91);
-  s.debuffPercent = '50'; assert.equal(page.CalcEngine.calculate().totalDamage, 46);
-  s.debuffPercent = '0'; s.defenseMod = '100'; assert.equal(page.CalcEngine.calculate().totalDamage, 46);
-  s.defenseMod = '0'; s.finalPowerManual = '400'; assert.equal(page.CalcEngine.calculate().totalDamage, 361);
-  s.finalPowerManual = ''; s.starMeteor = 2; assert.equal(page.CalcEngine.calculate().totalDamage, 117);
+  assert.equal(page.CalcEngine.calculate().totalDamage, 90);
+  s.debuffPercent = '50'; assert.equal(page.CalcEngine.calculate().totalDamage, 45);
+  s.debuffPercent = '0'; s.defenseMod = '100'; assert.equal(page.CalcEngine.calculate().totalDamage, 45);
+  s.defenseMod = '0'; s.finalPowerManual = '400'; assert.equal(page.CalcEngine.calculate().totalDamage, 360);
+  s.finalPowerManual = ''; s.starMeteor = 2; assert.equal(page.CalcEngine.calculate().totalDamage, 115);
 });

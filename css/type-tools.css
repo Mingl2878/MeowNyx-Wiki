@@ -1,0 +1,87 @@
+/* Attribute-page additions only; no shared IDs or global input handlers. */
+.type-tools-page {
+  --type-tools-ring-red: #df352d;
+  --type-tools-ring-neutral: var(--border);
+  min-width: 0;
+}
+.type-tools-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.type-tools-toolbar .tq-toggle-bar { margin: 0; flex-shrink: 0; }
+.type-tools-copy {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 6px 12px;
+  min-width: 72px;
+  border: 1px solid var(--accent);
+  background: var(--bg-card);
+  color: var(--accent);
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+  font-size: .85em;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.type-tools-copy::before { content: ''; width: 14px; height: 14px; flex-shrink: 0; background: url('../assets/icons/ui/icon_copy.png') center / contain no-repeat; }
+.type-tools-copy:hover { background: var(--accent); color: var(--control-on-color); }
+.type-tools-copy[aria-busy="true"] { cursor: wait; opacity: .65; }
+.type-tools-copy:focus-visible,
+.type-tools-avatar:focus-visible,
+.type-tools-page .tc-grid-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.type-tools-status { font-size: 12px; color: var(--text-secondary); overflow-wrap: anywhere; }
+.type-tools-status[data-state="error"] { color: #df352d; }
+.type-tools-page .tc-grid-icon { padding: 0; min-width: 0; font: inherit; }
+.type-tools-grid-section { margin-top: 16px; }
+.type-tools-list-section { margin-top: 20px; }
+.type-tools-empty { color: var(--text-muted); font-size: 13px; }
+.type-tools-avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: inline-flex;
+  border-radius: 50%;
+  padding: 3px;
+  box-sizing: border-box;
+  background: var(--type-tools-ring);
+}
+.type-tools-avatar-inner {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 12px;
+}
+.type-tools-avatar-inner img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.type-tools-page .tq-monster-list { gap: 6px; }
+.type-tools-page .tq-cat-header { overflow-wrap: anywhere; }
+/* Use the available layout width even under CSS zoom or a narrow desktop window. */
+.type-tools-page .type-calc-grid,
+.type-tools-page .type-calc-result-grid {
+  grid-template-columns: repeat(9, minmax(0, 48px));
+  max-width: 100%;
+}
+@media (max-width: 660px) {
+  .type-tools-page .type-calc-grid,
+  .type-tools-page .type-calc-result-grid { grid-template-columns: repeat(6, minmax(0, 48px)); gap: 8px; }
+  .type-tools-page .tq-toggle-btn { padding: 8px 16px; }
+}
+/* Existing category semantics retained, with theme-aware surfaces on this page. */
+.type-tools-page .tq-category,
+.type-tools-page .tq-cat-header { background: var(--bg-card); }
+[data-theme="dark"] .type-tools-page { --type-tools-ring-red: #f87171; }
+[data-theme="dark"] .type-tools-page .tq-cat-green .tq-cat-header { color: #86efac; }
+[data-theme="dark"] .type-tools-page .tq-cat-red .tq-cat-header,
+[data-theme="dark"] .type-tools-status[data-state="error"] { color: #fca5a5; }
+[data-theme="dark"] .type-tools-page .tq-cat-orange .tq-cat-header { color: #fdba74; }
+[data-theme="dark"] .type-tools-page .tq-cat-blue .tq-cat-header { color: #93c5fd; }

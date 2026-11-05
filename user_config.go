@@ -393,7 +393,7 @@ func (s *userConfigStore) writeLocked(doc jsonObject, before []byte) error {
 
 func knownConfigSection(key string) bool {
 	switch key {
-	case "rk_pet_configs", "rk_speed_pet_priority", "rk_speed_form_overrides", "rk_speed_view", "rk_damage_selection", "rk_damage_skill_configs", "rk_damage_view", "rk_chart_workspace":
+	case "rk_pet_configs", "rk_speed_pet_priority", "rk_speed_form_overrides", "rk_speed_view", "rk_damage_selection", "rk_damage_skill_configs", "rk_damage_view", "rk_chart_workspace", "rk_damage_levels", "rk_skill_simulation":
 		return true
 	}
 	return false
@@ -416,10 +416,10 @@ func validConfigID(b []byte) bool {
 
 // These sections were introduced after the original all-keys import flag.
 func upgradeConfigSection(key string) bool {
-	return key == "rk_damage_skill_configs" || key == "rk_damage_view" || key == "rk_chart_workspace"
+	return key == "rk_damage_skill_configs" || key == "rk_damage_view" || key == "rk_chart_workspace" || key == "rk_damage_levels" || key == "rk_skill_simulation"
 }
 
-func validateSkillConfig(value json.RawMessage) error {
+func validateSkillConfig(value json.RawMessage, allowAbuOverride bool) error {
 	obj, err := parseObject(value)
 	if err != nil {
 		return err
@@ -427,6 +427,13 @@ func validateSkillConfig(value json.RawMessage) error {
 	for key, raw := range obj {
 		invalid := func() error { return fmt.Errorf("invalid skill field %s", key) }
 		switch key {
+		case "abuBuffOverridden":
+			// Native623 owns this persistent takeover marker. Wolf-mode overrides
+			// are session-only and the shared active skill has no owner identity.
+			var flag bool
+			if !allowAbuOverride || nullJSON(raw) || json.Unmarshal(raw, &flag) != nil {
+				return invalid()
+			}
 		case "skillType":
 			var text string
 			if json.Unmarshal(raw, &text) != nil || (text != "attack" && text != "magic_attack") {
@@ -438,9 +445,19 @@ func validateSkillConfig(value json.RawMessage) error {
 				return invalid()
 			}
 			for _, c := range text {
-				if !(c >= '0' && c <= '9') && !strings.ContainsRune("+-*/(). \t\r\n", c) {
+				if !(c >= '0' && c <= '9') && !strings.ContainsRune("+-*/^(). \t\r\n", c) {
 					return invalid()
 				}
+			}
+		case "skillInputKind":
+			var kind string
+			if json.Unmarshal(raw, &kind) != nil || (kind != "power" && kind != "energy" && kind != "hp-ratio") {
+				return invalid()
+			}
+		case "skillInputValue":
+			var value string
+			if nullJSON(raw) || json.Unmarshal(raw, &value) != nil || len(value) > 128 {
+				return invalid()
 			}
 		case "skillAttr", "currentSkillName", "debuffPercent", "defenseMod", "finalPowerManual":
 			var text string
@@ -513,20 +530,40 @@ func validateConfigEntry(section, key string, value json.RawMessage) error {
 			return validateChartWorkspace(value)
 		}
 		return invalid()
+	case "rk_skill_simulation":
+		return validateSkillSimulation(key, value)
+	case "rk_damage_levels":
+		id, err := strconv.ParseUint(key, 10, 53)
+		if err != nil || id == 0 || strconv.FormatUint(id, 10) != key {
+			return invalid()
+		}
+		return validateDamageLevels(value)
 	case "rk_damage_skill_configs":
 		id, err := strconv.ParseUint(key, 10, 53)
 		if err != nil || id == 0 || strconv.FormatUint(id, 10) != key {
 			return invalid()
 		}
-		if err := validateSkillConfig(value); err != nil {
+		if err := validateSkillConfig(value, key == "623"); err != nil {
 			return err
 		}
 	case "rk_damage_view":
-		if key != "skill" {
+		switch key {
+		case "skill":
+			return validateSkillConfig(value, false)
+		case "speedPriority":
+			var ids []int64
+			if nullJSON(value) || json.Unmarshal(value, &ids) != nil || len(ids) > 16 {
+				return invalid()
+			}
+			seen := make(map[int64]bool, len(ids))
+			for _, id := range ids {
+				if id <= 0 || id > (1<<53)-1 || id == 9001 || seen[id] {
+					return invalid()
+				}
+				seen[id] = true
+			}
+		default:
 			return invalid()
-		}
-		if err := validateSkillConfig(value); err != nil {
-			return err
 		}
 	case "rk_speed_pet_priority":
 		speed, err := strconv.ParseUint(key, 10, 53)
@@ -737,7 +774,7 @@ func (s *userConfigStore) data(request jsonObject) (jsonObject, error) {
 					}
 				} else if !exists || !bytes.Equal(old, value) {
 					// Preserve forward-compatible record fields on partial writes.
-					if index == 1 && exists && (section == "rk_pet_configs" || section == "rk_damage_skill_configs" || section == "rk_damage_view") {
+					if index == 1 && exists && (section == "rk_pet_configs" || section == "rk_damage_skill_configs" || section == "rk_damage_view" || section == "rk_damage_levels" || section == "rk_skill_simulation") {
 						previous, oldErr := parseObject(old)
 						fields, newErr := parseObject(value)
 						if oldErr == nil && newErr == nil {

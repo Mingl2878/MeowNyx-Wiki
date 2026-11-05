@@ -1,0 +1,61 @@
+async page => {
+  const origin=page.url().split('/').slice(0,3).join('/'), checks=[];
+  const check=(ok,message)=>{if(!ok)throw Error(message);checks.push(message);};
+  await page.goto(origin+'/#/damage');
+  await page.waitForFunction(()=>typeof DamagePage!=='undefined'&&!!document.querySelector('.attacker-card')&&!!window.BattleRecordsClient);
+  await page.evaluate(()=>UserConfig.flush());
+  const result=await page.evaluate(async()=>{
+    const evidence=value=>({value,certainty:'direct'});
+    const keys=BattleRecordsClient.STATS;
+    const side=(instanceId,monsterId)=>({pets:[{instanceId,monsterId,level:60,iv:Object.fromEntries(keys.map(k=>[k,evidence(k==='attack'?42:0)])),nature:Object.fromEntries(keys.map(k=>[k,evidence(k==='attack'?1:0)]))}],lead:instanceId,before:{},after:{}});
+    const r={version:1,id:'isolated-snapshot-only',mode:'pvp',outcome:'win',source:'isolated-test',quality:{roster:{me:true,enemy:true},actions:true,lead:{me:true,enemy:true}},sides:{me:side('me-1',203),enemy:side('enemy-1',522)},events:[],issues:[]};
+    // Numeric unknowns and multiple candidates must NOT auto apply as facts.
+    r.sides.enemy.pets[0].nature.defense={certainty:'candidate',candidates:[0,1]};
+    r.sides.enemy.pets[0].iv.defense={certainty:'unknown'};
+    const before=JSON.stringify(await(await fetch('/api/user-config')).json());
+    const state=DamagePage.getState();
+    const snapshot=JSON.stringify({atk:state.atkPet?.id,def:state.defPet?.id,an:state.atkNature,ai:state.atkIV,dn:state.defNature,di:state.defIV,power:state.basePower});
+    BattleRecordsClient.useRecord(r);DamagePage.CalcEngine.renderBattleSnapshotPanel();
+    const selected=DamagePage.CalcEngine.applyBattlePet('attacker','me','me-1')&&DamagePage.CalcEngine.applyBattlePet('defender','enemy','enemy-1');
+    const species=RKData.getMonsterById(203), expected=BattleMath.statFromEffectiveIV(RKData.getBaseStat(species,'attack'),'attack',1,42,60);
+    const actual=DamagePage.CalcEngine.battleStat('attacker','attack');
+    const full=BattleMath.statFromBase(RKData.getBaseStat(species,'attack'),'attack',1,true,60);
+    const button=document.querySelector('.attacker-card .iv-btn[data-stat="attack"]').textContent;
+    const result=DamagePage.CalcEngine.calculate();
+    const after=JSON.stringify(await(await fetch('/api/user-config')).json());
+    return {before,snapshot,selected,expected,actual,full,button,result,after,record:r};
+  });
+  check(result.selected,'both battle sides can be manually selected without personal writes');
+  check(result.actual===result.expected&&result.actual!==result.full,'numeric effective IV42 is used, not silently converted to full IV60');
+  check(result.button==='个体42','stat control explicitly shows imported exact IV');
+  check(result.before===result.after,'selecting both battle pets leaves entire personal configuration unchanged');
+  check(result.result.atkStat===result.expected,'ordinary damage uses exact snapshot stat');
+  await page.locator('.battle-snapshot-values summary').last().click();
+  check(await page.locator('#battle-snapshot-panel').innerText().then(t=>t.includes('手动假设')&&t.includes('候选')),'unknown/candidate fields are distinguished from direct evidence');
+  await page.locator('#basePower').fill('151');
+  await page.locator('#basePower').dispatchEvent('input');
+  await page.locator('.attacker-card .nature-btn[data-stat="attack"]').click();
+  const changes=await page.evaluate(async()=>{
+    const C=DamagePage.CalcEngine;
+    const ok=C.setBattleValue('attacker','iv','attack',48),bad=C.setBattleValue('attacker','iv','attack',61);
+    const before=C.battleStat('attacker','attack');
+    const level=await C.setLevelPreference('attacker',{manual:59});
+    const actual=C.battleStat('attacker','attack'), expected=BattleMath.statFromEffectiveIV(RKData.getBaseStat(RKData.getMonsterById(203),'attack'),'attack',DamagePage.getState().atkNature.attack,48,59);
+    await UserConfig.flush();return {ok,bad,before,level,actual,expected,profile:JSON.stringify(await(await fetch('/api/user-config')).json())};
+  });
+  check(changes.ok&&!changes.bad,'temporary exact IV edits validate bounds without clamping');
+  check(changes.level&&changes.actual===changes.expected&&changes.actual!==changes.before,'ordinary species may use explicit battle level in independent overlay');
+  check(changes.profile===result.before,'skill, nature, IV and level edits do not write any personal keys');
+  await page.locator('#swapIcon').click();
+  check(await page.evaluate(()=>DamagePage.CalcEngine.battleStat('defender','attack'))===changes.expected,'swapping sides also swaps exact IV and level overlay');
+  await page.goto(origin+'/#/battle-records');await page.waitForSelector('.battle-records-page');
+  await page.goto(origin+'/#/damage');await page.waitForSelector('#battle-snapshot-panel');
+  check(await page.evaluate(()=>DamagePage.CalcEngine.isBattleSimulation()),'same-session route changes retain isolated battle simulation');
+  await page.locator('.battle-snapshot-exit').click();
+  const restored=await page.evaluate(async()=>{const s=DamagePage.getState();await UserConfig.flush();return {active:DamagePage.CalcEngine.isBattleSimulation(),snapshot:JSON.stringify({atk:s.atkPet?.id,def:s.defPet?.id,an:s.atkNature,ai:s.atkIV,dn:s.defNature,di:s.defIV,power:s.basePower}),profile:JSON.stringify(await(await fetch('/api/user-config')).json())};});
+  check(!restored.active&&restored.snapshot===result.snapshot,'exiting restores pre-entry personal/manual calculation state');
+  check(restored.profile===result.before,'exiting does not persist battle guesses or reset personal records');
+  await page.reload();await page.waitForSelector('.attacker-card');
+  check(await page.evaluate(()=>BattleRecordsClient.getRecord()===null&&!DamagePage.CalcEngine.isBattleSimulation()),'reload does not resurrect session-only battle overlays');
+  return {passed:checks.length,checks};
+}

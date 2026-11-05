@@ -173,3 +173,25 @@
 .chart-preset-picker .bloodline-hdropdown-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .chart-preset-picker .bloodline-hdropdown-icon { max-width: 100%; object-fit: contain; }
 .chart-favorites [data-preset-readonly="true"] { cursor: not-allowed; }
+
+/* Survival is based on the single visible damage configuration, never pixels. */
+.chart-page [data-survival="kill"] { --chart-survival-border: #dc2626; }
+.chart-page [data-survival="survive"] { --chart-survival-border: #16a34a; }
+.chart-page .chart-favorites-item .chart-favorites-avatar > img,
+.chart-page .chart-favorites-item .chart-favorites-avatar > .quick-pet-initial {
+  border-color: var(--chart-survival-border, var(--border));
+}
+.chart-all-toggle[hidden] { display: none; }
+.chart-preset-picker .chart-preset-dynamic-row {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 6px;
+}
+.chart-preset-picker .chart-preset-dynamic {
+  display: block; width: 100%; min-width: 0; box-sizing: border-box; padding: 8px 4px;
+  font: inherit; color: var(--text-primary); background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: 6px; cursor: pointer;
+}
+.chart-preset-picker .chart-preset-dynamic[aria-pressed="true"] { border-color: var(--accent); }
+.chart-preset-picker .chart-preset-dynamic:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.chart-preset-picker button:disabled { color: var(--text-secondary); cursor: not-allowed; opacity: .55; }
+.chart-favorites option:disabled { color: var(--text-secondary); }

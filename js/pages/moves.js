@@ -1,11 +1,11 @@
-﻿/**
+/**
  * moves.js — 技能列表页面
  * 功能：上方筛选（搜索/类型/属性/能耗），下方卡片网格
  */
 const MovesPage = (function () {
   let currentFilter = { keyword: '' };
   // Kept only in this page module: navigating away/back retains filters, reload resets.
-  const valueFilters = CommonUI.FilterExclusion.create();
+  const valueFilters = CommonUI.FilterExclusion.create({ powerRange: true });
   let activeSortKey = '';
   let activeSortState = 0; // 0=default, 1=desc, 2=asc
   let detailStyle = 'default';
@@ -130,7 +130,7 @@ const MovesPage = (function () {
         </div>
         <div class="filter-section">
           <div class="type-pills type-pills-nowrap" id="move-season-pills" style="width:auto;">
-            ${['S1', 'S2', 'S3', 'S4'].map(season => `<span class="type-pill" data-filter-season="${season}" style="padding:6px 12px;">${season}</span>`).join('')}
+            ${['S1', 'S2', 'S3', 'S4', 'S5'].map(season => `<span class="type-pill" data-filter-season="${season}" style="padding:6px 12px;">${season}</span>`).join('')}
           </div>
         </div>
 
@@ -264,10 +264,12 @@ const MovesPage = (function () {
     });
   }
 
-  // 同一进化链只显示最高阶段：如果某精灵的进化后形态也在列表中，则移除该精灵
+  // 仅明确普通直接前置允许收起；成员集合无方向，不能据此隐藏其它形态。
   function deduplicateByEvolution(arr) {
     const hasEvolvedInList = (m) => {
-      return arr.some(i => i.monster.evolves_from_id === m.id && i.monster.id !== m.id);
+      return !m.is_leader_form && m.evolution_stage !== '首领形态' && arr.some(i =>
+        !i.monster.is_leader_form && i.monster.evolution_stage !== '首领形态'
+        && i.monster.evolves_from_id === m.id && i.monster.id !== m.id);
     };
     return arr.filter(info => !hasEvolvedInList(info.monster));
   }
@@ -302,7 +304,7 @@ const MovesPage = (function () {
 
     const resolvedSourceIds = new Set();
     allMonsters.forEach(m => {
-      if (m.is_leader_form) return; // 首领技能由对应高级形态代表
+      // Independent leader learnsets stay visible; only the actual learning source deduplicates.
       const resolved = RKData.resolveSkillSource(m);
       const sourceMonster = resolved.sourceMonster || m;
       if (resolvedSourceIds.has(sourceMonster.id)) return;
@@ -630,8 +632,11 @@ const MovesPage = (function () {
     const results = [];
 
     allMonsters.forEach(m => {
-      if (m.is_leader_form) return;
-      const wiki = RKData.getResolvedWikiData(m);
+      const resolved = RKData.resolveSkillSource(m);
+      // Keep the existing non-leader intersection policy; an independent leader
+      // cannot be represented by a merely paired ordinary form.
+      if ((m.is_leader_form || m.evolution_stage === '首领形态') && resolved.sourceMonster?.id !== m.id) return;
+      const wiki = resolved.wiki;
       if (wiki && wiki.skills) {
         const skillSet = new Set(wiki.skills.map(s => s.name));
         if (allSkillNames.every(sn => skillSet.has(sn))) {
@@ -678,11 +683,11 @@ const MovesPage = (function () {
       );
     }
 
-    // OR within each include dimension, AND across dimensions; exclusions remove
-    // the union of matching values without mutating the master skill list.
+    // Power inclusion uses one exact value or two range endpoints; other include
+    // dimensions remain OR, with AND across dimensions and original exclusion buckets.
     list = list.filter(mv => CommonUI.FilterExclusion.matches(valueFilters, {
       type: getMoveTypeZh(mv), elem: getMoveElemZh(mv),
-      energy: mv.energy_cost, power: mv.power, season: mv.season || 'S1'
+      energy: mv.energy_cost, power: mv.power, season: mv.season || null // unknown is visible without a season filter, never guessed S1
     }));
 
     // 排序

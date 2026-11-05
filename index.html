@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CATALOG_BOOT -->
   <title>小黑猫 wiki</title>
   <link rel="icon" href="assets/favicon.ico">
   <script>
@@ -12,9 +13,17 @@
   <link rel="stylesheet" href="css/style.css?v={{CACHE_BUST}}">
   <link rel="stylesheet" href="css/listing-ui.css?v={{CACHE_BUST}}">
   <link rel="stylesheet" href="css/chart-features.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/damage-levels.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/type-tools.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/skill-simulation.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/damage-reduction.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/battle-records.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/battle-snapshot.css?v={{CACHE_BUST}}">
   <link rel="stylesheet" href="css/team-speed-features.css?v={{CACHE_BUST}}">
   <link rel="stylesheet" href="css/game-glossary.css?v={{CACHE_BUST}}">
   <link rel="stylesheet" href="css/user-config.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/catalog-updater.css?v={{CACHE_BUST}}">
+  <link rel="stylesheet" href="css/petdex-family.css?v={{CACHE_BUST}}">
   <script src="js/chart.umd.min.js"></script>
 </head>
 <body>
@@ -31,6 +40,7 @@
       <a href="#/speed" class="nav-link" data-route="speed" draggable="false">速度速查</a>
       <a href="#/team" class="nav-link" data-route="team" draggable="false">组队系统</a>
       <a href="#/damage" class="nav-link" data-route="damage" draggable="false">伤害计算</a>
+      <a href="#/battle-records" class="nav-link" data-route="battle-records" draggable="false">对战记录</a>
       <a href="#/chart" class="nav-link" data-route="chart" draggable="false">伤害曲线</a>
       <a href="#/game-description" class="nav-link" data-route="game-description" draggable="false">游戏描述</a>
       <a href="#/updatedata" class="nav-link" data-route="updatedata" draggable="false">数据更新</a>
@@ -65,25 +75,42 @@
   <!-- 数据层：浏览器与更新脚本共用身份解析规则 -->
   <script src="js/battle-math.js?v={{CACHE_BUST}}"></script>
   <script src="js/monster-identity.js?v={{CACHE_BUST}}"></script>
+  <script src="js/catalog-data.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pet-levels.js?v={{CACHE_BUST}}"></script>
   <script src="js/data.js?v={{CACHE_BUST}}"></script>
   <script src="js/pet-configuration.js?v={{CACHE_BUST}}"></script>
   <!-- 公共组件 -->
   <script src="js/user-config.js?v={{CACHE_BUST}}"></script>
+  <script src="js/speed-leader-display.js?v={{CACHE_BUST}}"></script>
+  <script src="js/damage-speed-priority.js?v={{CACHE_BUST}}"></script>
   <script src="js/common.js?v={{CACHE_BUST}}"></script>
   <script src="js/listing-ui.js?v={{CACHE_BUST}}"></script>
   <script src="js/favorites.js?v={{CACHE_BUST}}"></script>
   <script src="js/chart-workspace.js?v={{CACHE_BUST}}"></script>
   <script src="js/game-glossary.js?v={{CACHE_BUST}}"></script>
   <!-- 页面模块 -->
+  <script src="js/petdex-family.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/petdex.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/moves.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/types.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/speed.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/team.js?v={{CACHE_BUST}}"></script>
   <script src="js/skill-variants.js?v={{CACHE_BUST}}"></script>
+  <script src="js/trait-power-defaults.js?v={{CACHE_BUST}}"></script>
+  <script src="js/skill-simulation.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-system-actions.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-time-filters.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-records.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-speed-inference.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-turn-view.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-rule-families.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-history-growth.js?v={{CACHE_BUST}}"></script>
+  <script src="js/battle-action-outcomes.js?v={{CACHE_BUST}}"></script>
+  <script src="js/pages/battle-records.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/damage.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/chart.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/game-description.js?v={{CACHE_BUST}}"></script>
+  <script src="js/catalog-updater.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/updatedata.js?v={{CACHE_BUST}}"></script>
   <script src="js/pages/settings.js?v={{CACHE_BUST}}"></script>
   <!-- 主应用 -->

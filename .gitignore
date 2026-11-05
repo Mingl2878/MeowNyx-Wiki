@@ -14,6 +14,21 @@ node_modules/
 user-config.json
 settings.json
 webview2/
+session/
+__pycache__/
+*.pyc
+*.pyo
+*.pcap
+*.pcapng
+battle-records.sqlite*
+# One-shot local history mutation tools are not release sources.
+battle_import_apply_tool.go
+battle_identity_apply_tool.go
+# These four executables are clean, manifest-verified portable Python runtime files.
+!rkpp/python/python.exe
+!rkpp/python/pythonw.exe
+!rkpp/python/Lib/venv/scripts/nt/python.exe
+!rkpp/python/Lib/venv/scripts/nt/pythonw.exe
 
 # IDE
 .vscode/

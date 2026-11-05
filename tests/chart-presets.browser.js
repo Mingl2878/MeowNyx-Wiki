@@ -53,8 +53,8 @@ async page => {
     check(order.length===18,'actual data defines exactly18 ordinary types');
     await page.locator('#chartGroupPresets').click();
     check(await page.locator('#chartPresetPicker .bloodline-hdropdown-row').count()===3,'bloodline style three rows without None/Leader row');
-    check(await page.locator('#chartPresetPicker button').count()===18,'six icons per row, all18 types');
-    check(same(await page.locator('#chartPresetPicker button').evaluateAll(ns=>ns.map(n=>n.dataset.presetId)),order.map(t=>'preset:'+t)),'actual PILL_ORDER drives picker order');
+    check(await page.locator('#chartPresetPicker .bloodline-hdropdown-item').count()===18,'six icons per row, all18 types');
+    check(same(await page.locator('#chartPresetPicker .bloodline-hdropdown-item').evaluateAll(ns=>ns.map(n=>n.dataset.presetId)),order.map(t=>'preset:'+t)),'actual PILL_ORDER drives picker order');
     check(await page.locator('[data-preset-id="preset:Normal"]').getAttribute('aria-label')==='所有普通系精灵','Normal uses full Chinese name');
     check(await page.locator('[data-preset-id="preset:Mechanical"]').getAttribute('aria-label')==='所有机械系精灵','Mechanical uses full Chinese name');
     await page.keyboard.press('ArrowRight');
@@ -140,7 +140,7 @@ async page => {
       await page.locator('#chartGroupPresets').scrollIntoViewIfNeeded();await page.locator('#chartGroupPresets').focus();await page.keyboard.press('ArrowDown');
       const bounds=await page.locator('#chartPresetPicker').evaluate(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,w:innerWidth,h:innerHeight,overflow:n.scrollWidth>n.clientWidth+1};});
       check(bounds.left>=0&&bounds.right<=bounds.w+1&&bounds.top>=0&&bounds.bottom<=bounds.h+1&&!bounds.overflow,width+' @'+zoom+' picker fits viewport without horizontal clipping');
-      await page.keyboard.press('End');check(await page.evaluate(()=>document.activeElement.dataset.presetId)==='preset:Illusion','End reaches final type at '+width+'/'+zoom);
+      await page.keyboard.press('End');check(await page.evaluate(()=>document.activeElement.dataset.presetId)==='preset:Favorites','End reaches final Favorites preset at '+width+'/'+zoom);
       await page.keyboard.press('Escape');check(await page.locator('#chartPresetPicker').count()===0,'Escape cleanup at '+width+'/'+zoom);
     }
     await page.locator('#chartGroupPresets').click();await page.evaluate(()=>window.dispatchEvent(new Event('appfontchange')));

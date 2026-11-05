@@ -8,7 +8,7 @@ import (
 
 // Presets persist only their reserved selection ID, never derived member lists.
 func validChartPresetID(id string) bool {
-	for _, name := range []string{"Normal", "Grass", "Fire", "Water", "Light", "Ground", "Ice", "Dragon", "Electric", "Poison", "Bug", "Fighting", "Flying", "Cute", "Ghost", "Dark", "Mechanical", "Illusion"} {
+	for _, name := range []string{"Survivors", "Favorites", "Normal", "Grass", "Fire", "Water", "Light", "Ground", "Ice", "Dragon", "Electric", "Poison", "Bug", "Fighting", "Flying", "Cute", "Ghost", "Dark", "Mechanical", "Illusion"} {
 		if id == "preset:"+name {
 			return true
 		}
@@ -28,12 +28,22 @@ func validateChartWorkspace(raw json.RawMessage) error {
 	if json.Unmarshal(obj["version"], &version) != nil || version != 1 {
 		return invalid()
 	}
+	var revision int
+	if value, exists := obj["controlsRevision"]; exists {
+		if nullJSON(value) || json.Unmarshal(value, &revision) != nil || revision < 0 || revision > 2 {
+			return invalid()
+		}
+	}
+	modern := revision == 2
 	var active string
 	if json.Unmarshal(obj["activeGroupId"], &active) != nil || strings.TrimSpace(active) == "" || len(active) > 128 {
 		return invalid()
 	}
 	var imported bool
 	if v, exists := obj["legacyImported"]; exists && (nullJSON(v) || json.Unmarshal(v, &imported) != nil) {
+		return invalid()
+	}
+	if modern && !imported {
 		return invalid()
 	}
 	var groups []json.RawMessage
@@ -73,13 +83,37 @@ func validateChartWorkspace(raw json.RawMessage) error {
 	if err != nil {
 		return invalid()
 	}
-	var doubleLife bool
-	if nullJSON(controls["doubleLife"]) || json.Unmarshal(controls["doubleLife"], &doubleLife) != nil {
-		return invalid()
+	// v1 doubleLife remains an input compatibility alias for HP positive nature.
+	// New clients migrate to hpNature and mirror the alias; neither controls HP IV.
+	if _, modern := controls["hpNature"]; !modern {
+		if _, legacy := controls["doubleLife"]; !legacy {
+			return invalid()
+		}
+	}
+	if modern {
+		var nature, alias bool
+		if nullJSON(controls["hpNature"]) || nullJSON(controls["doubleLife"]) ||
+			json.Unmarshal(controls["hpNature"], &nature) != nil ||
+			json.Unmarshal(controls["doubleLife"], &alias) != nil || nature != alias {
+			return invalid()
+		}
+	}
+	for _, field := range []string{"hpNature", "doubleLife", "hpIV"} {
+		if value, exists := controls[field]; exists {
+			var enabled bool
+			if nullJSON(value) || json.Unmarshal(value, &enabled) != nil || (field == "hpIV" && !enabled) {
+				return invalid()
+			}
+		}
 	}
 	for _, field := range []string{"atkIV", "atkNature", "defIV"} {
 		stats, err := parseObject(controls[field])
 		if err != nil {
+			return invalid()
+		}
+		// Legacy API/read fixtures may omit stats; revision 2 must be a complete
+		// linked control snapshot, never a partial field patch.
+		if modern && len(stats) != 2 {
 			return invalid()
 		}
 		for stat, value := range stats {
@@ -95,8 +129,15 @@ func validateChartWorkspace(raw json.RawMessage) error {
 			}
 			if field == "atkNature" {
 				var n int
-				if json.Unmarshal(value, &n) != nil || n < 0 || n > 2 {
+				if json.Unmarshal(value, &n) != nil || n < 0 || n > 2 || (modern && n > 1) {
 					return invalid()
+				}
+				if modern && n == 1 {
+					ivs, err := parseObject(controls["atkIV"])
+					var enabled bool
+					if err != nil || json.Unmarshal(ivs[stat], &enabled) != nil || !enabled {
+						return invalid()
+					}
 				}
 			} else {
 				var b bool

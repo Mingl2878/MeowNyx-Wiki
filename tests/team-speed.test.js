@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const ROOT = path.resolve(__dirname, '..');
-const read = file => fs.readFileSync(path.join(ROOT, file), 'utf8');
+const read = file => require('./catalog-read-fixture.cjs').readResource(ROOT, file);
 const plain = value => JSON.parse(JSON.stringify(value));
 
 function eventTarget() {
@@ -129,8 +129,9 @@ test('empty teams render all three 18-type panels and offense has independent si
 
 test('defense uses the shared multiplier and currently selected leader form', async () => {
   const { api, team } = await runtime();
-  const base = api.getMonsters().find(m => !m.is_leader_form && api.getMonsters().some(l => l.is_leader_form && l.dex_number === m.dex_number));
-  const leader = api.getMonsters().find(m => m.is_leader_form && m.dex_number === base.dex_number);
+  const base = { id: 91001, main_type: { name: 'Fire' } };
+  const leader = { id: 91002, is_leader_form: true, leader_of_id: base.id, main_type: { name: 'Water' }, sub_type: { name: 'Grass' } };
+  api.getMonsters().push(base, leader);
   team.setFixture({ team: [base.id], detailBloodline: { [base.id]: 'Leader' }, leaderFormId: { [base.id]: leader.id } });
   assert.equal(team.getTeamDisplayMonster(base.id).id, leader.id);
   const calls = [];

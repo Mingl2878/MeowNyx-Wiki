@@ -13,7 +13,7 @@ function server(data={}) {
       if(b?.reset_pet_defaults) for(const record of Object.values(this.data.rk_pet_configs||{})) record.mode=0;
       if(b)for(const [key,fields]of Object.entries(b.patch||b.import||{})){
         if(b.import && this.flags[key])continue;
-        if(b.import && ['rk_damage_skill_configs','rk_damage_view','rk_chart_workspace'].includes(key))this.flags[key]=true;
+        if(b.import && ['rk_damage_skill_configs','rk_damage_view','rk_chart_workspace','rk_damage_levels','rk_skill_simulation'].includes(key))this.flags[key]=true;
         if(!Object.keys(fields).length)continue;
         this.data[key]??={};
         for(const [k,v]of Object.entries(fields)){

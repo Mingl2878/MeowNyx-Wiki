@@ -10,6 +10,7 @@
     'speed': SpeedPage,
     'team': TeamPage,
     'damage': DamagePage,
+    'battle-records': BattleRecordsPage,
     'chart': ChartPage,
     'game-description': GameDescriptionPage,
     'updatedata': UpdateDataPage,

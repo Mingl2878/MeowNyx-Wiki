@@ -5,6 +5,9 @@ const path = require('node:path');
 const vm = require('node:vm');
 const Identity = require('../js/monster-identity');
 const ROOT = path.resolve(__dirname, '..');
+const {toLegacy}=require('../js/catalog-data.js');
+const {historicalMingulong}=require('./catalog-history-fixture.cjs');
+const {mingulongSkills}=require('./catalog-s5-expectations.cjs');
 const monster = (id, name, form = 'default') => ({ id, localized: { zh: { name } }, form });
 const skill = (name, source = '默认') => ({ name, source, type: '物攻', element: '机械', desc: name });
 const entry = (...skills) => ({ image: '', skills });
@@ -73,7 +76,7 @@ test('do not rewrite unrelated legacy skill rows', () => {
 async function loadRuntime(root = ROOT, overrides = {}) {
   const context = {
     console: { log() {}, error() {} },
-    fetch: async file => ({ ok: true, json: async () => file in overrides ? overrides[file] : JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')) })
+    fetch: async file => ({ ok: true, json: async () => file in overrides ? overrides[file] : JSON.parse(require('./catalog-read-fixture.cjs').readResource(root, file)) })
   };
   vm.createContext(context);
   for (const file of ['js/battle-math.js', 'js/monster-identity.js', 'js/data.js']) vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
@@ -94,9 +97,38 @@ test('real data and actual browser data layer restore all three learnsets', asyn
   const moveNames = new Set(api.getMoves().map(m => api.getMoveName(m)));
   for (const m of api.getMonsters().filter(m => !m.hidden)) {
     const wiki = api.getResolvedWikiData(m);
+    if (m.id === 619) {
+      assert.equal(m.localized.zh.name, '冥古龙');
+      assert.equal(m.data_status, undefined,'graduated monster must not remain a placeholder');
+      assert.equal(m.learnset_mode, 'own');
+      assert.equal(m.default_level, 99);
+      assert.equal(m.dex_number,470);assert.equal(m.season,'S5');assert.equal(m.evolves_from_id,624);
+      const expected=mingulongSkills.map(s=>[api.getMoveName(api.getMoves().find(move=>move.id===s.skill_id)),s.source]);
+      assert.deepEqual(JSON.parse(JSON.stringify(wiki.skills.map(s=>[s.name,s.source]))),expected,'graduation supplies all reviewed own sources and only named legend');
+      assert.match(wiki.image,/^assets\/monster\/images\/wiki\/s5-619-[a-f0-9]+\.png(?:\?v=\d+)?$/,'actual browser layer must carry the new portrait, with only its normal cache token');
+      assert.equal(wiki.data_status,undefined);
+    }
     assert.ok(wiki?.skills?.length, `${Identity.displayName(m)} lacks skills`);
     for (const s of wiki.skills) assert.ok(moveNames.has(s.name), `${Identity.displayName(m)}: unknown ${s.name}`);
   }
+});
+
+test('historical Mingulong placeholder stays independently empty through the actual browser layer',async()=>{
+  const current=JSON.parse(fs.readFileSync(path.join(ROOT,'data/catalog.json'),'utf8')),before=JSON.stringify(current);
+  const legacy=toLegacy(historicalMingulong(current));
+  const api=await loadRuntime(ROOT,{'data/monsters.json':legacy.monsters,'data/moves.json':legacy.moves,'data/types.json':legacy.types,'data/wiki_monster_data.json':legacy.wiki});
+  const m=api.getMonsterById(619),wiki=api.getResolvedWikiData(m);
+  assert.equal(m.localized.zh.name,'冥古龙');assert.equal(m.data_status,'placeholder');
+  assert.equal(m.learnset_mode,'own');assert.equal(m.default_level,99);
+  assert.ok(Array.isArray(wiki.skills)&&wiki.skills.length===0,'historical placeholder must never inherit the new ordinary predecessor learnset');
+  assert.equal(m.image,'');assert.equal(wiki.image||'','');assert.equal(JSON.stringify(current),before);
+});
+
+test('source image roles survive static browser identity lookup for the explicitly refreshed cube',async()=>{
+  const api=await loadRuntime(),cube=api.getMonsterById(410),wiki=api.getResolvedWikiData(410);
+  assert.equal(cube.localized.zh.name,'立方人');
+  assert.match(cube.image,/^s5-410-[a-f0-9]+\.webp(?:\?v=\d+)?$/);assert.match(wiki.image,/^assets\/monster\/images\/wiki\/s5-410-[a-f0-9]+\.webp(?:\?v=\d+)?$/);
+  assert.notEqual(cube.image,wiki.image,'avatar and portrait are separate reviewed roles');
 });
 
 test('explicit own is respected; explicit inheritance still resolves by ID', async () => {
